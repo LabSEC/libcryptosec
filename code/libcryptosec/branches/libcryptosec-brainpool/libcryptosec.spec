@@ -1,5 +1,5 @@
-Summary: libcryptosec
-Name: libcryptosec
+Summary: libcryptosec-brainpool
+Name: libcryptosec-brainpool
 Version: 2.1.0
 Release: 0
 Source0: %{name}-%{version}.tar.gz

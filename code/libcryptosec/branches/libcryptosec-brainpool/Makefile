@@ -1,10 +1,10 @@
 LIBS = -lp11 
-INCLUDES = -I/home/gabriel/workspace/openssl-1.0.0a/include/ -I./include
+INCLUDES = -I/home/labsec/openssl-1.0.0a/include/ -I./include
 FLAGS = -shared
 CC = g++
 EXECUTABLES = libcryptosec.so
 
-USER_OBJS += /home/gabriel/workspace/openssl-1.0.0a/libcrypto.a
+USER_OBJS += /home/labsec/openssl-1.0.0a/libcrypto.a
 
 CPP_SRCS += \
 ./src/AsymmetricCipher.cpp \
