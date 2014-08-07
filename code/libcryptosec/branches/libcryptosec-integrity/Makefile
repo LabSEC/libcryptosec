@@ -20,8 +20,10 @@ CPP_SRCS += \
 ./src/ECDSAPublicKey.cpp \
 ./src/DateTime.cpp \
 ./src/DynamicEngine.cpp \
+./src/Emac.cpp \
 ./src/Engine.cpp \
 ./src/Engines.cpp \
+./src/Hmac.cpp \
 ./src/KeyPair.cpp \
 ./src/MessageDigest.cpp \
 ./src/NetscapeSPKI.cpp \
@@ -101,8 +103,10 @@ OBJS += \
 ./src/ECDSAPublicKey.o \
 ./src/DateTime.o \
 ./src/DynamicEngine.o \
+./src/Emac.o \
 ./src/Engine.o \
 ./src/Engines.o \
+./src/Hmac.o \
 ./src/KeyPair.o \
 ./src/MessageDigest.o \
 ./src/NetscapeSPKI.o \
@@ -182,8 +186,10 @@ CPP_DEPS += \
 ./src/ECDSAPublicKey.d \
 ./src/DateTime.d \
 ./src/DynamicEngine.d \
+./src/Emac.d \
 ./src/Engine.d \
 ./src/Engines.d \
+./src/Hmac.d \
 ./src/KeyPair.d \
 ./src/MessageDigest.d \
 ./src/NetscapeSPKI.d \
