@@ -40,10 +40,29 @@ public:
 	 * Constroi um objeto Hmac.
 	 * @param key chave secreta.
 	 * @param algorithm algoritmo de resumo.
+	 * @throw HmacException caso ocorra erro ao inicializar a estrutura do hmac do OpenSSL.
+	 */
+	Hmac(ByteArray key, MessageDigest::Algorithm algorithm) throw (HmacException);
+
+	/**
+	 * Construtor.
+	 * Constroi um objeto Hmac.
+	 * @param key chave secreta.
+	 * @param algorithm algoritmo de resumo.
 	 * @param engine objeto Engine.
 	 * @throw HmacException caso ocorra erro ao inicializar a estrutura do hmac do OpenSSL.
 	 */
 	Hmac(std::string key, MessageDigest::Algorithm algorithm, Engine &engine) throw (HmacException);
+
+	/**
+	 * Construtor.
+	 * Constroi um objeto Hmac.
+	 * @param key chave secreta.
+	 * @param algorithm algoritmo de resumo.
+	 * @param engine objeto Engine.
+	 * @throw HmacException caso ocorra erro ao inicializar a estrutura do hmac do OpenSSL.
+	 */
+	Hmac(ByteArray key, MessageDigest::Algorithm algorithm, Engine &engine) throw (HmacException);
 
 	/**
 	 * Destrutor.

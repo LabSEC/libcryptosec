@@ -8,7 +8,15 @@ Hmac::Hmac(std::string key, MessageDigest::Algorithm algorithm) throw (HmacExcep
 	this->init( key, algorithm );
 }
 
+Hmac::Hmac(ByteArray key, MessageDigest::Algorithm algorithm) throw (HmacException) {
+	this->init( key, algorithm );
+}
+
 Hmac::Hmac(std::string key, MessageDigest::Algorithm algorithm, Engine &engine) throw (HmacException) {
+	this->init( key, algorithm, engine );
+}
+
+Hmac::Hmac(ByteArray key, MessageDigest::Algorithm algorithm, Engine &engine) throw (HmacException) {
 	this->init( key, algorithm, engine );
 }
 
