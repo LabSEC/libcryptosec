@@ -8,6 +8,7 @@ USER_OBJS += /usr/local/ssl/lib/libcrypto.a
 
 CPP_SRCS += \
 ./src/AsymmetricCipher.cpp \
+./src/AsymmetricEmac.cpp \
 ./src/AsymmetricKey.cpp \
 ./src/Base64.cpp \
 ./src/BigInteger.cpp \
@@ -20,7 +21,6 @@ CPP_SRCS += \
 ./src/ECDSAPublicKey.cpp \
 ./src/DateTime.cpp \
 ./src/DynamicEngine.cpp \
-./src/Emac.cpp \
 ./src/Engine.cpp \
 ./src/Engines.cpp \
 ./src/Hmac.cpp \
@@ -54,6 +54,7 @@ CPP_SRCS += \
 ./src/SmartcardSlot.cpp \
 ./src/SmartcardSlots.cpp \
 ./src/SymmetricCipher.cpp \
+./src/SymmetricEmac.cpp \
 ./src/SymmetricKey.cpp \
 ./src/SymmetricKeyGenerator.cpp \
 ./src/certificate/AuthorityKeyIdentifierExtension.cpp \
@@ -91,6 +92,7 @@ CPP_SRCS += \
  
 OBJS += \
 ./src/AsymmetricCipher.o \
+./src/AsymmetricEmac.o \
 ./src/AsymmetricKey.o \
 ./src/Base64.o \
 ./src/BigInteger.o \
@@ -103,7 +105,6 @@ OBJS += \
 ./src/ECDSAPublicKey.o \
 ./src/DateTime.o \
 ./src/DynamicEngine.o \
-./src/Emac.o \
 ./src/Engine.o \
 ./src/Engines.o \
 ./src/Hmac.o \
@@ -137,6 +138,7 @@ OBJS += \
 ./src/SmartcardSlot.o \
 ./src/SmartcardSlots.o \
 ./src/SymmetricCipher.o \
+./src/SymmetricEmac.o \
 ./src/SymmetricKey.o \
 ./src/SymmetricKeyGenerator.o \
 ./src/certificate/AuthorityKeyIdentifierExtension.o \
@@ -174,6 +176,7 @@ OBJS += \
 
 CPP_DEPS += \
 ./src/AsymmetricCipher.d \
+./src/AsymmetricEmac.d \
 ./src/AsymmetricKey.d \
 ./src/Base64.d \
 ./src/BigInteger.d \
@@ -220,6 +223,7 @@ CPP_DEPS += \
 ./src/SmartcardSlot.d \
 ./src/SmartcardSlots.d \
 ./src/SymmetricCipher.d \
+./src/SymmetricEmac.d \
 ./src/SymmetricKey.d \
 ./src/SymmetricKeyGenerator.d \
 ./src/certificate/AuthorityKeyIdentifierExtension.d \
