@@ -88,6 +88,19 @@ void Hmac::update(std::string data) throw (HmacException, InvalidStateException)
 	this->update( content );
 }
 
+void Hmac::update(std::vector<std::string> &data){
+	for(int unsigned i = 0; i < data.size(); i++){
+		this->update(data[i]);
+	}
+}
+
+void Hmac::update(std::vector<ByteArray> &data){
+
+	for(int unsigned i = 0; i < data.size(); i++){
+		this->update(data[i]);
+	}
+}
+
 ByteArray Hmac::doFinal(ByteArray &data) throw (HmacException, InvalidStateException) {
 	this->update( data );
 	return this->doFinal();

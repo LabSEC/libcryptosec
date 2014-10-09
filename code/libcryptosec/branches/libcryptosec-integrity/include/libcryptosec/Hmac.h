@@ -7,6 +7,7 @@
 #include <libcryptosec/Engine.h>
 #include <libcryptosec/exception/InvalidStateException.h>
 #include <libcryptosec/exception/HmacException.h>
+#include <vector>
 
 /**
  * @defgroup Util Classes Relacionadas Utilitárias de Criptografia
@@ -118,6 +119,22 @@ public:
 	 * @throw InvalidStateException caso o objeto Hmac não tenha sido inicializado corretamente.
 	 */
 	void update(std::string data) throw (HmacException, InvalidStateException);
+
+	/**
+	 * Atualizar/concatenar o conteúdo de entrada do hmac.
+	 * @param data conteúdo para geração do hmac usando vector<string>.
+	 * @throw HmacException caso ocorra erro ao atualizar o contexto do hmac do OpenSSL.
+	 * @throw InvalidStateException caso o objeto Hmac não tenha sido inicializado corretamente.
+	 */
+	void update(std::vector<std::string> &data) throw (HmacException, InvalidStateException);
+
+	/**
+	 * Atualizar/concatenar o conteúdo de entrada do hmac.
+	 * @param data conteúdo para geração do hmac usando vector<ByteArray>.
+	 * @throw HmacException caso ocorra erro ao atualizar o contexto do hmac do OpenSSL.
+	 * @throw InvalidStateException caso o objeto Hmac não tenha sido inicializado corretamente.
+	 */
+	void update(std::vector<ByteArray> &data) throw (HmacException, InvalidStateException);
 
 	/**
 	 * Gerar o hmac
