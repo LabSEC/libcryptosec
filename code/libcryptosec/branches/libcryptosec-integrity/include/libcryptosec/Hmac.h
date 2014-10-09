@@ -180,7 +180,7 @@ protected:
 	};
 
 	/**
-	 * Algoritmo selecionado
+	 * Algoritmo selecionado.
 	 */
 	MessageDigest::Algorithm algorithm;
 
