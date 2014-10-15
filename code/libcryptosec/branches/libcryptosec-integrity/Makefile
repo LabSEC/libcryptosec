@@ -92,14 +92,6 @@ OBJS += $(CPP_SRCS:.cpp=.o)
 
 CPP_DEPS += $(CPP_SRCS:.cpp=.d)
 
-#TODO
-#CPP_TEST_SRCS += 
-#
-#TEST_OBJS += $(CPP_TEST_SRCS:.cpp=.o)
-#
-# Verificar se precisa de DEPS para os testes. Teste é apenas executado, nunca instalado.
-#CPP_TEST_DEPS += $(CPP_TEST_SRCS:.cpp=.d)
-
 src/%.o: ./src/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
@@ -110,10 +102,6 @@ src/%.o: ./src/%.cpp
 $(EXECUTABLES):	$(OBJS)
 	$(CC) $(FLAGS) -o $(EXECUTABLES) $(OBJS) $(USER_OBJS) $(LIBS)  
 	@echo 'Build complete!'
-	
-test:
-#TODO
-
 
 clean:
 	rm -rf $(CPP_DEPS) $(OBJS) $(EXECUTABLES)
