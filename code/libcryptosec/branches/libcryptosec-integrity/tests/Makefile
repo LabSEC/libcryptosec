@@ -8,26 +8,30 @@ EXECUTABLE = test.out
 GTEST_DIR = gtest
 SRC_DIR = src
 
-TEST_SRCS += \
-./$(GTEST_DIR)/gtest-all.cpp \
-./$(SRC_DIR)/Main.cpp \
-./$(SRC_DIR)/TesteExemplo.cpp \
+TEST_SRCS += $(wildcard $(SRC_DIR)/*.cpp)
+OBJS += $(TEST_SRCS:.cpp=.o)
 
-all: compile test
+%.o: %.cpp
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -O0 -Wall -c -o "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
 
-compile:
-	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) $(LIBS) $(TEST_SRCS) -o $(EXECUTABLE)
+all:	gtest $(OBJS)
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) $(LIBS) -o $(EXECUTABLE) $(OBJS) ./$(GTEST_DIR)/gtest-all.o
+	@echo 'Build complete!'
+	@echo ' '
+
+gtest: ./$(GTEST_DIR)/gtest-all.o
 
 test:
+	@echo 'Executing tests...'
 	./$(EXECUTABLE)
+	@echo 'Done!'
 
 clean:
-	rm $(EXECUTABLE)
+	rm -rf ./$(SRC_DIR)/*.o $(EXECUTABLE)
 
-#TODO
-#CPP_TEST_SRCS += 
-#
-#TEST_OBJS += $(CPP_TEST_SRCS:.cpp=.o)
-#
-# Verificar se precisa de DEPS para os testes. Teste é apenas executado, nunca instalado.
-#CPP_TEST_DEPS += $(CPP_TEST_SRCS:.cpp=.d)
+veryclean: clean
+	rm -rf ./$(GTEST_DIR)/*.o
