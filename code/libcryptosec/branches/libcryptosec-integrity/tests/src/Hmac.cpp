@@ -88,13 +88,3 @@ TEST(GeracaoHmacInconsistente, DuploInit) {
 
 	EXPECT_EQ("1616DF6E386C2660916BE7A4370951276B5229F26249C2D758643C58E6E6576E", hmac.doFinal("testeLABSEC").toHex());
 }
-
-
-
-/*TEST(Hmac, EngineVazia) {
-	Hmac hmac;
-	ByteArray b = ByteArray("senha");
-	hmac.init(b, MessageDigest::SHA256, NULL);
-
-	EXPECT_EQ("1616DF6E386C2660916BE7A4370951276B5229F26249C2D758643C58E6E6576E", hmac.doFinal("testeLABSEC").toHex());
-}*/
