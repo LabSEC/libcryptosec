@@ -7,6 +7,7 @@ EXECUTABLE = test.out
 
 GTEST_DIR = gtest
 SRC_DIR = src
+LIBCRYPTOSEC = /usr/lib/libcryptosec.so
 
 TEST_SRCS += $(wildcard $(SRC_DIR)/*.cpp)
 OBJS += $(TEST_SRCS:.cpp=.o)
@@ -14,14 +15,17 @@ OBJS += $(TEST_SRCS:.cpp=.o)
 %.o: %.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -O0 -Wall -c -o "$@" "$<"
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -O0 -Wall -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
-all:	gtest $(OBJS)
-	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) $(LIBS) -o $(EXECUTABLE) $(OBJS) ./$(GTEST_DIR)/gtest-all.o
+all:	check-lib gtest $(OBJS)
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) -o $(EXECUTABLE) $(OBJS) ./$(GTEST_DIR)/gtest-all.o $(LIBS)
 	@echo 'Build complete!'
 	@echo ' '
+
+check-lib:
+	@test -s $(LIBCRYPTOSEC) || { echo "You should install libcryptosec first!"; exit 1; }
 
 gtest: ./$(GTEST_DIR)/gtest-all.o
 
