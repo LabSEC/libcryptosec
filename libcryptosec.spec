@@ -27,8 +27,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/libcryptosec/
 
 %changelog
-* Mon Sep 02 2014 Lucas Perin
-- Version 2.0.1 RHEL5.5 (OpenSSL 1.0.2)
+* Wed Nov 19 2014 Lucas Petry
+- Version 2.1.1 RHEL5.5 (OpenSSL 1.0.1.h)
+* Tue Sep 02 2014 Lucas Perin
+- Version 2.1.0 RHEL5.5 (OpenSSL 1.0.1.h)
 * Mon May 24 2010 Cristian Thiago Moecke
 - Version 2.0.1 RHEL5.5 (OpenSSL 1.0.0)
 * Thu Dec 08 2009 Cristian Thiago Moecke
