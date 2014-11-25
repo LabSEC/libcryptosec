@@ -2,11 +2,15 @@
 #define ECDSAKEYPAIR_H_
 
 #include <openssl/evp.h>
+#include <openssl/bio.h>
+
 #include "ByteArray.h"
 #include "SymmetricKey.h"
 #include "KeyPair.h"
 #include "ECDSAPublicKey.h"
 #include "ECDSAPrivateKey.h"
+#include "ec/Curve.h"
+#include "Base64.h"
 
 #include <libcryptosec/exception/EngineException.h>
 #include <libcryptosec/exception/EncodeException.h>
@@ -31,6 +35,27 @@ class ECDSAKeyPair : public KeyPair
 		ECDSAKeyPair(AsymmetricKey::Curve curve, bool named=true)
 				throw (AsymmetricKeyException);
 		
+		/**
+		 * Cria par por parâmetros informados em DER
+		 * TODO
+		 */
+		ECDSAKeyPair(ByteArray &derEncoded)
+				throw (AsymmetricKeyException);
+
+		/**
+		 * Cria par por parâmetros informados em PEM
+		 * TODO
+		 */
+		ECDSAKeyPair(std::string &encoded)
+				throw (AsymmetricKeyException);
+
+		/**
+		 * Cria par por parãmetros informados por um objeto Curve
+		 * TODO
+		 */
+		ECDSAKeyPair(const Curve & curve)
+				throw (AsymmetricKeyException);
+
 		virtual ~ECDSAKeyPair();
 		/**
 		 * gets the public key from key pair
@@ -57,6 +82,11 @@ class ECDSAKeyPair : public KeyPair
 		 * gets the key size
 		 * @return key size
 		 */
+
+	protected:
+		void generateKey(EC_GROUP * group) throw (AsymmetricKeyException);
+		EC_GROUP *createGroup(const Curve& curve);
+		EC_GROUP *createGroup(ByteArray &derEncoded);
 };
 
 #endif /*ECDSAKEYPAIR_H_*/

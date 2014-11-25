@@ -157,23 +157,27 @@ TEST_F(HmacTest, HmacSha256FromEmptyText_key150bytes) {
  * Gera e testa Hmac com o algoritmo sha1 de um arquivo binario e chave de 63 bytes
  */
 TEST_F(HmacTest, HmacSha1FromBinaryFile_key63bytes) {
-	fstream file ("./files/binaryFile.hmac2", ios::in|ios::binary|ios::ate);
-	file.seekg (0, file.end);
-	int length = file.tellg();
-	file.seekg (0, file.beg);
+	fstream file ("files/binaryFile", ios::in|ios::binary|ios::ate);
+	if(file.is_open()){
+		file.seekg (0, file.end);
+		int length = file.tellg();
+		file.seekg (0, file.beg);
 
-	unsigned char * memblock = new unsigned char [length];
+		unsigned char * memblock = new unsigned char [length];
 
-	file.read ((char*)memblock, length);
-	file.close();
+		file.read ((char*)memblock, length);
+		file.close();
 
-	hmac.init(key63bytes, MessageDigest::SHA1);
-	ByteArray b(memblock, length);
+		hmac.init(key63bytes, MessageDigest::SHA1);
+		ByteArray b(memblock, length);
+		delete[] memblock;
+		EXPECT_STRCASEEQ("2dce9d5c64b7879fb52656953ae128a1eb2cd148",
+						hmac.doFinal(b).toHex().c_str());
 
-	EXPECT_STRCASEEQ("2dce9d5c64b7879fb52656953ae128a1eb2cd148",
-					hmac.doFinal(b).toHex().c_str());
+	}else{
+		FAIL();
+	}
 }
-
 /**
  * Testa geracao do Hmac com texto vazio, sem chave, sem inicializacao e atraves do .doFinal()
  */
