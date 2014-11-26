@@ -33,7 +33,7 @@ protected:
 	}
 
 	Hmac hmac;
-	ByteArray emptyKey;
+	static ByteArray emptyKey;
 	ByteArray key30bytes;
 	ByteArray key63bytes;
 	ByteArray key64bytes;
@@ -46,6 +46,7 @@ protected:
 
 };
 
+ByteArray HmacTest::emptyKey = ByteArray(new unsigned char[0], 0);
 /**
  * Gera e testa Hmac com o algoritmo sha256 e chave de 30 bytes
  */
@@ -139,7 +140,7 @@ TEST_F(HmacTest, HmacSha256FromVector_key63bytes) {
  * Gera e testa Hmac com o algoritmo MD5 a partir de uma chave vazia
  */
 TEST_F(HmacTest, HmacMd5_emptyKey) {
-	hmac.init(emptyKey, MessageDigest::MD5);
+	hmac.init(HmacTest::emptyKey, MessageDigest::MD5);
 	EXPECT_STRCASEEQ("0d371a986922b57b2247ec55f4b9bea4",
 					hmac.doFinal(plainTexts[0]).toHex().c_str());
 }
