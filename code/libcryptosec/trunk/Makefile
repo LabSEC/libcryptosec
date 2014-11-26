@@ -16,6 +16,7 @@ CPP_SRCS += \
 ./src/DSAPrivateKey.cpp \
 ./src/DSAPublicKey.cpp \
 ./src/ECDSAKeyPair.cpp \
+./src/CustomECDSAKeyPair.cpp \
 ./src/ECDSAPrivateKey.cpp \
 ./src/ECDSAPublicKey.cpp \
 ./src/DateTime.cpp \
@@ -87,7 +88,7 @@ CPP_SRCS += \
 ./src/certificate/SubjectKeyIdentifierExtension.cpp \
 ./src/certificate/UserNotice.cpp \
 ./src/certificate/CRLNumberExtension.cpp \
-./src/ec/Curve.cpp \
+./src/ec/EllipticCurve.cpp \
 ./src/ec/BrainpoolCurveFactory.cpp \
  
 OBJS += $(CPP_SRCS:.cpp=.o)
