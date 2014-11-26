@@ -241,32 +241,238 @@ const Curve* BrainpoolCurveFactory::bp256r1() throw (BigIntegerException) {
 	return curve;
 }
 
-///
-
 const Curve* BrainpoolCurveFactory::bp256t1() throw (BigIntegerException) {
-	return 0;
+	Curve * curve = new Curve();
+
+	curve->a = new BigInteger();
+	curve->a->setHexValue("A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620"
+						  "282013481D1F6E5374");
+
+	curve->b = new BigInteger();
+	curve->b->setHexValue("662C61C430D84EA4FE66A7733D0B76B7BF93EBC4AF2F49"
+						  "256AE58101FEE92B04");
+
+	curve->p = new BigInteger();
+	curve->p->setHexValue("A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620"
+						  "282013481D1F6E5377");
+
+	curve->x = new BigInteger();
+	curve->x->setHexValue("A3E8EB3CC1CFE7B7732213B23A656149AFA142C47AAFBC"
+						  "2B79A191562E1305F4");
+
+	curve->y = new BigInteger();
+	curve->y->setHexValue("2D996C823439C56D7F7B22E14644417E69BCB6DE39D027"
+						  "001DABE8F35B25C9BE");
+
+	curve->order = new BigInteger();
+	curve->order->setHexValue("A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B5"
+							  "61A6F7901E0E82974856A7");
+
+	curve->cofactor = new BigInteger();
+	curve->cofactor->setHexValue("1");
+	return curve;
 }
 
 const Curve* BrainpoolCurveFactory::bp320r1() throw (BigIntegerException) {
-	return 0;
+	Curve * curve = new Curve();
+
+	curve->a = new BigInteger();
+	curve->a->setHexValue("3EE30B568FBAB0F883CCEBD46D3F3BB8A2A73513F5EB79"
+						  "DA66190EB085FFA9F492F375A97D860EB4");
+
+	curve->b = new BigInteger();
+	curve->b->setHexValue("520883949DFDBC42D3AD198640688A6FE13F41349554B4"
+						  "9ACC31DCCD884539816F5EB4AC8FB1F1A6");
+
+	curve->p = new BigInteger();
+	curve->p->setHexValue("D35E472036BC4FB7E13C785ED201E065F98FCFA6F6F40D"
+						  "EF4F92B9EC7893EC28FCD412B1F1B32E27");
+
+	curve->x = new BigInteger();
+	curve->x->setHexValue("43BD7E9AFB53D8B85289BCC48EE5BFE6F20137D10A087E"
+						  "B6E7871E2A10A599C710AF8D0D39E20611");
+
+	curve->y = new BigInteger();
+	curve->y->setHexValue("14FDD05545EC1CC8AB4093247F77275E0743FFED117182"
+						  "EAA9C77877AAAC6AC7D35245D1692E8EE1");
+
+	curve->order = new BigInteger();
+	curve->order->setHexValue("D35E472036BC4FB7E13C785ED201E065F98FCFA5B6"
+							  "8F12A32D482EC7EE8658E98691555B44C59311");
+
+	curve->cofactor = new BigInteger();
+	curve->cofactor->setHexValue("1");
+	return curve;
 }
 
 const Curve* BrainpoolCurveFactory::bp320t1() throw (BigIntegerException) {
-	return 0;
+	Curve * curve = new Curve();
+
+	curve->a = new BigInteger();
+	curve->a->setHexValue("D35E472036BC4FB7E13C785ED201E065F98FCFA6F6F40D"
+						  "EF4F92B9EC7893EC28FCD412B1F1B32E24");
+
+	curve->b = new BigInteger();
+	curve->b->setHexValue("A7F561E038EB1ED560B3D147DB782013064C19F27ED27C"
+						  "6780AAF77FB8A547CEB5B4FEF422340353");
+
+	curve->p = new BigInteger();
+	curve->p->setHexValue("D35E472036BC4FB7E13C785ED201E065F98FCFA6F6F40D"
+						  "EF4F92B9EC7893EC28FCD412B1F1B32E27");
+
+	curve->x = new BigInteger();
+	curve->x->setHexValue("925BE9FB01AFC6FB4D3E7D4990010F813408AB106C4F09"
+						  "CB7EE07868CC136FFF3357F624A21BED52");
+
+	curve->y = new BigInteger();
+	curve->y->setHexValue("63BA3A7A27483EBF6671DBEF7ABB30EBEE084E58A0B077"
+						  "AD42A5A0989D1EE71B1B9BC0455FB0D2C3");
+
+	curve->order = new BigInteger();
+	curve->order->setHexValue("D35E472036BC4FB7E13C785ED201E065F98FCFA5B6"
+							  "8F12A32D482EC7EE8658E98691555B44C59311");
+
+	curve->cofactor = new BigInteger();
+	curve->cofactor->setHexValue("1");
+	return curve;
 }
 
 const Curve* BrainpoolCurveFactory::bp384r1() throw (BigIntegerException) {
-	return 0;
+	Curve * curve = new Curve();
+
+	curve->a = new BigInteger();
+	curve->a->setHexValue("7BC382C63D8C150C3C72080ACE05AFA0C2BEA28E4FB22787"
+						  "139165EFBA91F90F8AA5814A503AD4EB04A8C7DD22CE2826");
+
+	curve->b = new BigInteger();
+	curve->b->setHexValue("04A8C7DD22CE28268B39B55416F0447C2FB77DE107DCD2A6"
+						  "2E880EA53EEB62D57CB4390295DBC9943AB78696FA504C11");
+
+	curve->p = new BigInteger();
+	curve->p->setHexValue("8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B4"
+						  "12B1DA197FB71123ACD3A729901D1A71874700133107EC53");
+
+	curve->x = new BigInteger();
+	curve->x->setHexValue("1D1C64F068CF45FFA2A63A81B7C13F6B8847A3E77EF14FE3"
+						  "DB7FCAFE0CBD10E8E826E03436D646AAEF87B2E247D4AF1E");
+
+	curve->y = new BigInteger();
+	curve->y->setHexValue("8ABE1D7520F9C2A45CB1EB8E95CFD55262B70B29FEEC5864"
+						  "E19C054FF99129280E4646217791811142820341263C5315");
+
+	curve->order = new BigInteger();
+	curve->order->setHexValue("8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B3"
+							  "1F166E6CAC0425A7CF3AB6AF6B7FC3103B883202E9046565");
+
+	curve->cofactor = new BigInteger();
+	curve->cofactor->setHexValue("1");
+	return curve;
 }
 
 const Curve* BrainpoolCurveFactory::bp384t1() throw (BigIntegerException) {
-	return 0;
+	Curve * curve = new Curve();
+
+	curve->a = new BigInteger();
+	curve->a->setHexValue("8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B4"
+						  "12B1DA197FB71123ACD3A729901D1A71874700133107EC50");
+
+	curve->b = new BigInteger();
+	curve->b->setHexValue("7F519EADA7BDA81BD826DBA647910F8C4B9346ED8CCDC64E"
+						  "4B1ABD11756DCE1D2074AA263B88805CED70355A33B471EE");
+
+	curve->p = new BigInteger();
+	curve->p->setHexValue("8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B4"
+						  "12B1DA197FB71123ACD3A729901D1A71874700133107EC53");
+
+	curve->x = new BigInteger();
+	curve->x->setHexValue("18DE98B02DB9A306F2AFCD7235F72A819B80AB12EBD65317"
+						  "2476FECD462AABFFC4FF191B946A5F54D8D0AA2F418808CC");
+
+	curve->y = new BigInteger();
+	curve->y->setHexValue("25AB056962D30651A114AFD2755AD336747F93475B7A1FCA"
+						  "3B88F2B6A208CCFE469408584DC2B2912675BF5B9E582928");
+
+	curve->order = new BigInteger();
+	curve->order->setHexValue("8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B3"
+							  "1F166E6CAC0425A7CF3AB6AF6B7FC3103B883202E9046565");
+
+	curve->cofactor = new BigInteger();
+	curve->cofactor->setHexValue("1");
+	return curve;
 }
 
 const Curve* BrainpoolCurveFactory::bp512r1() throw (BigIntegerException) {
-	return 0;
+	Curve * curve = new Curve();
+
+	curve->a = new BigInteger();
+	curve->a->setHexValue("7830A3318B603B89E2327145AC234CC594CBDD8D3DF"
+						  "91610A83441CAEA9863BC2DED5D5AA8253AA10A2EF1"
+						  "C98B9AC8B57F1117A72BF2C7B9E7C1AC4D77FC94CA");
+
+	curve->b = new BigInteger();
+	curve->b->setHexValue("3DF91610A83441CAEA9863BC2DED5D5AA8253AA10A2"
+						  "EF1C98B9AC8B57F1117A72BF2C7B9E7C1AC4D77FC94"
+						  "CADC083E67984050B75EBAE5DD2809BD638016F723");
+
+	curve->p = new BigInteger();
+	curve->p->setHexValue("AADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C"
+						  "9D20ED6639CCA703308717D4D9B009BC66842AECDA1"
+						  "2AE6A380E62881FF2F2D82C68528AA6056583A48F3");
+
+	curve->x = new BigInteger();
+	curve->x->setHexValue("81AEE4BDD82ED9645A21322E9C4C6A9385ED9F70B5D"
+						  "916C1B43B62EEF4D0098EFF3B1F78E2D0D48D50D168"
+						  "7B93B97D5F7C6D5047406A5E688B352209BCB9F822");
+
+	curve->y = new BigInteger();
+	curve->y->setHexValue("7DDE385D566332ECC0EABFA9CF7822FDF209F70024A"
+						  "57B1AA000C55B881F8111B2DCDE494A5F485E5BCA4B"
+						  "D88A2763AED1CA2B2FA8F0540678CD1E0F3AD80892");
+
+	curve->order = new BigInteger();
+	curve->order->setHexValue("AADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C"
+							  "9D20ED6639CCA70330870553E5C414CA92619418661"
+							  "197FAC10471DB1D381085DDADDB58796829CA90069");
+
+	curve->cofactor = new BigInteger();
+	curve->cofactor->setHexValue("1");
+	return curve;
 }
 
 const Curve* BrainpoolCurveFactory::bp512t1() throw (BigIntegerException) {
-	return 0;
+	Curve * curve = new Curve();
+
+	curve->a = new BigInteger();
+	curve->a->setHexValue("AADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C"
+						  "9D20ED6639CCA703308717D4D9B009BC66842AECDA1"
+						  "2AE6A380E62881FF2F2D82C68528AA6056583A48F0");
+
+	curve->b = new BigInteger();
+	curve->b->setHexValue("7CBBBCF9441CFAB76E1890E46884EAE321F70C0BCB4"
+						  "981527897504BEC3E36A62BCDFA2304976540F64500"
+						  "85F2DAE145C22553B465763689180EA2571867423E");
+
+	curve->p = new BigInteger();
+	curve->p->setHexValue("AADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C"
+						  "9D20ED6639CCA703308717D4D9B009BC66842AECDA1"
+						  "2AE6A380E62881FF2F2D82C68528AA6056583A48F3");
+
+	curve->x = new BigInteger();
+	curve->x->setHexValue("640ECE5C12788717B9C1BA06CBC2A6FEBA85842458C"
+						  "56DDE9DB1758D39C0313D82BA51735CDB3EA499AA77"
+						  "A7D6943A64F7A3F25FE26F06B51BAA2696FA9035DA");
+
+	curve->y = new BigInteger();
+	curve->y->setHexValue("5B534BD595F5AF0FA2C892376C84ACE1BB4E3019B71"
+						  "634C01131159CAE03CEE9D9932184BEEF216BD71DF2"
+						  "DADF86A627306ECFF96DBB8BACE198B61E00F8B332");
+
+	curve->order = new BigInteger();
+	curve->order->setHexValue("AADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C"
+							  "9D20ED6639CCA70330870553E5C414CA92619418661"
+							  "197FAC10471DB1D381085DDADDB58796829CA90069");
+
+	curve->cofactor = new BigInteger();
+	curve->cofactor->setHexValue("1");
+	return curve;
 }
