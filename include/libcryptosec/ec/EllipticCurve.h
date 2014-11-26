@@ -1,5 +1,5 @@
-#ifndef CURVE_H_
-#define CURVE_H_
+#ifndef EllipticCurve_H_
+#define EllipticCurve_H_
 
 /* c++ library includes */
 #include <string>
@@ -13,25 +13,25 @@
  * ou gerados a partir de um arquivo em PEM/DER
  * @ingroup Util
  */
-class Curve {
+class EllipticCurve {
 
 public:
 
-	Curve();
+	EllipticCurve();
 
 	/**
 	 * Cria uma curva elíptica a partir da descrição de seus parâmetros codificados em DER.
 	 * @param encoded parâmetros de curva o formato DER.
 	 */
-	Curve(ByteArray &encoded);
+	EllipticCurve(ByteArray &encoded);
 
 	/**
 	 * Cria uma curva elíptica a partir da descrição de seus parâmetros codificados em PEM.
 	 * @param encoded parâmetros de curva o formato PEM.
 	 */
-	Curve(std::string &encoded);
+	EllipticCurve(std::string &encoded);
 
-	~Curve();
+	~EllipticCurve();
 
 	const BIGNUM * BN_a() const throw();
 
@@ -53,4 +53,4 @@ public:
 	static const std::string notSpecified;
 
 };
-#endif /* CURVE_H_ */
+#endif /* EllipticCurve_H_ */

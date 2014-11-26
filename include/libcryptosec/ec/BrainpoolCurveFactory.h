@@ -2,7 +2,7 @@
 #define BRAINPOOLCURVEFACTORY_H_
 
 /* local includes */
-#include "Curve.h"
+#include "EllipticCurve.h"
 
  /**
  * @brief Classe para fabricação de curvas do padrão Brainpool.
@@ -29,25 +29,25 @@ public:
 	};
 
 	virtual ~BrainpoolCurveFactory(){};
-	static const Curve * getCurve(BrainpoolCurveFactory::CurveName curveName) throw(BigIntegerException);
+	static const EllipticCurve * getCurve(BrainpoolCurveFactory::CurveName curveName) throw(BigIntegerException);
 
 private:
 
 	BrainpoolCurveFactory();
-	static const Curve * bp160r1() throw(BigIntegerException);
-	static const Curve * bp160t1() throw(BigIntegerException);
-	static const Curve * bp192r1() throw(BigIntegerException);
-	static const Curve * bp192t1() throw(BigIntegerException);
-	static const Curve * bp224r1() throw(BigIntegerException);
-	static const Curve * bp224t1() throw(BigIntegerException);
-	static const Curve * bp256r1() throw(BigIntegerException);
-	static const Curve * bp256t1() throw(BigIntegerException);
-	static const Curve * bp320r1() throw(BigIntegerException);
-	static const Curve * bp320t1() throw(BigIntegerException);
-	static const Curve * bp384r1() throw(BigIntegerException);
-	static const Curve * bp384t1() throw(BigIntegerException);
-	static const Curve * bp512r1() throw(BigIntegerException);
-	static const Curve * bp512t1() throw(BigIntegerException);
+	static const EllipticCurve * bp160r1() throw(BigIntegerException);
+	static const EllipticCurve * bp160t1() throw(BigIntegerException);
+	static const EllipticCurve * bp192r1() throw(BigIntegerException);
+	static const EllipticCurve * bp192t1() throw(BigIntegerException);
+	static const EllipticCurve * bp224r1() throw(BigIntegerException);
+	static const EllipticCurve * bp224t1() throw(BigIntegerException);
+	static const EllipticCurve * bp256r1() throw(BigIntegerException);
+	static const EllipticCurve * bp256t1() throw(BigIntegerException);
+	static const EllipticCurve * bp320r1() throw(BigIntegerException);
+	static const EllipticCurve * bp320t1() throw(BigIntegerException);
+	static const EllipticCurve * bp384r1() throw(BigIntegerException);
+	static const EllipticCurve * bp384t1() throw(BigIntegerException);
+	static const EllipticCurve * bp512r1() throw(BigIntegerException);
+	static const EllipticCurve * bp512t1() throw(BigIntegerException);
 };
 
 #endif /* BRAINPOOLCURVEFACTORY_H_ */

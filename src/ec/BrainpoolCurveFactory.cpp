@@ -4,7 +4,7 @@ BrainpoolCurveFactory::BrainpoolCurveFactory() {
 //Nothing to do. This constructor is never called.
 }
 
-const Curve* BrainpoolCurveFactory::getCurve(
+const EllipticCurve* BrainpoolCurveFactory::getCurve(
 		BrainpoolCurveFactory::CurveName curveName) throw (BigIntegerException) {
 
 	switch (curveName) {
@@ -59,8 +59,8 @@ const Curve* BrainpoolCurveFactory::getCurve(
 	}
 }
 
-const Curve* BrainpoolCurveFactory::bp160r1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp160r1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("340E7BE2A280EB74E2BE61BADA745D97E8F7C300");
@@ -85,8 +85,8 @@ const Curve* BrainpoolCurveFactory::bp160r1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp160t1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp160t1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("E95E4A5F737059DC60DFC7AD95B3D8139515620C");
@@ -111,8 +111,8 @@ const Curve* BrainpoolCurveFactory::bp160t1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp192r1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp192r1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("6A91174076B1E0E19C39C031FE8685C1CAE040E5C69A28EF");
@@ -137,8 +137,8 @@ const Curve* BrainpoolCurveFactory::bp192r1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp192t1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp192t1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("C302F41D932A36CDA7A3463093D18DB78FCE476DE1A86294");
@@ -163,8 +163,8 @@ const Curve* BrainpoolCurveFactory::bp192t1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp224r1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp224r1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("68A5E62CA9CE6C1C299803A6C1530B514E182AD8B0042A59CAD29F43");
@@ -189,8 +189,8 @@ const Curve* BrainpoolCurveFactory::bp224r1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp224t1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp224t1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("D7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FC");
@@ -215,8 +215,8 @@ const Curve* BrainpoolCurveFactory::bp224t1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp256r1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp256r1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("7D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9");
@@ -241,8 +241,8 @@ const Curve* BrainpoolCurveFactory::bp256r1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp256t1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp256t1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620"
@@ -273,8 +273,8 @@ const Curve* BrainpoolCurveFactory::bp256t1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp320r1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp320r1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("3EE30B568FBAB0F883CCEBD46D3F3BB8A2A73513F5EB79"
@@ -305,8 +305,8 @@ const Curve* BrainpoolCurveFactory::bp320r1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp320t1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp320t1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("D35E472036BC4FB7E13C785ED201E065F98FCFA6F6F40D"
@@ -337,8 +337,8 @@ const Curve* BrainpoolCurveFactory::bp320t1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp384r1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp384r1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("7BC382C63D8C150C3C72080ACE05AFA0C2BEA28E4FB22787"
@@ -369,8 +369,8 @@ const Curve* BrainpoolCurveFactory::bp384r1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp384t1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp384t1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B4"
@@ -401,8 +401,8 @@ const Curve* BrainpoolCurveFactory::bp384t1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp512r1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp512r1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("7830A3318B603B89E2327145AC234CC594CBDD8D3DF"
@@ -439,8 +439,8 @@ const Curve* BrainpoolCurveFactory::bp512r1() throw (BigIntegerException) {
 	return curve;
 }
 
-const Curve* BrainpoolCurveFactory::bp512t1() throw (BigIntegerException) {
-	Curve * curve = new Curve();
+const EllipticCurve* BrainpoolCurveFactory::bp512t1() throw (BigIntegerException) {
+	EllipticCurve * curve = new EllipticCurve();
 
 	curve->a = new BigInteger();
 	curve->a->setHexValue("AADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C"
