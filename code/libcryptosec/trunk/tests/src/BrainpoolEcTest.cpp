@@ -54,11 +54,11 @@ TEST_F(BrainpoolEcTest, HardcodedBpTestBP160r1){
 
 }
 
-//TEST_F(BrainpoolEcTest, HardcodedBpTestBP160t1){
-//
-//	testHardcodedCurve(BrainpoolCurveFactory::BP160t1);
-//
-//}
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP160t1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP160t1);
+
+}
 
 TEST_F(BrainpoolEcTest, HardcodedBpTestBP192r1){
 
