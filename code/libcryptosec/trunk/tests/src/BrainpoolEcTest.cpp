@@ -54,6 +54,84 @@ TEST_F(BrainpoolEcTest, HardcodedBpTestBP160r1){
 
 }
 
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP160t1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP160t1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP192r1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP192r1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP192t1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP192t1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP224r1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP224r1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP224t1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP224t1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP256r1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP256r1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP256t1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP256t1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP320r1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP320r1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP320t1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP320t1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP384r1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP384r1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP384t1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP384t1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP512r1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP512r1);
+
+}
+
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP512t1){
+
+	testHardcodedCurve(BrainpoolCurveFactory::BP512t1);
+
+}
+
 TEST_F(BrainpoolEcTest, DerFormatedTestBp160r1){
 	std::fstream file("files/BP160r1", ios::in|ios::binary|ios::ate);
 	testKeyPairFromFile(file);
