@@ -11,6 +11,14 @@ protected:
 	virtual void SetUp() {
 	}
 
+	void testHardcodedCurve(BrainpoolCurveFactory::CurveName curve){
+		const Curve * curve = BrainpoolCurveFactory::getCurve(curve);
+			ECDSAKeyPair keypair (*curve);
+			std::string pem = keypair.getPemEncoded();
+			EXPECT_TRUE(pem.size() > 0);
+			//TODO melhorar testes da chave fazendo assinatura
+	}
+
 	void testKeyPairFromFile(fstream &file){
 		if(file.is_open()){
 				/* Read file into ByteArray*/
@@ -40,13 +48,9 @@ protected:
 
 
 
-TEST_F(BrainpoolEcTest, HardcodedBpTest){
+TEST_F(BrainpoolEcTest, HardcodedBpTestBP160r1){
 
-	const Curve * curve = BrainpoolCurveFactory::getCurve(BrainpoolCurveFactory::BP160r1);
-	ECDSAKeyPair keypair (*curve);
-	std::string pem = keypair.getPemEncoded();
-	EXPECT_TRUE(pem.size() > 0);
-	//TODO melhorar testes da chave fazendo assinatura
+	testHardcodedCurve(BrainpoolCurveFactory::BP160r1);
 
 }
 
