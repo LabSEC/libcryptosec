@@ -14,6 +14,7 @@ protected:
 	void testHardcodedCurve(BrainpoolCurveFactory::CurveName curveName){
 		const EllipticCurve * curve = BrainpoolCurveFactory::getCurve(curveName);
 			CustomECDSAKeyPair keypair (*curve);
+			delete(curve);
 			std::string pem = keypair.getPemEncoded();
 			EXPECT_TRUE(pem.size() > 0);
 			//TODO melhorar testes da chave fazendo assinatura
