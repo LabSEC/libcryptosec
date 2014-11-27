@@ -150,6 +150,44 @@ EC_GROUP * CustomECDSAKeyPair::createGroup(ByteArray &derEncoded) {
 	return group;
 }
 
+PublicKey* CustomECDSAKeyPair::getPublicKey() throw (AsymmetricKeyException,
+		EncodeException) {
+	PublicKey *ret;
+	std::string keyTemp;
+	keyTemp = this->getPublicKeyPemEncoded();
+	ret = new ECDSAPublicKey(keyTemp);
+	return ret;
+}
+
+PrivateKey* CustomECDSAKeyPair::getPrivateKey() throw (AsymmetricKeyException) {
+	PrivateKey *ret;
+	EVP_PKEY *pkey;
+	ret = NULL;
+	if (engine) {
+		pkey = ENGINE_load_private_key(this->engine, this->keyId.c_str(), NULL,
+				NULL);
+		if (!pkey) {
+			throw AsymmetricKeyException(
+					AsymmetricKeyException::UNAVAILABLE_KEY,
+					"KeyId: " + this->keyId, "CustomECDSAKeyPair::getPrivateKey");
+		}
+		try {
+			ret = new PrivateKey(pkey);
+		} catch (...) {
+			EVP_PKEY_free(pkey);
+			throw;
+		}
+	} else {
+		ret = new ECDSAPrivateKey(this->key);
+		if (ret == NULL) {
+			throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE,
+					"CustomECDSAKeyPair::getPrivateKey");
+		}
+		CRYPTO_add(&this->key->references, 1, CRYPTO_LOCK_EVP_PKEY);
+	}
+	return ret;
+}
+
 AsymmetricKey::Algorithm CustomECDSAKeyPair::getAlgorithm()
 		throw (AsymmetricKeyException) {
 	return AsymmetricKey::CUSTOM_ECDSA;
