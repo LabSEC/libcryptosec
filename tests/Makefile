@@ -27,9 +27,12 @@ all:	check-lib gtest $(OBJS)
 check-lib:
 	@test -s $(LIBCRYPTOSEC) || { echo "You should install libcryptosec first!"; exit 1; }
 
+check-test:
+	@test -s $(EXECUTABLE) || { echo "You should compile the tests first!"; exit 1; }
+	
 gtest: ./$(GTEST_DIR)/gtest-all.o
 
-test:
+test:	check-test
 	@echo 'Executing tests...'
 	./$(EXECUTABLE)
 	@echo 'Done!'
