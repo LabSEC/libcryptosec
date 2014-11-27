@@ -192,6 +192,9 @@ PublicKey* KeyPair::getPublicKey()
 		case AsymmetricKey::ECDSA:
 			ret = new ECDSAPublicKey(keyTemp);
 			break;
+		case AsymmetricKey::CUSTOM_ECDSA:
+			ret = new ECDSAPublicKey(keyTemp);
+			break;
 	}
 	return ret;
 }
@@ -230,6 +233,9 @@ PrivateKey* KeyPair::getPrivateKey()
 				ret = new DSAPrivateKey(this->key);
 				break;
 			case AsymmetricKey::ECDSA:
+				ret = new ECDSAPrivateKey(this->key);
+				break;
+			case AsymmetricKey::CUSTOM_ECDSA:
 				ret = new ECDSAPrivateKey(this->key);
 				break;
 		}

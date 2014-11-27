@@ -51,6 +51,19 @@ public:
 
 	virtual ~CustomECDSAKeyPair();
 
+	/**
+	 * gets the public key from key pair
+	 * @return a public key from key pair
+	 */
+	virtual PublicKey* getPublicKey()
+			throw (AsymmetricKeyException, EncodeException);
+	/**
+	 * gets the private from key pair
+	 * @return a private key from key pair
+	 */
+	virtual PrivateKey* getPrivateKey()
+		throw (AsymmetricKeyException);
+
 	virtual AsymmetricKey::Algorithm getAlgorithm()
 			throw (AsymmetricKeyException);
 
