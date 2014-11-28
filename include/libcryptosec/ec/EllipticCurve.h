@@ -47,8 +47,39 @@ public:
 
 	const BIGNUM * BN_cofactor() const throw();
 
+	/*
+	 * Getters and setters. Setter com Hex disponível para simplificação
+	 * de código (caso mais comum).
+	 */
+	const BigInteger getA() const;
+	void setA(const BigInteger a);
+	void setA(const std::string hex);
+	const BigInteger getB() const;
+	void setB(const BigInteger b);
+	void setB(const std::string hex);
+	const BigInteger getCofactor() const;
+	void setCofactor(const BigInteger cofactor);
+	void setCofactor(const std::string hex);
+	const std::string getName() const;
+	void setName(const std::string name);
+	const std::string getOid() const;
+	void setOid(const std::string oid);
+	const BigInteger getOrder() const;
+	void setOrder(const BigInteger order);
+	void setOrder(const std::string hex);
+	const BigInteger getP() const;
+	void setP(const BigInteger p);
+	void setP(const std::string hex);
+	const BigInteger getX() const;
+	void setX(const BigInteger x);
+	void setX(const std::string hex);
+	const BigInteger getY() const;
+	void setY(const BigInteger y);
+	void setY(const std::string hex);
+
+protected:
 	std::string oid, name;
-	BigInteger *a, *b, *p, *x, *y, *order, *cofactor;
+	BigInteger a, b, p, x, y, order, cofactor;
 
 	static const std::string notSpecified;
 
