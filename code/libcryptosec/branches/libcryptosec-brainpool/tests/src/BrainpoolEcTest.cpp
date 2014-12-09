@@ -1,4 +1,4 @@
-#include <libcryptosec/CustomECDSAKeyPair.h>
+#include <libcryptosec/ECDSAKeyPair.h>
 #include <libcryptosec/ec/EllipticCurve.h>
 #include <libcryptosec/ec/BrainpoolCurveFactory.h>
 #include <fstream>
@@ -13,7 +13,7 @@ protected:
 
 	void testHardcodedCurve(BrainpoolCurveFactory::CurveName curveName){
 		const EllipticCurve * curve = BrainpoolCurveFactory::getCurve(curveName);
-			CustomECDSAKeyPair keypair (*curve);
+			ECDSAKeyPair keypair (*curve);
 			delete(curve);
 			std::string pem = keypair.getPemEncoded();
 			EXPECT_TRUE(pem.size() > 0);
@@ -33,7 +33,7 @@ protected:
 				delete[] memblock;
 
 				/*Do crypto*/
-				CustomECDSAKeyPair keypair(b);
+				ECDSAKeyPair keypair(b);
 				std::string pem = keypair.getPemEncoded();
 				EXPECT_TRUE(pem.size() > 0);
 				//TODO melhorar testes da chave fazendo assinatura

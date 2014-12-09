@@ -1,6 +1,7 @@
 #ifndef KEYPAIR_H_
 #define KEYPAIR_H_
 
+#include <openssl/ec.h>
 #include <openssl/evp.h>
 #include "ByteArray.h"
 #include "Engine.h"
@@ -108,12 +109,17 @@ class KeyPair
 		 * @return key size in bits
 		 */
 		int getSizeBits() throw (AsymmetricKeyException);
+		/**
+		 * include ECDSA parameters in the Key
+		 */
+		void includeECDSAKeyParameters() throw (AsymmetricKeyException);
 		
 		EVP_PKEY* getEvpPkey() const;
 		
 		ENGINE* getEngine() const;
 		
 		std::string getKeyId() const;
+
 	protected:
 		KeyPair();
 		static int passphraseCallBack(char *buf, int size, int rwflag, void *u);

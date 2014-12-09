@@ -4,7 +4,7 @@ ECDSAPublicKey::ECDSAPublicKey(EVP_PKEY *key)
 		throw (AsymmetricKeyException) : PublicKey(key)
 {
 	AsymmetricKey::Algorithm algorithm = this->getAlgorithm();
-	if (algorithm != AsymmetricKey::ECDSA)
+	if (algorithm != AsymmetricKey::NAMED_ECDSA)
 	{
 		throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "ECDSAPublicKey::ECDSAPublicKey");
 	}
@@ -15,7 +15,7 @@ ECDSAPublicKey::ECDSAPublicKey(ByteArray &derEncoded)
 {
 	AsymmetricKey::Algorithm algorithm;
 	algorithm = this->getAlgorithm();
-	if (algorithm != AsymmetricKey::ECDSA)
+	if (algorithm != AsymmetricKey::NAMED_ECDSA)
 	{
 		throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "ECDSAPublicKey::ECDSAPublicKey");
 	}
@@ -26,7 +26,7 @@ ECDSAPublicKey::ECDSAPublicKey(std::string &pemEncoded)
 {
 	AsymmetricKey::Algorithm algorithm;
 	algorithm = this->getAlgorithm();
-	if (algorithm != AsymmetricKey::ECDSA)
+	if (algorithm != AsymmetricKey::NAMED_ECDSA)
 	{
 		throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "ECDSAPublicKey::ECDSAPublicKey");
 	}

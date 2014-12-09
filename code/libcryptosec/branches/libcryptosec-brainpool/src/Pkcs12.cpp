@@ -76,7 +76,7 @@ PrivateKey* Pkcs12::getPrivKey(string password) throw(Pkcs12Exception)
 			ret = new DSAPrivateKey(this->privKey->getEvpPkey());
 			break;
 
-		case AsymmetricKey::ECDSA:
+		case AsymmetricKey::NAMED_ECDSA:
 			ret = new ECDSAPrivateKey(this->privKey->getEvpPkey());
 			break;
 	}

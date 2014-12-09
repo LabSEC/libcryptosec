@@ -49,7 +49,7 @@ public:
 		RSA, /*!< A chave é do tipo RSA */
 		DSA, /*!< A chave é do tipo DSA */
 		ECDSA, /*!< A chave é do tipo ECDSA */
-		CUSTOM_ECDSA /*!< A chave é do tipo ECDSA parametrizada */
+		NAMED_ECDSA, /*!< A chave é do tipo ECDSA padronizada por nome no openssl*/
 //		DH,
 //		EC,
 	};

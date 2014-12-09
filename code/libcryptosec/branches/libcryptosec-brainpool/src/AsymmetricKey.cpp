@@ -28,7 +28,7 @@ AsymmetricKey::Algorithm AsymmetricKey::getAlgorithm()
 			type = AsymmetricKey::DSA;
 			break;
 		case EVP_PKEY_EC:
-			type = AsymmetricKey::ECDSA;
+			type = AsymmetricKey::NAMED_ECDSA;
 			break;
 //		case EVP_PKEY_DH:
 //			type = AsymmetricKey::DH;

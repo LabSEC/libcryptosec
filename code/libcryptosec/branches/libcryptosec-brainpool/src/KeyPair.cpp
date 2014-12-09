@@ -41,7 +41,7 @@ KeyPair::KeyPair(AsymmetricKey::Algorithm algorithm, int length)
 			this->key = EVP_PKEY_new();
 			EVP_PKEY_assign_DSA(this->key, dsa);
 			break;
-		case AsymmetricKey::ECDSA:
+		case AsymmetricKey::NAMED_ECDSA:
 			break;
 	}
 	if (!this->key)
@@ -189,10 +189,10 @@ PublicKey* KeyPair::getPublicKey()
 		case AsymmetricKey::DSA:
 			ret = new DSAPublicKey(keyTemp);
 			break;
-		case AsymmetricKey::ECDSA:
+		case AsymmetricKey::NAMED_ECDSA:
 			ret = new ECDSAPublicKey(keyTemp);
 			break;
-		case AsymmetricKey::CUSTOM_ECDSA:
+		case AsymmetricKey::ECDSA:
 			ret = new ECDSAPublicKey(keyTemp);
 			break;
 	}
@@ -232,10 +232,10 @@ PrivateKey* KeyPair::getPrivateKey()
 			case AsymmetricKey::DSA:
 				ret = new DSAPrivateKey(this->key);
 				break;
-			case AsymmetricKey::ECDSA:
+			case AsymmetricKey::NAMED_ECDSA:
 				ret = new ECDSAPrivateKey(this->key);
 				break;
-			case AsymmetricKey::CUSTOM_ECDSA:
+			case AsymmetricKey::ECDSA:
 				ret = new ECDSAPrivateKey(this->key);
 				break;
 		}
@@ -372,7 +372,7 @@ AsymmetricKey::Algorithm KeyPair::getAlgorithm() throw (AsymmetricKeyException)
 			type = AsymmetricKey::DSA;
 			break;
 		case EVP_PKEY_EC:
-			type = AsymmetricKey::ECDSA;
+			type = AsymmetricKey::NAMED_ECDSA;
 			break;
 //		case EVP_PKEY_DH:
 //			type = AsymmetricKey::DH;
@@ -465,6 +465,16 @@ std::string KeyPair::getPublicKeyPemEncoded() throw (EncodeException)
 	BIO_free(buffer);
 	return ret;
 }
+
+void KeyPair::includeECDSAKeyParameters() throw (AsymmetricKeyException){
+	EC_KEY *ec_key = EVP_PKEY_get1_EC_KEY(this->key);
+	if(!ec_key) {
+		throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "KeyPair::includeECDSAKeyParameters");
+	}
+	EC_KEY_set_asn1_flag(ec_key, 0);
+
+}
+
 
 EVP_PKEY* KeyPair::getEvpPkey() const
 {

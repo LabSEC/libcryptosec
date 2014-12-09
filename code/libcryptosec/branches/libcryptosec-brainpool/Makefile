@@ -16,7 +16,6 @@ CPP_SRCS += \
 ./src/DSAPrivateKey.cpp \
 ./src/DSAPublicKey.cpp \
 ./src/ECDSAKeyPair.cpp \
-./src/CustomECDSAKeyPair.cpp \
 ./src/ECDSAPrivateKey.cpp \
 ./src/ECDSAPublicKey.cpp \
 ./src/DateTime.cpp \
@@ -26,6 +25,7 @@ CPP_SRCS += \
 ./src/Hmac.cpp \
 ./src/KeyPair.cpp \
 ./src/MessageDigest.cpp \
+./src/NamedECDSAKeyPair.cpp \
 ./src/NetscapeSPKI.cpp \
 ./src/NetscapeSPKIBuilder.cpp \
 ./src/OpenSSLErrorHandler.cpp \
