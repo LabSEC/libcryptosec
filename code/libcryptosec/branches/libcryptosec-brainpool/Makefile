@@ -25,7 +25,6 @@ CPP_SRCS += \
 ./src/Hmac.cpp \
 ./src/KeyPair.cpp \
 ./src/MessageDigest.cpp \
-./src/NamedECDSAKeyPair.cpp \
 ./src/NetscapeSPKI.cpp \
 ./src/NetscapeSPKIBuilder.cpp \
 ./src/OpenSSLErrorHandler.cpp \

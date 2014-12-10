@@ -49,6 +49,9 @@ public:
 	ECDSAKeyPair(const EllipticCurve & curve)
 			throw (AsymmetricKeyException);
 
+	ECDSAKeyPair(AsymmetricKey::Curve curve, bool named=true)
+			throw (AsymmetricKeyException);
+
 	virtual ~ECDSAKeyPair();
 
 	/**

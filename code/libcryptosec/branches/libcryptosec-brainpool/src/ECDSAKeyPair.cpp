@@ -1,9 +1,5 @@
 #include "libcryptosec/ECDSAKeyPair.h"
 
-ECDSAKeyPair::~ECDSAKeyPair() {
-	// TODO Auto-generated destructor stub
-}
-
 ECDSAKeyPair::ECDSAKeyPair(ByteArray& derEncoded) throw (AsymmetricKeyException) {
 	this->key = NULL;
 	this->engine = NULL;
@@ -27,6 +23,39 @@ ECDSAKeyPair::ECDSAKeyPair(const EllipticCurve & curve) throw (AsymmetricKeyExce
 	EC_GROUP * group = createGroup(curve);
 	generateKey(group);
 	EC_GROUP_free(group);
+}
+
+ECDSAKeyPair::ECDSAKeyPair(AsymmetricKey::Curve curve, bool named)
+		throw (AsymmetricKeyException) {
+	EC_KEY *eckey;
+	this->key = NULL;
+	this->engine = NULL;
+	eckey = NULL;
+	eckey = EC_KEY_new_by_curve_name(curve);
+	if (named)
+		EC_KEY_set_asn1_flag(eckey, OPENSSL_EC_NAMED_CURVE);
+	EC_KEY_generate_key(eckey);
+	if (!eckey) {
+		throw AsymmetricKeyException(AsymmetricKeyException::INTERNAL_ERROR,
+				"ECDSAKeyPair::ECDSAKeyPair");
+	}
+	this->key = EVP_PKEY_new();
+	EVP_PKEY_assign_EC_KEY(this->key, eckey);
+	if (!this->key) {
+		throw AsymmetricKeyException(AsymmetricKeyException::INTERNAL_ERROR,
+				"ECDSAKeyPair::ECDSAKeyPair");
+	}
+}
+
+ECDSAKeyPair::~ECDSAKeyPair() {
+	if (this->key) {
+		EVP_PKEY_free(this->key);
+		this->key = NULL;
+	}
+	if (this->engine) {
+		ENGINE_free(this->engine);
+		this->engine = NULL;
+	}
 }
 
 void ECDSAKeyPair::generateKey(EC_GROUP * group) throw (AsymmetricKeyException) {
