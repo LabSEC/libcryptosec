@@ -109,10 +109,6 @@ class KeyPair
 		 * @return key size in bits
 		 */
 		int getSizeBits() throw (AsymmetricKeyException);
-		/**
-		 * include ECDSA parameters in the Key
-		 */
-		void includeECDSAKeyParameters() throw (AsymmetricKeyException);
 		
 		EVP_PKEY* getEvpPkey() const;
 		
