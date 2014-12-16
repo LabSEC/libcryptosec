@@ -6,11 +6,13 @@ CertificateBuilder::CertificateBuilder()
 	this->cert = X509_new();
 	this->setNotBefore(dateTime);
 	this->setNotAfter(dateTime);
+	this->setIncludeEcdsaParameters(false);
 }
 
 CertificateBuilder::CertificateBuilder(std::string pemEncoded)
 		throw (EncodeException)
 {
+	this->setIncludeEcdsaParameters(false);
 	BIO *buffer;
 	buffer = BIO_new(BIO_s_mem());
 	if (buffer == NULL)
@@ -34,6 +36,7 @@ CertificateBuilder::CertificateBuilder(std::string pemEncoded)
 CertificateBuilder::CertificateBuilder(ByteArray &derEncoded)
 	throw (EncodeException)
 {
+	this->setIncludeEcdsaParameters(false);
 	BIO *buffer;
 	buffer = BIO_new(BIO_s_mem());
 	if (buffer == NULL)
@@ -56,6 +59,7 @@ CertificateBuilder::CertificateBuilder(ByteArray &derEncoded)
 
 CertificateBuilder::CertificateBuilder(CertificateRequest &request)
 {
+	this->setIncludeEcdsaParameters(false);
 	RDNSequence subject;
 	PublicKey *publicKey = NULL;
 	std::vector<Extension *> extensions;
@@ -100,6 +104,7 @@ CertificateBuilder::CertificateBuilder(CertificateRequest &request)
 CertificateBuilder::CertificateBuilder(const CertificateBuilder& cert)
 {
 	this->cert = X509_dup(cert.getX509());
+	this->setIncludeEcdsaParameters(cert.isIncludeEcdsaParameters());
 }
 
 CertificateBuilder::~CertificateBuilder()
@@ -472,6 +477,9 @@ MessageDigest::Algorithm CertificateBuilder::getMessageDigestAlgorithm()
 
 void CertificateBuilder::setPublicKey(PublicKey &publicKey)
 {
+	if(this->isIncludeEcdsaParameters()) {
+		this->includeEcdsaParameters(publicKey);
+	}
 	X509_set_pubkey(this->cert, publicKey.getEvpPkey());
 }
 
@@ -945,5 +953,21 @@ CertificateBuilder& CertificateBuilder::operator =(const CertificateBuilder& val
 		X509_free(this->cert);
 	}
     this->cert = X509_dup(value.getX509());
+    this->setIncludeEcdsaParameters(value.isIncludeEcdsaParameters());
     return (*this);
+}
+
+bool CertificateBuilder::isIncludeEcdsaParameters() const {
+	return this->includeECDSAParameters;
+}
+
+void CertificateBuilder::setIncludeEcdsaParameters(bool includeEcdsaParameters) {
+	this->includeECDSAParameters = includeEcdsaParameters;
+}
+
+void CertificateBuilder::includeEcdsaParameters(PublicKey &publicKey) {
+	if(publicKey.getAlgorithm() == AsymmetricKey::ECDSA) {
+		EC_KEY *ec_key = EVP_PKEY_get1_EC_KEY(publicKey.getEvpPkey());
+		EC_KEY_set_asn1_flag(ec_key, 0);
+	}
 }
