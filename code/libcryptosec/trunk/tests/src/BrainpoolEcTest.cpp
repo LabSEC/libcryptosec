@@ -1,4 +1,4 @@
-#include <libcryptosec/CustomECDSAKeyPair.h>
+#include <libcryptosec/ECDSAKeyPair.h>
 #include <libcryptosec/ec/EllipticCurve.h>
 #include <libcryptosec/ec/BrainpoolCurveFactory.h>
 #include <fstream>
@@ -13,7 +13,7 @@ protected:
 
 	void testHardcodedCurve(BrainpoolCurveFactory::CurveName curveName){
 		const EllipticCurve * curve = BrainpoolCurveFactory::getCurve(curveName);
-			CustomECDSAKeyPair keypair (*curve);
+			ECDSAKeyPair keypair (*curve);
 			delete(curve);
 			std::string pem = keypair.getPemEncoded();
 			EXPECT_TRUE(pem.size() > 0);
@@ -22,26 +22,26 @@ protected:
 
 	void testKeyPairFromFile(fstream &file){
 		if(file.is_open()){
-				/* Read file into ByteArray*/
-				file.seekg (0, file.end);
-				int length = file.tellg();
-				file.seekg (0, file.beg);
-				unsigned char * memblock = new unsigned char [length];
-				file.read ((char*)memblock, length);
-				file.close();
-				ByteArray b(memblock, length);
-				delete[] memblock;
+			/* Read file into ByteArray*/
+			file.seekg (0, file.end);
+			int length = file.tellg();
+			file.seekg (0, file.beg);
+			unsigned char * memblock = new unsigned char [length];
+			file.read ((char*)memblock, length);
+			file.close();
+			ByteArray b(memblock, length);
+			delete[] memblock;
 
-				/*Do crypto*/
-				CustomECDSAKeyPair keypair(b);
-				std::string pem = keypair.getPemEncoded();
-				EXPECT_TRUE(pem.size() > 0);
-				//TODO melhorar testes da chave fazendo assinatura
-			}
-			else
-			{
-				FAIL();
-			}
+			/*Do crypto*/
+			ECDSAKeyPair keypair(b);
+			std::string pem = keypair.getPemEncoded();
+			EXPECT_TRUE(pem.size() > 0);
+			//TODO melhorar testes da chave fazendo assinatura
+		}
+		else
+		{
+			FAIL();
+		}
 	}
 
 };
