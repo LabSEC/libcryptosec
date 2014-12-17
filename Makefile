@@ -16,7 +16,6 @@ CPP_SRCS += \
 ./src/DSAPrivateKey.cpp \
 ./src/DSAPublicKey.cpp \
 ./src/ECDSAKeyPair.cpp \
-./src/CustomECDSAKeyPair.cpp \
 ./src/ECDSAPrivateKey.cpp \
 ./src/ECDSAPublicKey.cpp \
 ./src/DateTime.cpp \

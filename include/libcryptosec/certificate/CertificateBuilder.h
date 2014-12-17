@@ -87,8 +87,15 @@ public:
 			throw (CertificationException, AsymmetricKeyException);
 	X509* getX509() const;
 	CertificateBuilder& operator =(const CertificateBuilder& value);
+	bool isIncludeEcdsaParameters() const;
+	void setIncludeEcdsaParameters(bool includeEcdsaParameters);
+
 protected:
+	void includeEcdsaParameters(PublicKey &publicKey);
 	X509 *cert;
+	bool includeECDSAParameters;
+
+
 };
 
 #endif /*CERTIFICATEBUILDER_H_*/
