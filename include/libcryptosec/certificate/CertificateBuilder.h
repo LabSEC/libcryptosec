@@ -89,9 +89,9 @@ public:
 	CertificateBuilder& operator =(const CertificateBuilder& value);
 	bool isIncludeEcdsaParameters() const;
 	void setIncludeEcdsaParameters(bool includeEcdsaParameters);
+	void includeEcdsaParameters();
 
 protected:
-	void includeEcdsaParameters(PublicKey &publicKey);
 	X509 *cert;
 	bool includeECDSAParameters;
 
