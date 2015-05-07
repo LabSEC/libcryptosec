@@ -1,7 +1,7 @@
 Summary: libcryptosec
 Name: libcryptosec
 Version: 2.2.1
-Release: 751
+Release: 760
 Source0: %{name}-%{version}.tar.gz
 License: GPL
 Group: Development/Tools
@@ -27,10 +27,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/libcryptosec/
 
 %changelog
-* Wed Apr 15 2015 Lucas Petry
-- Version 2.2.1 RHEL5.5 (OpenSSL 1.0.2.a)
+* Thu May 07 2015 Vinicius Weisheimer
+- Version 2.2.1 RHEL5.5 (OpenSSL 1.0.1.h com patch Brainpool)
 * Wed Dec 17 2014 Lucas Petry
-- Version 2.2.0 RHEL5.5 (OpenSSL 1.0.1.h com patch Brainpool)
+- Version 2.2 RHEL5.5 (OpenSSL 1.0.1.h com patch Brainpool)
 * Wed Nov 19 2014 Lucas Petry
 - Version 2.1.2 RHEL5.5 (OpenSSL 1.0.1.h)
 * Tue Sep 02 2014 Lucas Perin

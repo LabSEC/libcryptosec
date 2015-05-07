@@ -477,6 +477,9 @@ MessageDigest::Algorithm CertificateBuilder::getMessageDigestAlgorithm()
 
 void CertificateBuilder::setPublicKey(PublicKey &publicKey)
 {
+	if(this->isIncludeEcdsaParameters()) {
+		this->includeEcdsaParameters(publicKey);
+	}
 	X509_set_pubkey(this->cert, publicKey.getEvpPkey());
 }
 
@@ -962,16 +965,9 @@ void CertificateBuilder::setIncludeEcdsaParameters(bool includeEcdsaParameters) 
 	this->includeECDSAParameters = includeEcdsaParameters;
 }
 
-void CertificateBuilder::includeEcdsaParameters() {
-	PublicKey* publicKey = this->getPublicKey();
-
-	if(publicKey) {
-		if(publicKey->getAlgorithm() == AsymmetricKey::ECDSA && this->isIncludeEcdsaParameters()) {
-			EC_KEY *ec_key = EVP_PKEY_get1_EC_KEY(publicKey->getEvpPkey());
-			EC_KEY_set_asn1_flag(ec_key, 0);
-		}
-
-		this->setPublicKey(*publicKey);
-		delete publicKey;
+void CertificateBuilder::includeEcdsaParameters(PublicKey &publicKey) {
+	if(publicKey.getAlgorithm() == AsymmetricKey::ECDSA) {
+		EC_KEY *ec_key = EVP_PKEY_get1_EC_KEY(publicKey.getEvpPkey());
+		EC_KEY_set_asn1_flag(ec_key, 0);
 	}
 }
