@@ -53,6 +53,7 @@ public:
 	void setVersion(long version);
 	long getVersion() throw (CertificationException);
 	void setIssuer(RDNSequence &issuer) throw (CertificationException);
+	void setIssuer(X509* issuer) throw (CertificationException);
 	RDNSequence getIssuer();
 	void setLastUpdate(DateTime &dateTime);
 	DateTime getLastUpdate();

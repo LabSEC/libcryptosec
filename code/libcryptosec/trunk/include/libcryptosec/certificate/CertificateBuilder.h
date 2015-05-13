@@ -70,6 +70,7 @@ public:
 	void setNotAfter(DateTime &dateTime);
 	DateTime getNotAfter();
 	void setIssuer(RDNSequence &name);
+	void setIssuer(X509* issuer) throw (CertificationException);
 	RDNSequence getIssuer();
 	void setSubject(RDNSequence &name);
 	RDNSequence getSubject();
