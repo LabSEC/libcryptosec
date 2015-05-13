@@ -227,6 +227,21 @@ void CertificateRevocationListBuilder::setIssuer(RDNSequence &issuer)
 	}
 }
 
+void CertificateRevocationListBuilder::setIssuer(X509* issuer)
+		throw (CertificationException)
+{
+	//TODO(lucasperin):
+	int rc;
+	//      X509_NAME *name;
+	//      name = issuer.getX509Name();
+	rc = X509_CRL_set_issuer_name(this->crl, X509_get_subject_name(issuer));
+	//      X509_NAME_free(name);
+	if (!rc)
+	{
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateRevocationListBuilder::setIssuer");
+	}
+}
+
 RDNSequence CertificateRevocationListBuilder::getIssuer()
 {
 	return RDNSequence(X509_CRL_get_issuer(this->crl));

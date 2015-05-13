@@ -578,6 +578,21 @@ void CertificateBuilder::setIssuer(RDNSequence &name)
 	X509_NAME_free(issuer);
 }
 
+void CertificateBuilder::setIssuer(X509* issuer)
+		throw (CertificationException)
+{
+	//TODO(lucasperin):
+	int rc;
+	//      X509_NAME *name;
+	//      name = issuer.getX509Name();
+	rc = X509_set_issuer_name(this->cert, X509_get_subject_name(issuer));
+	//      X509_NAME_free(name);
+	if (!rc)
+	{
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setIssuer");
+	}
+}
+
 RDNSequence CertificateBuilder::getIssuer()
 {
 	return RDNSequence(X509_get_issuer_name(this->cert));
