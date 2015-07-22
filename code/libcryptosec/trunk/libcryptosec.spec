@@ -1,7 +1,7 @@
 Summary: libcryptosec
 Name: libcryptosec
-Version: 2.2.1
-Release: 751
+Version: 2.2.2
+Release: 765
 Source0: %{name}-%{version}.tar.gz
 License: GPL
 Group: Development/Tools
@@ -27,6 +27,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/libcryptosec/
 
 %changelog
+* Wed Jul 22 2015 Lucas Perin <lucas.perin@posgrad.ufsc.br> - 2.2.2
+- Must use OpenSSL 1.0.1h with Brainpool path if using Brainpool curves;
+- Added functions to Certificate and CRL Builder that keep the subject's string format in the Issuer field.  
+
 * Wed Apr 15 2015 Lucas Petry
 - Version 2.2.1 RHEL5.5 (OpenSSL 1.0.2.a)
 * Wed Dec 17 2014 Lucas Petry
