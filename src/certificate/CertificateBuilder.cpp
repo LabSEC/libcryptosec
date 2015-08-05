@@ -70,8 +70,7 @@ CertificateBuilder::CertificateBuilder(CertificateRequest &request)
 	this->setNotBefore(dateTime);
 	this->setNotAfter(dateTime);
 
-	subject = request.getSubject();
-	this->setSubject(subject);
+	this->setSubject(request.getX509Req());
 	try
 	{
 		publicKey = request.getPublicKey();
@@ -581,12 +580,8 @@ void CertificateBuilder::setIssuer(RDNSequence &name)
 void CertificateBuilder::setIssuer(X509* issuer)
 		throw (CertificationException)
 {
-	//TODO(lucasperin):
 	int rc;
-	//      X509_NAME *name;
-	//      name = issuer.getX509Name();
 	rc = X509_set_issuer_name(this->cert, X509_get_subject_name(issuer));
-	//      X509_NAME_free(name);
 	if (!rc)
 	{
 		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setIssuer");
@@ -604,6 +599,17 @@ void CertificateBuilder::setSubject(RDNSequence &name)
 	subject = name.getX509Name();
 	X509_set_subject_name(this->cert, subject);
 	X509_NAME_free(subject);
+}
+
+void CertificateBuilder::setSubject(X509_REQ* req)
+		throw (CertificationException)
+{
+	int rc;
+	rc = X509_set_subject_name(this->cert, X509_REQ_get_subject_name(req));
+	if (!rc)
+	{
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
+	}
 }
 
 RDNSequence CertificateBuilder::getSubject()

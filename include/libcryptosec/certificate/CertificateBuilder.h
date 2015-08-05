@@ -73,6 +73,7 @@ public:
 	void setIssuer(X509* issuer) throw (CertificationException);
 	RDNSequence getIssuer();
 	void setSubject(RDNSequence &name);
+	void setSubject(X509_REQ* req) throw (CertificationException);
 	RDNSequence getSubject();
 	void addExtension(Extension &extension) throw (CertificationException);
 	void addExtensions(std::vector<Extension *> &extensions)
