@@ -581,7 +581,8 @@ void CertificateBuilder::setIssuer(X509* issuer)
 		throw (CertificationException)
 {
 	int rc;
-	rc = X509_set_issuer_name(this->cert, X509_get_subject_name(issuer));
+	X509_NAME *name = X509_get_subject_name(issuer);
+	rc = X509_set_issuer_name(this->cert, X509_NAME_dup(name));
 	if (!rc)
 	{
 		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setIssuer");
@@ -605,7 +606,8 @@ void CertificateBuilder::setSubject(X509_REQ* req)
 		throw (CertificationException)
 {
 	int rc;
-	rc = X509_set_subject_name(this->cert, X509_REQ_get_subject_name(req));
+	X509_NAME *name = X509_REQ_get_subject_name(req);
+	rc = X509_set_subject_name(this->cert, X509_NAME_dup(name));
 	if (!rc)
 	{
 		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
