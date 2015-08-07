@@ -596,10 +596,33 @@ RDNSequence CertificateBuilder::getIssuer()
 
 void CertificateBuilder::setSubject(RDNSequence &name)
 {
-	X509_NAME *subject;
-	subject = name.getX509Name();
-	X509_set_subject_name(this->cert, subject);
-	X509_NAME_free(subject);
+	//TODO(perin,Filipe):
+	X509_NAME *subject = X509_get_subject_name(this->cert);
+	//TODO(perin): testar se essa condição realmente pode acontecer.
+	if(subject == NULL){
+		subject = name.getX509Name();
+		X509_set_subject_name(this->cert, subject);
+		X509_NAME_free(subject);
+	} else {
+		//TODO(perin): adicionar entries um por um considerando type
+
+		std::vector<std::pair<ObjectIdentifier, std::string> >::iterator iterEntries = name.getEntries().begin();
+
+		for (iterEntries = name.getEntries().begin();iterEntries != name.getEntries().end();iterEntries++)
+		{
+			int nameEntryPos = X509_NAME_get_index_by_OBJ(subject, iterEntries->first.getObjectIdentifier(), -1);
+
+			X509_NAME_ENTRY* ne = X509_NAME_get_entry(subject, nameEntryPos);
+
+			std::string data = iterEntries->second;
+			int rc = X509_NAME_ENTRY_set_data(ne, ne->value->type, (unsigned char *)data.c_str(), data.length());
+			if (!rc)
+			{
+				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
+			}
+		}
+
+	}
 }
 
 void CertificateBuilder::setSubject(X509_REQ* req)
