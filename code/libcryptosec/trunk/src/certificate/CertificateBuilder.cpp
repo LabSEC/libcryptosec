@@ -596,29 +596,50 @@ RDNSequence CertificateBuilder::getIssuer()
 
 void CertificateBuilder::setSubject(RDNSequence &name)
 {
-	//TODO(perin,Filipe):
 	X509_NAME *subject = X509_get_subject_name(this->cert);
-	//TODO(perin): testar se essa condição realmente pode acontecer.
+
+
+
+	//TODO(perin): testar se essa condição realmente pode acontecer. Provavel q nao, neste caso remover.
 	if(subject == NULL){
 		subject = name.getX509Name();
 		X509_set_subject_name(this->cert, subject);
 		X509_NAME_free(subject);
 	} else {
-		//TODO(perin): adicionar entries um por um considerando type
 
-		std::vector<std::pair<ObjectIdentifier, std::string> >::iterator iterEntries = name.getEntries().begin();
 
-		for (iterEntries = name.getEntries().begin();iterEntries != name.getEntries().end();iterEntries++)
+
+		std::vector<std::pair<ObjectIdentifier, std::string> > iterEntries = name.getEntries();
+		//TODO(Filipe): antes de qualquer coisa, iterar sobre todas as entries e procurar "nameEntryPos" positivo.
+		//Se houver pelo menos uma nameEntryPos positiva que retorne um X509_NAME com typo UTF8, utilizar
+		//MBSTRING_ASC no else abaixo. Caso contr'ario, se houverem apenas printable strings, utilizar printable strin.
+		//Caso nenhum nameEntryPos retorne positivo, utilizar MBSTRING_ASC.
+
+
+
+		for (int i=0; i<iterEntries.size(); i++)
 		{
-			int nameEntryPos = X509_NAME_get_index_by_OBJ(subject, iterEntries->first.getObjectIdentifier(), -1);
+			int nameEntryPos = X509_NAME_get_index_by_OBJ(subject, iterEntries.at(i).first.getObjectIdentifier(), -1);
+			X509_NAME_ENTRY* ne;
+			std::string data;
 
-			X509_NAME_ENTRY* ne = X509_NAME_get_entry(subject, nameEntryPos);
+			if (nameEntryPos >= 0){
+				ne = X509_NAME_get_entry(subject, nameEntryPos);
 
-			std::string data = iterEntries->second;
-			int rc = X509_NAME_ENTRY_set_data(ne, ne->value->type, (unsigned char *)data.c_str(), data.length());
-			if (!rc)
-			{
-				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
+				data = iterEntries.at(i).second;
+				int rc = X509_NAME_ENTRY_set_data(ne, ne->value->type, (unsigned char *)data.c_str(), data.length());
+				if (!rc)
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
+				}
+
+			} else {
+				ne = X509_NAME_ENTRY_new();
+				X509_NAME_ENTRY_set_object(ne, iterEntries.at(i).first.getObjectIdentifier());
+				data = iterEntries.at(i).second;
+				X509_NAME_ENTRY_set_data(ne, MBSTRING_ASC, (unsigned char *)data.c_str(), data.length());
+				X509_NAME_add_entry(subject, ne, -1, 0);
+				X509_NAME_ENTRY_free(ne);
 			}
 		}
 
