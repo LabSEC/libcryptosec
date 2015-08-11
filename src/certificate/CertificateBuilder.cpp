@@ -609,24 +609,36 @@ void CertificateBuilder::setSubject(RDNSequence &name)
 
 
 
-		std::vector<std::pair<ObjectIdentifier, std::string> > iterEntries = name.getEntries();
+		std::vector<std::pair<ObjectIdentifier, std::string> > entries = name.getEntries();
 		//TODO(Filipe): antes de qualquer coisa, iterar sobre todas as entries e procurar "nameEntryPos" positivo.
 		//Se houver pelo menos uma nameEntryPos positiva que retorne um X509_NAME com typo UTF8, utilizar
 		//MBSTRING_ASC no else abaixo. Caso contr'ario, se houverem apenas printable strings, utilizar printable strin.
 		//Caso nenhum nameEntryPos retorne positivo, utilizar MBSTRING_ASC.
 
 
-
-		for (int i=0; i<iterEntries.size(); i++)
+		int type = MBSTRING_ASC;
+		for (int i=0; i<entries.size(); i++)
 		{
-			int nameEntryPos = X509_NAME_get_index_by_OBJ(subject, iterEntries.at(i).first.getObjectIdentifier(), -1);
+			int pos = X509_NAME_get_index_by_OBJ(subject, entries.at(i).first.getObjectIdentifier(), -1);
+			bool notCountry = entries.at(i).first.getNid() != NID_countryName;
+			if (pos >= 0 && notCountry)
+			{
+				X509_NAME_ENTRY* entry = X509_NAME_get_entry(subject, pos);
+				type = entry->value->type;
+			}
+		}
+
+		for (int i=0; i<entries.size(); i++)
+		{
+			int nameEntryPos = X509_NAME_get_index_by_OBJ(subject, entries.at(i).first.getObjectIdentifier(), -1);
 			X509_NAME_ENTRY* ne;
 			std::string data;
 
 			if (nameEntryPos >= 0){
 				ne = X509_NAME_get_entry(subject, nameEntryPos);
 
-				data = iterEntries.at(i).second;
+				data = entries.at(i).second;
+				std::cout << ne->value->type << endl;
 				int rc = X509_NAME_ENTRY_set_data(ne, ne->value->type, (unsigned char *)data.c_str(), data.length());
 				if (!rc)
 				{
@@ -635,9 +647,9 @@ void CertificateBuilder::setSubject(RDNSequence &name)
 
 			} else {
 				ne = X509_NAME_ENTRY_new();
-				X509_NAME_ENTRY_set_object(ne, iterEntries.at(i).first.getObjectIdentifier());
-				data = iterEntries.at(i).second;
-				X509_NAME_ENTRY_set_data(ne, MBSTRING_ASC, (unsigned char *)data.c_str(), data.length());
+				X509_NAME_ENTRY_set_object(ne, entries.at(i).first.getObjectIdentifier());
+				data = entries.at(i).second;
+				X509_NAME_ENTRY_set_data(ne, type, (unsigned char *)data.c_str(), data.length());
 				X509_NAME_add_entry(subject, ne, -1, 0);
 				X509_NAME_ENTRY_free(ne);
 			}
