@@ -598,63 +598,53 @@ void CertificateBuilder::setSubject(RDNSequence &name)
 {
 	X509_NAME *subject = X509_get_subject_name(this->cert);
 
-
-
-	//TODO(perin): testar se essa condição realmente pode acontecer. Provavel q nao, neste caso remover.
 	if(subject == NULL){
-		subject = name.getX509Name();
-		X509_set_subject_name(this->cert, subject);
-		X509_NAME_free(subject);
-	} else {
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
+	}
 
+	std::vector<std::pair<ObjectIdentifier, std::string> > entries = name.getEntries();
 
-
-		std::vector<std::pair<ObjectIdentifier, std::string> > entries = name.getEntries();
-		//TODO(Filipe): antes de qualquer coisa, iterar sobre todas as entries e procurar "nameEntryPos" positivo.
-		//Se houver pelo menos uma nameEntryPos positiva que retorne um X509_NAME com typo UTF8, utilizar
-		//MBSTRING_ASC no else abaixo. Caso contr'ario, se houverem apenas printable strings, utilizar printable strin.
-		//Caso nenhum nameEntryPos retorne positivo, utilizar MBSTRING_ASC.
-
-
-		int type = MBSTRING_ASC;
-		for (int i=0; i<entries.size(); i++)
+	// encontra um padrão nas entries:
+	int baseType = MBSTRING_ASC;     // formato padrão do certificado
+	for (int i=0; i<entries.size(); i++)
+	{
+		int pos = X509_NAME_get_index_by_OBJ(subject, entries.at(i).first.getObjectIdentifier(), -1);
+		bool notCountry = entries.at(i).first.getNid() != NID_countryName;
+		if (pos >= 0 && notCountry)
 		{
-			int pos = X509_NAME_get_index_by_OBJ(subject, entries.at(i).first.getObjectIdentifier(), -1);
-			bool notCountry = entries.at(i).first.getNid() != NID_countryName;
-			if (pos >= 0 && notCountry)
+			X509_NAME_ENTRY* entry = X509_NAME_get_entry(subject, pos);
+			baseType = entry->value->type;
+			break;    // usado para sair assim que achar um formato
+		}
+	}
+
+	for (int i=0; i<entries.size(); i++)
+	{
+		int nameEntryPos = X509_NAME_get_index_by_OBJ(subject, entries.at(i).first.getObjectIdentifier(), -1);
+		X509_NAME_ENTRY* ne;
+		std::string data;
+
+		if (nameEntryPos >= 0)
+		{
+			ne = X509_NAME_get_entry(subject, nameEntryPos);
+
+			data = entries.at(i).second;
+			int rc = X509_NAME_ENTRY_set_data(ne, ne->value->type, (unsigned char *)data.c_str(), data.length());
+			if (!rc)
 			{
-				X509_NAME_ENTRY* entry = X509_NAME_get_entry(subject, pos);
-				type = entry->value->type;
+				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
 			}
 		}
-
-		for (int i=0; i<entries.size(); i++)
+		else
 		{
-			int nameEntryPos = X509_NAME_get_index_by_OBJ(subject, entries.at(i).first.getObjectIdentifier(), -1);
-			X509_NAME_ENTRY* ne;
-			std::string data;
-
-			if (nameEntryPos >= 0){
-				ne = X509_NAME_get_entry(subject, nameEntryPos);
-
-				data = entries.at(i).second;
-				std::cout << ne->value->type << endl;
-				int rc = X509_NAME_ENTRY_set_data(ne, ne->value->type, (unsigned char *)data.c_str(), data.length());
-				if (!rc)
-				{
-					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
-				}
-
-			} else {
-				ne = X509_NAME_ENTRY_new();
-				X509_NAME_ENTRY_set_object(ne, entries.at(i).first.getObjectIdentifier());
-				data = entries.at(i).second;
-				X509_NAME_ENTRY_set_data(ne, type, (unsigned char *)data.c_str(), data.length());
-				X509_NAME_add_entry(subject, ne, -1, 0);
-				X509_NAME_ENTRY_free(ne);
-			}
+			ne = X509_NAME_ENTRY_new();
+			X509_NAME_ENTRY_set_object(ne, entries.at(i).first.getObjectIdentifier());
+			data = entries.at(i).second;
+			int entryType = (data.empty()) ? MBSTRING_ASC : baseType;
+			X509_NAME_ENTRY_set_data(ne, entryType, (unsigned char *)data.c_str(), data.length());
+			X509_NAME_add_entry(subject, ne, -1, 0);
+			X509_NAME_ENTRY_free(ne);
 		}
-
 	}
 }
 
