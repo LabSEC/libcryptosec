@@ -594,7 +594,7 @@ RDNSequence CertificateBuilder::getIssuer()
 	return RDNSequence(X509_get_issuer_name(this->cert));
 }
 
-void CertificateBuilder::setSubject(RDNSequence &name)
+void CertificateBuilder::alterSubject(RDNSequence &name)
 {
 	X509_NAME *subject = X509_get_subject_name(this->cert);
 
@@ -604,8 +604,7 @@ void CertificateBuilder::setSubject(RDNSequence &name)
 
 	std::vector<std::pair<ObjectIdentifier, std::string> > entries = name.getEntries();
 
-	// encontra um padrão nas entries:
-	int baseType = MBSTRING_ASC;     // formato padrão do certificado
+	int entryType = MBSTRING_ASC;
 	for (int i=0; i<entries.size(); i++)
 	{
 		int pos = X509_NAME_get_index_by_OBJ(subject, entries.at(i).first.getObjectIdentifier(), -1);
@@ -613,8 +612,8 @@ void CertificateBuilder::setSubject(RDNSequence &name)
 		if (pos >= 0 && notCountry)
 		{
 			X509_NAME_ENTRY* entry = X509_NAME_get_entry(subject, pos);
-			baseType = entry->value->type;
-			break;    // usado para sair assim que achar um formato
+			entryType = entry->value->type;
+			break;
 		}
 	}
 
@@ -622,30 +621,36 @@ void CertificateBuilder::setSubject(RDNSequence &name)
 	{
 		int nameEntryPos = X509_NAME_get_index_by_OBJ(subject, entries.at(i).first.getObjectIdentifier(), -1);
 		X509_NAME_ENTRY* ne;
-		std::string data;
-
-		if (nameEntryPos >= 0)
+		std::string data = entries.at(i).second;
+		if (!data.empty())
 		{
-			ne = X509_NAME_get_entry(subject, nameEntryPos);
-
-			data = entries.at(i).second;
-			int rc = X509_NAME_ENTRY_set_data(ne, ne->value->type, (unsigned char *)data.c_str(), data.length());
-			if (!rc)
+			if (nameEntryPos >= 0)
 			{
-				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
+				ne = X509_NAME_get_entry(subject, nameEntryPos);
+				int rc = X509_NAME_ENTRY_set_data(ne, ne->value->type, (unsigned char *)data.c_str(), data.length());
+				if (!rc)
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
+				}
+			}
+			else
+			{
+				ne = X509_NAME_ENTRY_new();
+				X509_NAME_ENTRY_set_object(ne, entries.at(i).first.getObjectIdentifier());
+				X509_NAME_ENTRY_set_data(ne, entryType, (unsigned char *)data.c_str(), data.length());
+				X509_NAME_add_entry(subject, ne, -1, 0);
+				X509_NAME_ENTRY_free(ne);
 			}
 		}
-		else
-		{
-			ne = X509_NAME_ENTRY_new();
-			X509_NAME_ENTRY_set_object(ne, entries.at(i).first.getObjectIdentifier());
-			data = entries.at(i).second;
-			int entryType = (data.empty()) ? MBSTRING_ASC : baseType;
-			X509_NAME_ENTRY_set_data(ne, entryType, (unsigned char *)data.c_str(), data.length());
-			X509_NAME_add_entry(subject, ne, -1, 0);
-			X509_NAME_ENTRY_free(ne);
-		}
 	}
+}
+
+void CertificateBuilder::setSubject(RDNSequence &name)
+{
+	X509_NAME *subject;
+	subject = name.getX509Name();
+	X509_set_subject_name(this->cert, subject);
+	X509_NAME_free(subject);
 }
 
 void CertificateBuilder::setSubject(X509_REQ* req)

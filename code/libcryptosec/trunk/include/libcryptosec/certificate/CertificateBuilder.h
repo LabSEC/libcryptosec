@@ -69,10 +69,47 @@ public:
 	DateTime getNotBefore();
 	void setNotAfter(DateTime &dateTime);
 	DateTime getNotAfter();
+
+	/**
+	 * Define o campo "issuer" a partir de um RDNSequence, utilizando o
+	 * codificação de string padrão do OpenSSL.
+	 *
+	 * @param name issuer
+	 */
 	void setIssuer(RDNSequence &name);
+
+	/**
+	 * Define o campo "issuer" a partir de um X509, respeitando o
+	 * codificação de string existente.
+	 *
+	 * @param issuer issuer
+	 */
 	void setIssuer(X509* issuer) throw (CertificationException);
+
 	RDNSequence getIssuer();
+
+	/**
+	 * Altera o campo "subject" a partir de um RDNSequence, respeitando a
+	 * codificação de string existente.
+	 *
+	 * @param name subject
+	 */
+	void alterSubject(RDNSequence &name) throw (CertificationException);
+
+	/**
+	 * Define o campo "subject" a partir de um RDNSequence, utilizando a
+	 * codificação de string padrão do OpenSSL.
+	 *
+	 * @param name subject
+	 */
 	void setSubject(RDNSequence &name);
+
+	/**
+	 * Define o campo "subject" a partir de um X509_REQ, respeitando a
+	 * codificação de string existente.
+	 *
+	 * @param name subject
+	 */
 	void setSubject(X509_REQ* req) throw (CertificationException);
 	RDNSequence getSubject();
 	void addExtension(Extension &extension) throw (CertificationException);
