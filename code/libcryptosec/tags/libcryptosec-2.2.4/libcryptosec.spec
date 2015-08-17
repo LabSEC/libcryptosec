@@ -1,7 +1,7 @@
 Summary: libcryptosec
 Name: libcryptosec
-Version: 2.2.3
-Release: 769
+Version: 2.2.4
+Release: 779
 Source0: %{name}-%{version}.tar.gz
 License: GPL
 Group: Development/Tools
@@ -27,6 +27,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/libcryptosec/
 
 %changelog
+* Mon Aug 17 2015 Lucas Perin <lucas.perin@posgrad.ufsc.br> - 2.2.3
+- Must use OpenSSL 1.0.1h with Brainpool patch if using Brainpool curves;
+- Added functions to Certificate Builder that keep the subject's string format field when building from a RDNSequence.
+
 * Wed Aug 05 2015 Lucas Perin <lucas.perin@posgrad.ufsc.br> - 2.2.3
 - Must use OpenSSL 1.0.1h with Brainpool patch if using Brainpool curves;
 - Added functions to Certificate Builder that keep the subject's string format field when building from a CSR.
