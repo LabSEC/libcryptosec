@@ -595,6 +595,7 @@ RDNSequence CertificateBuilder::getIssuer()
 }
 
 void CertificateBuilder::alterSubject(RDNSequence &name)
+		throw (CertificationException)
 {
 	X509_NAME *subject = X509_get_subject_name(this->cert);
 
