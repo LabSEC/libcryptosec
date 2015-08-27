@@ -15,5 +15,5 @@ if(BUILD_TESTING)
 	enable_testing()
 	add_subdirectory(tests)
 
-	add_custom_target(check ${CMAKE_CTEST_COMMAND} -V WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+	add_custom_target(check env CTEST_OUTPUT_ON_FAILURE=TRUE ${CMAKE_CTEST_COMMAND} WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()

@@ -14,3 +14,5 @@ target_link_libraries(BrainpoolTest cryptosec ${CMAKE_THREAD_LIBS_INIT} ${GTEST_
 target_link_libraries(HmacTest cryptosec ${CMAKE_THREAD_LIBS_INIT} ${GTEST_BOTH_LIBRARIES})
 add_test(BrainpoolTest BrainpoolTest)
 add_test(HmacTest HmacTest)
+
+file(COPY files DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
