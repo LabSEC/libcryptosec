@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
 add_subdirectory(asn1)
 add_subdirectory(certificate)
 add_subdirectory(ec)
@@ -55,5 +57,8 @@ set(SOURCE_FILES
         SymmetricKey.cpp
         SymmetricKeyGenerator.cpp)
 
-add_library(src ${SOURCE_FILES})
-target_link_libraries(src asn1 certificate ec)
+add_library(cryptosec SHARED ${SOURCE_FILES})
+target_link_libraries(cryptosec asn1 certificate ec)
+
+install(TARGETS cryptosec
+        DESTINATION lib)
