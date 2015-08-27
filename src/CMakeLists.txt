@@ -58,7 +58,7 @@ set(SOURCE_FILES
         SymmetricKeyGenerator.cpp)
 
 add_library(cryptosec SHARED ${SOURCE_FILES})
-target_link_libraries(cryptosec asn1 certificate ec)
+target_link_libraries(cryptosec asn1 certificate ec ${OPENSSL_LIBRARIES} ${LIBP11_LIBRARIES})
 
 install(TARGETS cryptosec
         DESTINATION lib)
