@@ -9,4 +9,11 @@ find_package(LibP11 REQUIRED)
 
 include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/include ${OPENSSL_INCLUDE_DIR} ${LIBP11_INCLUDE_DIR})
 add_subdirectory(src)
-add_subdirectory(tests)
+
+if(BUILD_TESTING)
+	include(CTest)
+	enable_testing()
+	add_subdirectory(tests)
+
+	add_custom_target(check ${CMAKE_CTEST_COMMAND} -V WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+endif()
