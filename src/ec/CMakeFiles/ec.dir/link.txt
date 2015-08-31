@@ -1,2 +1,0 @@
-/usr/bin/ar cr libec.a  CMakeFiles/ec.dir/BrainpoolCurveFactory.cpp.o CMakeFiles/ec.dir/EllipticCurve.cpp.o
-/usr/bin/ranlib libec.a

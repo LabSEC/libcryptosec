@@ -1,4 +1,0 @@
-/home/luiz/gitsClones/libcryptosec/src/asn1/CMakeFiles/asn1.dir
-/home/luiz/gitsClones/libcryptosec/src/certificate/CMakeFiles/certificate.dir
-/home/luiz/gitsClones/libcryptosec/src/CMakeFiles/cryptosec.dir
-/home/luiz/gitsClones/libcryptosec/src/ec/CMakeFiles/ec.dir
