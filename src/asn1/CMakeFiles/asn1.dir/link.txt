@@ -1,0 +1,2 @@
+/usr/bin/ar cr libasn1.a  CMakeFiles/asn1.dir/Asn1Attribute.cpp.o CMakeFiles/asn1.dir/Asn1BitString.cpp.o CMakeFiles/asn1.dir/Asn1Boolean.cpp.o CMakeFiles/asn1.dir/Asn1Enumerated.cpp.o CMakeFiles/asn1.dir/Asn1Integer.cpp.o CMakeFiles/asn1.dir/Asn1Object.cpp.o CMakeFiles/asn1.dir/Asn1Sequence.cpp.o CMakeFiles/asn1.dir/Asn1Type.cpp.o
+/usr/bin/ranlib libasn1.a
