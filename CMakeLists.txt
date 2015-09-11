@@ -8,6 +8,7 @@ find_package(OpenSSL REQUIRED)
 find_package(LibP11 REQUIRED)
 
 include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/include ${OPENSSL_INCLUDE_DIR} ${LIBP11_INCLUDE_DIR})
+add_subdirectory(include)
 add_subdirectory(src)
 
 if(BUILD_TESTING)
