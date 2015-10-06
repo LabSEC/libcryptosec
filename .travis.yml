@@ -1,11 +1,12 @@
 language: cpp
 sudo: false
 
-addons:
-    apt:
-        sources:
-        - openssl
-        - libp11-dev
+install:
+    addons:
+        apt:
+            sources:
+            - openssl
+            - libp11-dev
 
 script:
 - mkdir BUILD
