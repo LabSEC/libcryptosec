@@ -8,4 +8,5 @@ script:
 - mkdir BUILD
 - cd BUILD
 - cmake ..
-- make dist
+- make
+- sudo make install
