@@ -1,2 +1,1 @@
-.. image:: https://travis-ci.org/LabSEC/libcryptosec.svg
-    :target: https://travis-ci.org/LabSEC/libcryptosec
+[![Build Status](https://travis-ci.org/LabSEC/libcryptosec.svg)](https://travis-ci.org/LabSEC/libcryptosec)
