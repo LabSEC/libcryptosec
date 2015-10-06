@@ -2,12 +2,14 @@ language: cpp
 
 
 install:
-- sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+- sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
 - sudo apt-get update -qq
 - sudo apt-get install -qq openssl libp11-dev gcc-4.9 g++-4.9
 
 script:
 - mkdir BUILD
 - cd BUILD
-- cmake ..
+- cmake .. -DBUILD_TESTING=true
 - make
+- sudo make install
+- make test
