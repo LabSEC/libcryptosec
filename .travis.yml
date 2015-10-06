@@ -7,15 +7,13 @@ install:
 - sudo apt-get install -qq libp11-dev
 - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-- echo $CXX
-- echo $CC
-- wget https://www.openssl.org/source/openssl-1.0.2d.tar.gz
-- tar -zxvf openssl-1.0.2d.tar.gz
-- cd openssl-1.0.2d
-- CFLAGS=-fPIC ./config shared
-- make -j9
-- sudo make install
-- cd ..
+#- wget https://www.openssl.org/source/openssl-1.0.2d.tar.gz
+#- tar -zxvf openssl-1.0.2d.tar.gz
+#- cd openssl-1.0.2d
+#- CFLAGS=-fPIC ./config shared
+#- make -j9
+#- sudo make install
+#- cd ..
 
 script:
 - mkdir BUILD
