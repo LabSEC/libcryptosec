@@ -11,6 +11,7 @@ install:
 - CFLAGS=-fPIC ./config shared
 - make -j9
 - sudo make install
+- cd ..
 
 script:
 - mkdir BUILD
