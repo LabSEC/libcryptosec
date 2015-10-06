@@ -4,7 +4,7 @@ language: cpp
 install:
 - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
 - sudo apt-get update -qq
-- sudo apt-get install -qq libp11-dev gcc-4.9 g++-4.9 libgtest-dev
+- sudo apt-get install -qq libp11-dev gcc-4.9 g++-4.9
 - wget https://www.openssl.org/source/openssl-1.0.2d.tar.gz
 - tar -zxvf openssl-1.0.2d.tar.gz
 - cd openssl-1.0.2d
@@ -16,7 +16,6 @@ install:
 script:
 - mkdir BUILD
 - cd BUILD
-- cmake .. -DBUILD_TESTING=true
+- cmake ..
 - make
 - sudo make install
-- make test
