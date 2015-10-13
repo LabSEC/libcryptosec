@@ -234,6 +234,53 @@ BigInteger CertificateRevocationList::getSerialNumberBigInt()
 	return BigInteger(asn1Int);
 }
 
+long CertificateRevocationList::getBaseCRLNumber()
+		throw (CertificationException)
+{
+	ASN1_INTEGER *asn1Int;
+	long ret;
+	if (this->crl == NULL)
+	{
+		throw CertificationException(CertificationException::INVALID_CRL, "CertificateRevocationList::getBaseCRLNumber");
+	}
+	asn1Int = (ASN1_INTEGER*) X509_CRL_get_ext_d2i(this->crl, NID_delta_crl, 0, 0);
+	if (asn1Int == NULL)
+	{
+		throw CertificationException(CertificationException::SET_NO_VALUE, "CertificateRevocationList::getBaseCRLNumber");
+	}
+	if (asn1Int->data == NULL)
+	{
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateRevocationList::getBaseCRLNumber");
+	}
+	ret = ASN1_INTEGER_get(asn1Int);
+	if (ret < 0L)
+	{
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateRevocationList::getBaseCRLNumber");
+	}
+	return ret;
+}
+
+BigInteger CertificateRevocationList::getBaseCRLNumberBigInt()
+	throw (CertificationException, BigIntegerException)
+{
+	ASN1_INTEGER *asn1Int;
+	if (this->crl == NULL)
+	{
+		throw CertificationException(CertificationException::INVALID_CRL, "CertificateRevocationList::getBaseCRLNumberBigInt");
+	}
+	asn1Int = (ASN1_INTEGER*) X509_CRL_get_ext_d2i(this->crl, NID_delta_crl, 0, 0);
+	if (asn1Int == NULL)
+	{
+		throw CertificationException(CertificationException::SET_NO_VALUE, "CertificateRevocationList::getBaseCRLNumberBigInt");
+	}
+	if (asn1Int->data == NULL)
+	{
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateRevocationList::getBaseCRLNumberBigInt");
+	}
+	return BigInteger(asn1Int);
+}
+
+
 long CertificateRevocationList::getVersion()
 		throw (CertificationException)
 {
@@ -352,6 +399,9 @@ std::vector<Extension*> CertificateRevocationList::getExtension(Extension::Name 
 					break;
 				case Extension::CRL_NUMBER:
 					oneExt = new CRLNumberExtension(ext);
+					break;
+				case Extension::DELTA_CRL_INDICATOR:
+					oneExt = new DeltaCRLIndicatorExtension(ext);
 					break;
 				default:
 					oneExt = new Extension(ext);

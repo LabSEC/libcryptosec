@@ -37,6 +37,7 @@ public:
 		DOMAIN_COMPONENT = 15,
 		UNKNOWN = 16,
 	};
+	
 	RDNSequence();
 	RDNSequence(X509_NAME *rdn);
 	RDNSequence(STACK_OF(X509_NAME_ENTRY) *entries);
