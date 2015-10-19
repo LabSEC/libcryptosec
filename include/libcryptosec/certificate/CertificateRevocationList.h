@@ -24,6 +24,7 @@
 #include "SubjectInformationAccessExtension.h"
 #include "CertificatePoliciesExtension.h"
 #include "CRLNumberExtension.h"
+#include "DeltaCRLIndicatorExtension.h"
 
 #include "RDNSequence.h"
 #include "RevokedCertificate.h"
@@ -44,6 +45,8 @@ public:
 	ByteArray getDerEncoded() throw (EncodeException);
 	long getSerialNumber() throw (CertificationException);
 	BigInteger getSerialNumberBigInt() throw (CertificationException, BigIntegerException);
+	long getBaseCRLNumber() throw (CertificationException);
+	BigInteger getBaseCRLNumberBigInt() throw (CertificationException, BigIntegerException);
 	long getVersion() throw (CertificationException);
 	RDNSequence getIssuer();
 	DateTime getLastUpdate();

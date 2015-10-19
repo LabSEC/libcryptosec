@@ -28,8 +28,10 @@ public:
 		SUBJECT_ALTERNATIVE_NAME,
 		SUBJECT_INFORMATION_ACCESS,
 		SUBJECT_KEY_IDENTIFIER,
-		CRL_NUMBER
+		CRL_NUMBER,
+		DELTA_CRL_INDICATOR
 	};
+	
 	Extension(X509_EXTENSION *ext) throw (CertificationException);
 	Extension(std::string oid, bool critical, std::string valueBase64) throw (CertificationException);
 	virtual ~Extension();

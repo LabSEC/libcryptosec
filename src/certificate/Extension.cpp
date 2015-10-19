@@ -151,6 +151,9 @@ Extension::Name Extension::getName(int nid)
 		case NID_crl_number:
 			ret = Extension::CRL_NUMBER;
 			break;
+		case NID_delta_crl:
+			ret = Extension::DELTA_CRL_INDICATOR;
+			break;			
 		default:
 			ret = Extension::UNKNOWN;
 	}
