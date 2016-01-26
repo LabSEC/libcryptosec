@@ -16,6 +16,7 @@ set(SOURCE_FILES
         CertPathValidator.cpp
         CRLDistributionPointsExtension.cpp
         CRLNumberExtension.cpp
+	DeltaCRLIndicatorExtension.cpp
         DistributionPoint.cpp
         DistributionPointName.cpp
         ExtendedKeyUsageExtension.cpp
