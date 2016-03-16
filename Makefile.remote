@@ -1,5 +1,0 @@
-remote-clean:
-	ssh labsec@sgcjdb.vm "(cd /opt/workspace-remoto/libcryptosec2.x ; make clean)"
-
-remote-build:
-	ssh labsec@sgcjdb.vm "(cd /opt/workspace-remoto/libcryptosec2.x ; make)"
