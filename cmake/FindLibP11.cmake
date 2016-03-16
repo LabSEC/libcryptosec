@@ -1,0 +1,7 @@
+find_path(LIBP11_INCLUDE_DIRS NAMES libp11.h)
+find_library(LIBP11_LIBRARIES NAMES p11 libp11)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(libp11 DEFAULT_MSG LIBP11_INCLUDE_DIRS LIBP11_LIBRARIES)
+
+mark_as_advanced(LIBP11_INCLUDE_DIRS LIBP11_LIBRARIES)

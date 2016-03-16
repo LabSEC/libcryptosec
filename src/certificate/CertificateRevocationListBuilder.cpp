@@ -462,7 +462,10 @@ std::vector<Extension*> CertificateRevocationListBuilder::getExtension(Extension
 					break;					
 				case Extension::CRL_NUMBER:
 					oneExt = new CRLNumberExtension(ext);
-					break;					
+					break;						
+				case Extension::DELTA_CRL_INDICATOR:
+					oneExt = new DeltaCRLIndicatorExtension(ext);
+					break;				
 				default:
 					oneExt = new Extension(ext);
 					break;
@@ -521,7 +524,10 @@ std::vector<Extension*> CertificateRevocationListBuilder::getExtensions()
 				break;
 			case Extension::CRL_NUMBER:
 				oneExt = new CRLNumberExtension(ext);
-				break;									
+				break;		
+			case Extension::DELTA_CRL_INDICATOR:
+				oneExt = new DeltaCRLIndicatorExtension(ext);							
+				break;
 			default:
 				oneExt = new Extension(ext);
 				break;
