@@ -16,5 +16,5 @@ install:
 #- cd ..
 
 script:
-- make
+- make USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so
 - sudo make install
