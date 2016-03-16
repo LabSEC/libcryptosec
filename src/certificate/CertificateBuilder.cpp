@@ -644,6 +644,7 @@ void CertificateBuilder::alterSubject(RDNSequence &name)
 			}
 		}
 	}
+	name = RDNSequence(subject);
 }
 
 void CertificateBuilder::setSubject(RDNSequence &name)
