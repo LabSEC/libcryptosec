@@ -1,23 +1,14 @@
 language: cpp
 
+compiler:
+- g++
 
 install:
 - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
 - sudo apt-get update -qq
 - sudo apt-get install -qq libp11-dev
-- if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-#- wget https://www.openssl.org/source/openssl-1.0.2d.tar.gz
-#- tar -zxvf openssl-1.0.2d.tar.gz
-#- cd openssl-1.0.2d
-#- CFLAGS=-fPIC ./config shared
-#- make -j9
-#- sudo make install
-#- cd ..
+- sudo apt-get install -qq g++-4.9
 
 script:
-- mkdir BUILD
-- cd BUILD
-- cmake ..
-- make
-- sudo make install
+- make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so
+
