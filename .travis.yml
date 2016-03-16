@@ -16,8 +16,5 @@ install:
 #- cd ..
 
 script:
-- mkdir BUILD
-- cd BUILD
-- cmake ..
 - make
 - sudo make install
