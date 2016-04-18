@@ -17,10 +17,7 @@ make
 strip libcryptosec.so
 %install
 make install
-%clean
-%post
-%preun
-make uninstall
+
 %files
 #arquivos contidos no pacote
 %defattr(-,root,root)
