@@ -16,6 +16,7 @@ our project.
 
 ### 2.2.5 and higher
 Use OpenSSL 1.0.2 and higher for Brainpool support.
+*Must update brainpool NIDS if compiling with 1.0.2*.
 
 ### 2.2.4
 This is specific tag we used with an OpenSSL patch
