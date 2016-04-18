@@ -2,24 +2,25 @@ Summary: libcryptosec
 Name: libcryptosec
 Version: 2.2.5
 Release: 1
-Source0: %{name}-%{version}.tar.gz
+Source0: %{name}-%{version}.zip
 License: GPL
 Group: Development/Tools
-BuildRoot: %{_builddir}/%{name}-root
+BuildArch: i386
 Requires: libp11
 %description
 libcryptosec is an OpenSSL c++ wrapper with extra features
+
 %prep
-%setup -q -n %{name}
+%setup -q
 %build
 make
 strip libcryptosec.so
 %install
-make DESTDIR=$RPM_BUILD_ROOT install
+make install
 %clean
-rm -rf $RPM_BUILD_ROOT
 %post
 %preun
+make uninstall
 %files
 #arquivos contidos no pacote
 %defattr(-,root,root)
