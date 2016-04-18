@@ -598,6 +598,57 @@ void CertificateBuilder::alterSubject(RDNSequence &name)
 		throw (CertificationException)
 {
 	X509_NAME *subject = X509_get_subject_name(this->cert);
+	if(subject == NULL)
+	{
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+	}
+	X509_NAME *subjectName = X509_NAME_new();
+	if(subjectName == NULL)
+	{
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+	}
+	std::vector<std::pair<ObjectIdentifier, std::string> > entries = name.getEntries();
+	X509_NAME_ENTRY *newEntry = X509_NAME_ENTRY_new();
+
+	std::string data;
+	for(std::vector<std::pair<ObjectIdentifier, std::string> >::iterator entry = entries.begin(); entry != entries.end(); entry++)
+	{
+		data = entry->second;
+		newEntry = X509_NAME_ENTRY_new();
+
+		int position = X509_NAME_get_index_by_OBJ(subject, entry->first.getObjectIdentifier(), -1);
+		if(position != -1)
+		{
+			X509_NAME_ENTRY* oldEntry = X509_NAME_get_entry(subject, position);
+
+			int entryType = oldEntry->value->type;
+
+			if(!X509_NAME_ENTRY_set_object(newEntry, entry->first.getObjectIdentifier()))
+			{
+				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+			}
+
+			if(!X509_NAME_ENTRY_set_data(newEntry, entryType, (unsigned char *)data.c_str(), data.length()))
+			{
+				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+			}
+
+			if(!X509_NAME_add_entry(subjectName, newEntry, -1, 0))
+			{
+				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+			}
+
+			X509_NAME_ENTRY_free(newEntry);
+
+		}
+	}
+	if(!X509_set_subject_name(this->cert, subjectName))
+	{
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+	}
+
+/*	ALTERSUBJECT VERSION 2.2.4
+	X509_NAME *subject = X509_get_subject_name(this->cert);
 
 	if(subject == NULL){
 		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::setSubject");
@@ -644,7 +695,7 @@ void CertificateBuilder::alterSubject(RDNSequence &name)
 			}
 		}
 	}
-	name = RDNSequence(subject);
+	name = RDNSequence(subject);*/
 }
 
 void CertificateBuilder::setSubject(RDNSequence &name)
