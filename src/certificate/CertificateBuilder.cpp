@@ -608,7 +608,7 @@ void CertificateBuilder::alterSubject(RDNSequence &name)
 		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
 	}
 	std::vector<std::pair<ObjectIdentifier, std::string> > entries = name.getEntries();
-	X509_NAME_ENTRY *newEntry = X509_NAME_ENTRY_new();
+	X509_NAME_ENTRY *newEntry;
 
 	std::string data;
 	for(std::vector<std::pair<ObjectIdentifier, std::string> >::iterator entry = entries.begin(); entry != entries.end(); entry++)
@@ -616,7 +616,7 @@ void CertificateBuilder::alterSubject(RDNSequence &name)
 		data = entry->second;
 		newEntry = X509_NAME_ENTRY_new();
 
-		int position = X509_NAME_get_index_by_OBJ(subject, entry->first.getObjectIdentifier(), -1);
+		int position = X509_NAME_get_index_by_NID(subject, entry->first.getNid(), -1);
 		if(position != -1)
 		{
 			X509_NAME_ENTRY* oldEntry = X509_NAME_get_entry(subject, position);
@@ -640,6 +640,14 @@ void CertificateBuilder::alterSubject(RDNSequence &name)
 
 			X509_NAME_ENTRY_free(newEntry);
 
+		}
+		else
+		{
+			newEntry = X509_NAME_ENTRY_new();
+			X509_NAME_ENTRY_set_object(newEntry, entry->first.getObjectIdentifier());
+			X509_NAME_ENTRY_set_data(newEntry, MBSTRING_ASC, (unsigned char *)data.c_str(), data.length());
+			X509_NAME_add_entry(subjectName, newEntry, -1, 0);
+			X509_NAME_ENTRY_free(newEntry);
 		}
 	}
 	if(!X509_set_subject_name(this->cert, subjectName))
