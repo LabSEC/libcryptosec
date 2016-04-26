@@ -1,6 +1,6 @@
 #include <libcryptosec/Hmac.h>
 #include <fstream>
-#include <gtest/gtest.h>
+#include "gtest.h"
 
 class HmacTest : public ::testing::Test {
 

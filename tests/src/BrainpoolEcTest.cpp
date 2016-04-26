@@ -2,7 +2,7 @@
 #include <libcryptosec/ec/EllipticCurve.h>
 #include <libcryptosec/ec/BrainpoolCurveFactory.h>
 #include <fstream>
-#include <gtest/gtest.h>
+#include "gtest.h"
 #include <stdio.h>
 
 class BrainpoolEcTest : public ::testing::Test {
