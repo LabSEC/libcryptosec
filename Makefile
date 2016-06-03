@@ -3,6 +3,8 @@ INCLUDES = -I/usr/local/ssl/include -I./include
 FLAGS = -shared
 CC = g++
 EXECUTABLES = libcryptosec.so
+ARQ= $(shell uname -m)
+LIBDIR = /usr/lib
 
 USER_OBJS += /usr/local/ssl/lib/libcrypto.a
 
@@ -109,10 +111,16 @@ $(EXECUTABLES):	$(OBJS)
 clean:
 	rm -rf $(CPP_DEPS) $(OBJS) $(EXECUTABLES)
 	
-install: $(EXECUTABLES)
+
+libdir:
+ifeq ($(ARQ), x86_64)
+	LIBDIR=/usr/lib64
+endif
+
+install: $(EXECUTABLES) libdir
 	@echo 'Installing libcryptosec ...'
-	@mkdir -p $(DESTDIR)/usr/lib
-	@cp libcryptosec.so $(DESTDIR)/usr/lib
+	@mkdir -p $(DESTDIR)$(LIBDIR)
+	@cp libcryptosec.so $(DESTDIR)$(LIBDIR)
 	@mkdir -m 0755 -p $(DESTDIR)/usr/include/libcryptosec
 	@mkdir -m 0755 -p $(DESTDIR)/usr/include/libcryptosec/exception
 	@mkdir -m 0755 -p $(DESTDIR)/usr/include/libcryptosec/certificate
@@ -125,6 +133,6 @@ install: $(EXECUTABLES)
 
 uninstall:
 	@echo 'Uninstalling libcryptosec ...'
-	@rm -rf $(DESTDIR)/usr/lib/$(EXECUTABLES)
+	@rm -rf $(DESTDIR)$(LIBDIR)/$(EXECUTABLES)
 	@rm -rf $(DESTDIR)/usr/include/libcryptosec
 	@echo 'Uninstalation complete!'
