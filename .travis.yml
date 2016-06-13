@@ -11,4 +11,5 @@ install:
 
 script:
 - make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so
+- make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so -C tests/ test
 
