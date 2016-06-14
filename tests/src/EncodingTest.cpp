@@ -102,10 +102,10 @@ protected:
      * obrigatória na geração da requisição.
      */
     bool test() {
-        int encodingCommonName = X509_NAME_get_entry(before, X509_NAME_get_index_by_NID(nm, NID_commonName, -1));
-        for (int i = 0; i < X509_NAME_entry_count(before); i++) {
+        int encodingCommonName = X509_NAME_get_entry(before, 0)->value->type;
+        for (int i = 0; i < X509_NAME_entry_count(after); i++) {
             int encodingAfter = X509_NAME_get_entry(after, i)->value->type;
-            if (encoding_after != encodingCommonName) {
+            if (encodingAfter != encodingCommonName) {
                 return false;
             }
         }
