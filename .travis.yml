@@ -3,18 +3,15 @@ language: cpp
 compiler:
 - g++
 
-sudo: false
-
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.9
-    - libp11-dev
+install:
+- sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+- sudo apt-get update -qq
+- sudo apt-get install -qq libp11-dev
+- sudo apt-get install -qq g++-4.9
 
 script:
 - openssl version
 - make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so
+- sudo make install
 - make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so -C tests test
 
