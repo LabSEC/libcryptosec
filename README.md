@@ -2,7 +2,7 @@ Libcryptosec
 ===========
 Object Oriented Wrapper for the OpenSSL libcrypto library. 
 
-[![Build Status](https://travis-ci.org/LabSEC/libcryptosec.svg?branch=dev)](https://travis-ci.org/LabSEC/libcryptosec)
+[![Build Status](https://travis-ci.org/LabSEC/libcryptosec.svg?branch=master)](https://travis-ci.org/LabSEC/libcryptosec)
 
 ## Contributions
 
