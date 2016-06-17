@@ -1,5 +1,5 @@
 LIBS = -lcryptosec
-INCLUDES = -I./$(GTEST_DIR) -I/usr/include/libcryptosec
+INCLUDES = -I./$(GTEST_DIR) -I../include/libcryptosec
 CC = g++
 CPPFLAGS = -DGTEST_HAS_PTHREAD=0
 CXXFLAGS = -g
@@ -7,7 +7,7 @@ EXECUTABLE = test.out
 
 GTEST_DIR = gtest
 SRC_DIR = src
-LIBCRYPTOSEC = /usr/lib/libcryptosec.so
+LIBCRYPTOSEC = ../libcryptosec.so
 
 TEST_SRCS += $(wildcard $(SRC_DIR)/*.cpp)
 OBJS += $(TEST_SRCS:.cpp=.o)
