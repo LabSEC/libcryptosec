@@ -1,4 +1,5 @@
 #include <libcryptosec/certificate/CertificateBuilder.h>
+#include <libcryptosec/RSAKeyPair.h>
 #include <fstream>
 #include "gtest.h"
 #include <iostream>
@@ -34,7 +35,7 @@ protected:
         tmp.addEntry(RDNSequence::LOCALITY, "Locality");
         tmp.addEntry(RDNSequence::ORGANIZATION, "Organization");
         tmp.addEntry(RDNSequence::ORGANIZATION_UNIT, "Organization Unit");
-        tmp.addEntry(RDNSequence::COMMON_NAME, "Commmon Name");
+        tmp.addEntry(RDNSequence::COMMON_NAME, "Common Name");
         rdn = tmp;
     }
 
@@ -50,12 +51,14 @@ protected:
 
     /*!
      * @brief Testa se a codificacao das entradas estao de acordo com o esperado.
+     *
+     * @param expectedCodification Codificacao esperada.
      */
     void testStringCodificaton(int expectedCodification) {
         X509_NAME* after = X509_get_subject_name(cbuilder->getX509());
         for (int i = 0; i < X509_NAME_entry_count(after); i++) {
             X509_NAME_ENTRY* entry = X509_NAME_get_entry(after, i);
-            if (entry->object->nid != NID_countryName) {
+            if (OBJ_obj2nid(entry->object) != NID_countryName) {
             	int codification = entry->value->type;
             	ASSERT_EQ(codification, expectedCodification);
             }
@@ -63,7 +66,26 @@ protected:
     }
 
     /*!
+     * @brief Testa se a codificacao do certificado esta de acordo com o esperado.
+     *
+     * @param expectedCodification Codificação esperada.
+     * @param cert Certificado exportado.
+     */
+    void testStringCodificaton(int expectedCodification, Certificate* cert) {
+    	X509_NAME* after = X509_get_subject_name(cert->getX509());
+    	for (int i = 0; i < X509_NAME_entry_count(after); i++) {
+    		X509_NAME_ENTRY* entry = X509_NAME_get_entry(after, i);
+    		if (OBJ_obj2nid(entry->object) != NID_countryName) {
+    			int codification = entry->value->type;
+    			ASSERT_EQ(codification, expectedCodification);
+    		}
+    	}
+    }
+
+    /*!
      * @brief Testa se os valores das entradas sao mantidos apos a geracao do certificado.
+     *
+     * @param r RDNSequence o qual se deseja comparar com rdn interno.
      */
     void testStringValues(RDNSequence r) {
         vector<pair<ObjectIdentifier, string> > entries_before = r.getEntries();
@@ -121,8 +143,86 @@ protected:
         req_pem_encoded = stream.str();
     }
 
+    void setPEMIncompletePrintable() {
+    	using std::endl;
+    	std::stringstream stream;
+    	stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
+    		   << "MIIC+TCCAeECAQAwQzESMBAGA1UEBxMJeXd5cmEgQUMyMRIwEAYDVQQDEwl5d3ly" << endl
+			   << "YSBBQzIxGTAXBgNVBAwTEHRpdHVsbyB5d3lyYSBBQzIwggEiMA0GCSqGSIb3DQEB" << endl
+			   << "AQUAA4IBDwAwggEKAoIBAQDVh+Mi3eOz0YXK6J9hqCCwSLhAVpCHqxnGoq4g6bzL" << endl
+			   << "igClV5GbwIaKhMVuOS/0mdth+v4aBA1gVFMtpmR3xxFrDnaARjM5bwx1FKVyyZkF" << endl
+			   << "boNwaUGVWwPNraNNlnwMtL6oeksTDMSBRKTp8Jeu+sOPetL09ek4Ys29VGgRyu7i" << endl
+			   << "tE44fRiY0g+KxJfYN9DGPXv0dfJHhhu4D3UjvafAE0b8eiQT+4dlLw1euU1sJ8IF" << endl
+			   << "1y0109Jh5hexbLczhGuaV7bnG3xP+rrObiQ1iuQOdFMTgv1HTVnCmMM9Phh1lMXH" << endl
+			   << "5Sy8T1DZSfe0uekJpFuzbBTjzDQvb2ZYE7XM0/uoTWDDAgMBAAGgcTBvBgkqhkiG" << endl
+			   << "9w0BCQ4xYjBgMB0GA1UdDgQWBBRuVgfS7weLK4LybliWkb+q6LcVMjAPBgNVHRMB" << endl
+			   << "Af8EBTADAQH/MA8GA1UdDwEB/wQFAwMHH4AwHQYDVR0lBBYwFAYIKwYBBQUHAwEG" << endl
+			   << "CCsGAQUFBwMCMA0GCSqGSIb3DQEBDQUAA4IBAQCgEy2RmLok0IZizx9m++0v3YAn" << endl
+			   << "eOD2VogN2QcncEz92uLsorRgGe5uwqRMxeHcJoFVzPNvYphe0R6lV4mxjDCgUIwT" << endl
+			   << "hQl7GmCVEGMR+yCsgirYFHZz9jfuh7Q47ukSKo1sNrd50u8bFyUzu5CsnjEtJVE0" << endl
+			   << "2gJBCuiyXuYBg/L4eZJDoJwY/iKyQKhRd68BtEUXFr7wF0U0CkggPU38Kiy/VQLH" << endl
+			   << "XciyBd1S/BbTT9F8RW547rpeCF4oeqbN6kr2a+ykSIp3jLxz12vdXgGBVd+oBl6u" << endl
+			   << "H42k/Nd8kyfCQCuZY0+8fQZv9lHLDIeCKV5EBrbz93esyWHFMmePiRXCCi3v" << endl
+			   << "-----END CERTIFICATE REQUEST-----";
+    	req_pem_encoded = stream.str();
+    }
+
+    void setPEMFullUTF8() {
+    	using std::endl;
+    	std::stringstream stream;
+    	stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
+    		   << "MIIDjzCCAncCAQAwgacxCzAJBgNVBAYTAkFBMRwwGgYDVQQKDBNvcmcgeXd5cmFB" << endl
+			   << "QzEtMi41LjRjMR4wHAYDVQQLDBV1bm9yZyB5d3lyYUFDMS0yLjUuNGMxHzAdBgNV" << endl
+			   << "BAgMFmVzdGFkbyB5d3lyYUFDMS0yLjUuNGMxGDAWBgNVBAMMD3l3eXJhQUMxLTIu" << endl
+			   << "NS40YzEfMB0GA1UEDAwWdGl0dWxvIHl3eXJhQUMxLTIuNS40YzCCASIwDQYJKoZI" << endl
+			   << "hvcNAQEBBQADggEPADCCAQoCggEBAJVY01W9ieCEfheLSrHcjxynj6fVwOyhGj1d" << endl
+			   << "4PwSqe0l8M4vYPMGRuC0NqsvOrps+McdFXjdBoElDEZ+7UrxFXEW3jyNPw30aei9" << endl
+			   << "3PtPWwS0UNj5ySs3nw3ybuZlmstFyeOldTbEFOctG/sVeHcz/pprVvqtCEXpLKtg" << endl
+			   << "vtDgzjd68RRpJVIWIQ46HuoZZTRQomMiHZdkKKALkS0eAI7cKn1fVoLze2Hi/xnV" << endl
+			   << "acPy6BN+nBhndUGye5KvmQUAI9hQk6UHORwLEuSW2tn8iWVopswmc1xMXez8sNPR" << endl
+			   << "d2xwNnfA6xBZ1IZ0ZegzPLgegKQYraU93RofJa1bIWAHG/gtdx8CAwEAAaCBoTCB" << endl
+			   << "ngYJKoZIhvcNAQkOMYGQMIGNMB0GA1UdDgQWBBSaXq9MlK7J+UHMhU84IwqvgUCY" << endl
+			   << "qDAXBgNVHREEEDAOggxhc2Rhc2RzYWRhc2QwDwYDVR0TAQH/BAUwAwEB/zAPBgNV" << endl
+			   << "HQ8BAf8EBQMDBz+AMDEGA1UdJQQqMCgGCCsGAQUFBwMDBggrBgEFBQcDBAYIKwYB" << endl
+			   << "BQUHAwgGCCsGAQUFBwMJMA0GCSqGSIb3DQEBDQUAA4IBAQBhtwGISNB+nwpEJdB3" << endl
+			   << "J1hYH28/61CpYhHGa5ysdCPaPpPw5P4+yrpC/iJFV4Lw/0pvauaTY8KVIZQnmLYq" << endl
+			   << "rDB3Rv1d1qEC1owv1FLocnXVTfpyqLHtTZkNJ7ApHzUhUl+YCW+/cuIU+B9RxDug" << endl
+			   << "H0511zsavlRO+9DkZYOC5hO/bDlWy1IdT51qepBWCRD2sHviMQRlzYrt/s2BpXKf" << endl
+			   << "bhPfBWLL0wvV18WA3JmUOnjOCMXpHni9qoKS36eZVUr1pLbvwEmh0OLtSu9hhQGu" << endl
+			   << "q3VVrMLsnvlcgBzTIZi4Nt52bqSHuYCrJh+pZdd3IPl5G0mra+HkuXnxKrbQM6YK" << endl
+			   << "3aUS" << endl
+			   << "-----END CERTIFICATE REQUEST-----";
+    	req_pem_encoded = stream.str();
+    }
+
+    void setPEMIncompleteUTF8() {
+    	using std::endl;
+    	std::stringstream stream;
+    	stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
+    		   << "MIIC7jCCAdYCAQAwPzEjMCEGA1UEBwwabG9jYWxpZGFkZSBZd3lyYUFDMi0yLjUu" << endl
+			   << "NGMxGDAWBgNVBAMMD1l3eXJhQUMyLTIuNS40YzCCASIwDQYJKoZIhvcNAQEBBQAD" << endl
+			   << "ggEPADCCAQoCggEBAL9rgsnYC+gfpoYdOTKqFn6JWsL56lrc0qPuXfx15OJ0JF1s" << endl
+			   << "tX3hMxkM+Jnq53kEOmVwKsVyCYvCBqzARFqzmSy2RtNr9UUlsQWDIcPel9c4Zzj4" << endl
+			   << "cufd2ve7ChAEzFTR4j+gLZAnx7J7UdrLSSToRIkQpclGjFy11a1ldj7EXfZjn7HY" << endl
+			   << "PDgYbS9b3GUp9zcJ8YkGMBiQJmCTVfsGL+81e/shxjnSI4AFc2FLKv6BgRH+g97c" << endl
+			   << "gXzn45FmacudY8T1gqt4/j5SlwXNXMmnIpG8FRgnEmd5DInT7sb9wVVf1Ei/YCRP" << endl
+			   << "vqCMAmPEx9sS5H+Smy8eI6CM64IFj2ElEqgbVk0CAwEAAaBqMGgGCSqGSIb3DQEJ" << endl
+			   << "DjFbMFkwHQYDVR0OBBYEFBfmUjxv/PjEd9kCwPZOeV2mjPXsMA8GA1UdEwEB/wQF" << endl
+			   << "MAMBAf8wJwYDVR0lBCAwHgYIKwYBBQUHAwEGCCsGAQUFBwMCBggrBgEFBQcDAzAN" << endl
+			   << "BgkqhkiG9w0BAQ0FAAOCAQEANczEwCLolws/rnLXFDJKgj3y4YmoH6L8BQ7tojwp" << endl
+			   << "FFQolVhkBXFu80ZY6OnH6WhR2Ux/1H4rp7UC/m/yNcKA54Jru0VGm40YcbfZo9BT" << endl
+			   << "gJoS0IZY9fjvalc4Wp7j2aeOAPoyPP75OrgZC3iGKxkZXe/0DmrmLgVPjUg3XtvE" << endl
+			   << "BkkFtOBZxvjrv2fMWSKTgb4GkcF2Jl7DDx2TcZBltjxetyUmjUojhwyoCZoAJT4t" << endl
+			   << "EyDVIOvHGRQYsl00eX+MWuqgzoosZkWc9LZTAasogMpeLQGG0016tfr4juPq2tOl" << endl
+			   << "FNH73IwYynRBrS/XwxG/WZDPdyqf563Xq/FTF/CfsmJzrw==" << endl
+    		   << "-----END CERTIFICATE REQUEST-----";
+    	req_pem_encoded = stream.str();
+    }
+
     /*!
      * @brief Converte um número representando um nid em um RDNSequence::EntryType.
+     *
+     * @param nid Nid OpenSSL.
      */
     RDNSequence::EntryType id2Type(int nid) {
     	switch (nid) {
@@ -145,25 +245,50 @@ protected:
 /*!
  * @brief Testa se o certificado mantem a formatacao antes de ser emitido.
  */
-TEST_F(EncodingTest, keepPrintable) {
+TEST_F(EncodingTest, NonDefaultCodification) {
     setPEMFullPrintable();
     initialize();
     cbuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
+TEST_F(EncodingTest, DefaultCodification) {
+    setPEMFullUTF8();
+    initialize();
+    cbuilder->alterSubject(rdn);
+    testStringCodificaton(V_ASN1_UTF8STRING);
+}
+
 /*!
  * @brief Testa se o certificado mantem a formatacao antes de ser emitido, com um campo adicionado durante a emissao.
  */
-TEST_F(EncodingTest, keepPrintableAddedField) {
+TEST_F(EncodingTest, StringValues) {
     setPEMFullPrintable();
+    initialize();
+    cbuilder->alterSubject(rdn);
+    testStringValues(req->getSubject());
+}
+
+/*!
+ * @brief Testa se o certificado mantem a formatacao antes de ser emitido, com um campo adicionado durante a emissao.
+ */
+TEST_F(EncodingTest, AddedFieldNonDefaultCodification) {
+    setPEMIncompletePrintable();
     initialize();
     rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "OUnitName");
     cbuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
-TEST_F(EncodingTest, keepPrintableModifiedField) {
+TEST_F(EncodingTest, AddedFieldDefaultCodification) {
+    setPEMIncompleteUTF8();
+    initialize();
+    rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "OUnitName");
+    cbuilder->alterSubject(rdn);
+    testStringCodificaton(V_ASN1_UTF8STRING);
+}
+
+TEST_F(EncodingTest, ModifiedFieldNonDefaultCodification) {
     setPEMFullPrintable();
     initialize();
     modifyRDN();
@@ -171,17 +296,15 @@ TEST_F(EncodingTest, keepPrintableModifiedField) {
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
-/*!
- * @brief Testa se o certificado mantem a formatacao antes de ser emitido, com um campo adicionado durante a emissao.
- */
-TEST_F(EncodingTest, keepStringValues) {
-    setPEMFullPrintable();
+TEST_F(EncodingTest, ModifiedFieldDefaultCodification) {
+    setPEMFullUTF8();
     initialize();
+    modifyRDN();
     cbuilder->alterSubject(rdn);
-    testStringValues(req->getSubject());
+    testStringCodificaton(V_ASN1_UTF8STRING);
 }
 
-TEST_F(EncodingTest, keepStringModifiedField) {
+TEST_F(EncodingTest, ModifiedFieldStringValues) {
     setPEMFullPrintable();
     initialize();
     modifyRDN();
@@ -190,3 +313,29 @@ TEST_F(EncodingTest, keepStringModifiedField) {
     testStringValues(modified);
 }
 
+TEST_F(EncodingTest, ExportedCertificateNonDefaultCodification) {
+	setPEMFullPrintable();
+	initialize();
+	cbuilder->alterSubject(rdn);
+	RSAKeyPair key = RSAKeyPair(4096);
+	Certificate* cert = cbuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
+	testStringCodificaton(V_ASN1_PRINTABLESTRING, cert);
+}
+
+TEST_F(EncodingTest, ExportedCertificateDefaultCodification) {
+	setPEMFullUTF8();
+	initialize();
+	cbuilder->alterSubject(rdn);
+	RSAKeyPair key = RSAKeyPair(4096);
+	Certificate* cert = cbuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
+	testStringCodificaton(V_ASN1_UTF8STRING, cert);
+}
+
+TEST_F(EncodingTest, ExportedCertificateStringValues) {
+	setPEMFullPrintable();
+	initialize();
+	cbuilder->alterSubject(rdn);
+	RSAKeyPair key = RSAKeyPair(4096);
+	Certificate* cert = cbuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
+	testStringValues(cert->getSubject());
+}
