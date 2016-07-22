@@ -18,11 +18,18 @@ protected:
     /*!
      * @brief Inicializa os objetos utilizados nos testes.
      */
-    void initialize() {
+    void initializePEMEncoded() {
         req = new CertificateRequest(req_pem_encoded);
 	    cbuilder = new CertificateBuilder(*req);
 
         rdn = RDNSequence(cbuilder->getSubject().getX509Name());
+    }
+
+    void initializeNewRequest() {
+    	fillRDN();
+    	req = new CertificateRequest();
+    	req->setSubject(rdn);
+    	cbuilder = new CertificateBuilder(*req);
     }
 
     /*!
@@ -47,6 +54,17 @@ protected:
     		tmp.addEntry(id2Type(entries[i].first.getNid()), entries[i].second);
     	}
     	rdn = tmp;
+    }
+
+    int getReqCodification() {
+    	X509_NAME* name = X509_get_subject_name(cbuilder->getX509());
+    	for (int i = 0; i < X509_NAME_entry_count(name); i++) {
+    		X509_NAME_ENTRY* entry = X509_NAME_get_entry(name, i);
+    		if (OBJ_obj2nid(entry->object) != NID_countryName) {
+    			return entry->value->type;
+    		}
+    	}
+    	return -1;
     }
 
     /*!
@@ -245,16 +263,16 @@ protected:
 /*!
  * @brief Testa se o certificado mantem a formatacao antes de ser emitido.
  */
-TEST_F(EncodingTest, NonDefaultCodification) {
+TEST_F(EncodingTest, PrintableCodification) {
     setPEMFullPrintable();
-    initialize();
+    initializePEMEncoded();
     cbuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
-TEST_F(EncodingTest, DefaultCodification) {
+TEST_F(EncodingTest, UTF8Codification) {
     setPEMFullUTF8();
-    initialize();
+    initializePEMEncoded();
     cbuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_UTF8STRING);
 }
@@ -264,7 +282,7 @@ TEST_F(EncodingTest, DefaultCodification) {
  */
 TEST_F(EncodingTest, StringValues) {
     setPEMFullPrintable();
-    initialize();
+    initializePEMEncoded();
     cbuilder->alterSubject(rdn);
     testStringValues(req->getSubject());
 }
@@ -272,33 +290,33 @@ TEST_F(EncodingTest, StringValues) {
 /*!
  * @brief Testa se o certificado mantem a formatacao antes de ser emitido, com um campo adicionado durante a emissao.
  */
-TEST_F(EncodingTest, AddedFieldNonDefaultCodification) {
+TEST_F(EncodingTest, AddedFieldPrintableCodification) {
     setPEMIncompletePrintable();
-    initialize();
+    initializePEMEncoded();
     rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "OUnitName");
     cbuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
-TEST_F(EncodingTest, AddedFieldDefaultCodification) {
+TEST_F(EncodingTest, AddedFieldUTF8Codification) {
     setPEMIncompleteUTF8();
-    initialize();
+    initializePEMEncoded();
     rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "OUnitName");
     cbuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_UTF8STRING);
 }
 
-TEST_F(EncodingTest, ModifiedFieldNonDefaultCodification) {
+TEST_F(EncodingTest, ModifiedFieldPrintableCodification) {
     setPEMFullPrintable();
-    initialize();
+    initializePEMEncoded();
     modifyRDN();
     cbuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
-TEST_F(EncodingTest, ModifiedFieldDefaultCodification) {
+TEST_F(EncodingTest, ModifiedFieldUTF8Codification) {
     setPEMFullUTF8();
-    initialize();
+    initializePEMEncoded();
     modifyRDN();
     cbuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_UTF8STRING);
@@ -306,25 +324,25 @@ TEST_F(EncodingTest, ModifiedFieldDefaultCodification) {
 
 TEST_F(EncodingTest, ModifiedFieldStringValues) {
     setPEMFullPrintable();
-    initialize();
+    initializePEMEncoded();
     modifyRDN();
     RDNSequence modified = rdn;
     cbuilder->alterSubject(rdn);
     testStringValues(modified);
 }
 
-TEST_F(EncodingTest, ExportedCertificateNonDefaultCodification) {
+TEST_F(EncodingTest, ExportedCertificatePrintableCodification) {
 	setPEMFullPrintable();
-	initialize();
+	initializePEMEncoded();
 	cbuilder->alterSubject(rdn);
 	RSAKeyPair key = RSAKeyPair(4096);
 	Certificate* cert = cbuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
 	testStringCodificaton(V_ASN1_PRINTABLESTRING, cert);
 }
 
-TEST_F(EncodingTest, ExportedCertificateDefaultCodification) {
+TEST_F(EncodingTest, ExportedCertificateUTF8Codification) {
 	setPEMFullUTF8();
-	initialize();
+	initializePEMEncoded();
 	cbuilder->alterSubject(rdn);
 	RSAKeyPair key = RSAKeyPair(4096);
 	Certificate* cert = cbuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
@@ -333,9 +351,16 @@ TEST_F(EncodingTest, ExportedCertificateDefaultCodification) {
 
 TEST_F(EncodingTest, ExportedCertificateStringValues) {
 	setPEMFullPrintable();
-	initialize();
+	initializePEMEncoded();
 	cbuilder->alterSubject(rdn);
 	RSAKeyPair key = RSAKeyPair(4096);
 	Certificate* cert = cbuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
 	testStringValues(cert->getSubject());
+}
+
+TEST_F(EncodingTest, NewRequestDefaultCodification) {
+	initializeNewRequest();
+	int expectedCodification = getReqCodification();
+	cbuilder->alterSubject(rdn);
+	testStringCodificaton(expectedCodification);
 }
