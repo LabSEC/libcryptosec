@@ -19,7 +19,7 @@ protected:
      */
     void initialize() {
         req = new CertificateRequest(req_pem_encoded);
-		cbuilder = new CertificateBuilder(*req);
+	    cbuilder = new CertificateBuilder(*req);
 
         rdn = RDNSequence(cbuilder->getSubject().getX509Name());
     }
@@ -56,15 +56,30 @@ protected:
      * @brief Testa se os valores das entradas sao mantidos apos a geracao do certificado.
      */
     bool testStringValues() {
-        std::vector<std::pair<ObjectIdentifier, std::string> > entries_before = req->getSubject().getEntries();
-        std::vector<std::pair<ObjectIdentifier, std::string> > entries_after = rdn.getEntries();
-        for (int i = 0; i < (int) entries_before.size(); i++) {
+    	using std::vector;
+    	using std::pair;
+        vector<pair<ObjectIdentifier, string> > entries_before = req->getSubject().getEntries();
+        vector<pair<ObjectIdentifier, string> > entries_after = rdn.getEntries();
+        for (unsigned int i = 0; i < entries_before.size(); i++) {
             if (entries_before[i].first.getNid() == entries_after[i].first.getNid() &&
                 entries_before[i].second != entries_after[i].second) {
                 return false;
             }
         }
         return true;
+    }
+
+    /*!
+     * @brief Testa se os RDNs estão na ordem padrão OpenSSL.
+     */
+    void testRDNOrder() {
+    	std::vector<std::pair<ObjectIdentifier, std::string> > entries = rdn.getEntries();
+    	int previous_nid = id2Type(entries[0].first.getNid());
+    	for (unsigned int i = 1; i < entries.size(); i++) {
+    		int current_nid = id2Type(entries[i].first.getNid());
+    		ASSERT_GE(current_nid, previous_nid);
+    		previous_nid  = id2Type(entries[i].first.getNid());
+    	}
     }
 
     /*!
@@ -98,6 +113,21 @@ protected:
         req_pem_encoded = stream.str();
     }
 
+    /*!
+     * @brief Converte um número representando um nid em um RDNSequence::EntryType.
+     */
+    RDNSequence::EntryType id2Type(int nid) {
+    	switch (nid) {
+    	case NID_countryName:            return RDNSequence::COUNTRY;
+    	case NID_stateOrProvinceName:    return RDNSequence::STATE_OR_PROVINCE;
+		case NID_localityName:           return RDNSequence::LOCALITY;
+		case NID_organizationName:       return RDNSequence::ORGANIZATION;
+		case NID_organizationalUnitName: return RDNSequence::ORGANIZATION_UNIT;
+		case NID_commonName:             return RDNSequence::COMMON_NAME;
+		default:                         return RDNSequence::UNKNOWN;
+    	}
+    }
+
     CertificateBuilder* cbuilder;  //!< CertificateBuilder usado para aplicar a funcao testada.
     CertificateRequest* req;  //!< CertificateRequest usado para aplicar a funcao testada.
     std::string req_pem_encoded;  //!< String usada para armazenar a requisicao PEM.
@@ -120,8 +150,8 @@ TEST_F(EncodingTest, keepPrintable) {
 TEST_F(EncodingTest, keepPrintableAddedField) {
     setPEMFullPrintable();
     initialize();
-    cbuilder->alterSubject(rdn);
     rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "OUnitName");
+    cbuilder->alterSubject(rdn);
     ASSERT_TRUE(testStringCodificaton(V_ASN1_PRINTABLESTRING));
 }
 
@@ -134,3 +164,4 @@ TEST_F(EncodingTest, keepStringValues) {
     cbuilder->alterSubject(rdn);
     ASSERT_TRUE(testStringValues());
 }
+
