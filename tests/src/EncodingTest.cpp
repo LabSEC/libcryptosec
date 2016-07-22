@@ -27,7 +27,7 @@ protected:
     /*!
      * @brief Preenche as entradas de rdn.
      */
-    void fillRDN() {  // TODO: Falta UserId
+    void fillRDN() {
         RDNSequence tmp = RDNSequence();
         tmp.addEntry(RDNSequence::COUNTRY, "CO");
         tmp.addEntry(RDNSequence::STATE_OR_PROVINCE, "State");
@@ -38,47 +38,55 @@ protected:
         rdn = tmp;
     }
 
+    void modifyRDN() {
+    	std::vector<std::pair<ObjectIdentifier, std::string> > entries = rdn.getEntries();
+    	RDNSequence tmp;
+    	tmp.addEntry(id2Type(entries[0].first.getNid()), "MD");    // precisa ter duas letras pois pode ser country name
+    	for (unsigned int i = 1; i < entries.size(); i++) {
+    		tmp.addEntry(id2Type(entries[i].first.getNid()), entries[i].second);
+    	}
+    	rdn = tmp;
+    }
+
     /*!
      * @brief Testa se a codificacao das entradas estao de acordo com o esperado.
      */
-    bool testStringCodificaton(int expectedCodification) {
+    void testStringCodificaton(int expectedCodification) {
         X509_NAME* after = X509_get_subject_name(cbuilder->getX509());
         for (int i = 0; i < X509_NAME_entry_count(after); i++) {
             X509_NAME_ENTRY* entry = X509_NAME_get_entry(after, i);
-            if (entry->object->nid != NID_countryName && entry->value->type != expectedCodification) {
-                return false;
+            if (entry->object->nid != NID_countryName) {
+            	int codification = entry->value->type;
+            	ASSERT_EQ(codification, expectedCodification);
             }
         }
-        return true;
     }
 
     /*!
      * @brief Testa se os valores das entradas sao mantidos apos a geracao do certificado.
      */
-    bool testStringValues() {
-    	using std::vector;
-    	using std::pair;
-        vector<pair<ObjectIdentifier, string> > entries_before = req->getSubject().getEntries();
+    void testStringValues(RDNSequence r) {
+        vector<pair<ObjectIdentifier, string> > entries_before = r.getEntries();
         vector<pair<ObjectIdentifier, string> > entries_after = rdn.getEntries();
         for (unsigned int i = 0; i < entries_before.size(); i++) {
-            if (entries_before[i].first.getNid() == entries_after[i].first.getNid() &&
-                entries_before[i].second != entries_after[i].second) {
-                return false;
+            if (entries_before[i].first.getNid() == entries_after[i].first.getNid()) {
+            	string before = entries_before[i].second;
+            	string after = entries_after[i].second;
+            	ASSERT_EQ(before, after);
             }
         }
-        return true;
     }
 
     /*!
      * @brief Testa se os RDNs estão na ordem padrão OpenSSL.
      */
     void testRDNOrder() {
-    	std::vector<std::pair<ObjectIdentifier, std::string> > entries = rdn.getEntries();
-    	int previous_nid = id2Type(entries[0].first.getNid());
+    	vector<pair<ObjectIdentifier, std::string> > entries = rdn.getEntries();
+    	int previous_type = id2Type(entries[0].first.getNid());
     	for (unsigned int i = 1; i < entries.size(); i++) {
-    		int current_nid = id2Type(entries[i].first.getNid());
-    		ASSERT_GE(current_nid, previous_nid);
-    		previous_nid  = id2Type(entries[i].first.getNid());
+    		int current_type = id2Type(entries[i].first.getNid());
+    		ASSERT_GE(current_type, previous_type);
+    		previous_type  = current_type;
     	}
     }
 
@@ -141,7 +149,7 @@ TEST_F(EncodingTest, keepPrintable) {
     setPEMFullPrintable();
     initialize();
     cbuilder->alterSubject(rdn);
-    ASSERT_TRUE(testStringCodificaton(V_ASN1_PRINTABLESTRING));
+    testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
 /*!
@@ -152,7 +160,15 @@ TEST_F(EncodingTest, keepPrintableAddedField) {
     initialize();
     rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "OUnitName");
     cbuilder->alterSubject(rdn);
-    ASSERT_TRUE(testStringCodificaton(V_ASN1_PRINTABLESTRING));
+    testStringCodificaton(V_ASN1_PRINTABLESTRING);
+}
+
+TEST_F(EncodingTest, keepPrintableModifiedField) {
+    setPEMFullPrintable();
+    initialize();
+    modifyRDN();
+    cbuilder->alterSubject(rdn);
+    testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
 /*!
@@ -162,6 +178,15 @@ TEST_F(EncodingTest, keepStringValues) {
     setPEMFullPrintable();
     initialize();
     cbuilder->alterSubject(rdn);
-    ASSERT_TRUE(testStringValues());
+    testStringValues(req->getSubject());
+}
+
+TEST_F(EncodingTest, keepStringModifiedField) {
+    setPEMFullPrintable();
+    initialize();
+    modifyRDN();
+    RDNSequence modified = rdn;
+    cbuilder->alterSubject(rdn);
+    testStringValues(modified);
 }
 
