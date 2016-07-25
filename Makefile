@@ -92,6 +92,7 @@ CPP_SRCS += \
 ./src/certificate/UserNotice.cpp \
 ./src/ec/EllipticCurve.cpp \
 ./src/ec/BrainpoolCurveFactory.cpp \
+./src/ts/TimestampRequest.cpp \
  
 OBJS += $(CPP_SRCS:.cpp=.o)
 
