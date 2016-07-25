@@ -1,6 +1,6 @@
 #include <libcryptosec/certificate/DeltaCRLIndicatorExtension.h>
 
-DeltaCRLIndicatorExtension::DeltaCRLIndicatorExtension(unsigned long baseCrlNumber=0) : Extension() 
+DeltaCRLIndicatorExtension::DeltaCRLIndicatorExtension(unsigned long baseCrlNumber) : Extension() 
 {
 	this->baseCrlNumber = baseCrlNumber;
     this->objectIdentifier = ObjectIdentifierFactory::getObjectIdentifier(NID_delta_crl);

@@ -13,7 +13,7 @@
 class CRLNumberExtension : public Extension
 {
 public:
-	CRLNumberExtension(unsigned long serial);
+	CRLNumberExtension(unsigned long serial=0);
 	CRLNumberExtension(X509_EXTENSION* ext) throw (CertificationException);
 	virtual ~CRLNumberExtension();
 	/**
