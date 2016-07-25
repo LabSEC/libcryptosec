@@ -1,12 +1,12 @@
-LIBS = -lp11 
-INCLUDES = -I/usr/local/ssl/include -I./include
+LIBS = -lp11 -L/usr/local/opt/openssl/lib 
+INCLUDES = -I/usr/local/opt/openssl/include -I/usr/local/Cellar/libp11/0.2.8_1/include -I./include
 FLAGS = -shared
-CC = g++
+CC = clang++ -stdlib=libc++
 EXECUTABLES = libcryptosec.so
 ARQ= $(shell uname -m)
 LIBDIR = /usr/lib
+USER_OBJS += /usr/local/opt/openssl/lib/libcrypto.a
 
-USER_OBJS += /usr/local/ssl/lib/libcrypto.a
 
 CPP_SRCS += \
 ./src/AsymmetricCipher.cpp \

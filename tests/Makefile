@@ -1,6 +1,6 @@
-LIBS = -lcryptosec
-INCLUDES = -I./$(GTEST_DIR) -I../include/libcryptosec
-CC = g++
+LIBS = -lcryptosec -L../ 
+INCLUDES = -I./$(GTEST_DIR) -I../include/
+CC = clang++ -stdlib=libc++
 CPPFLAGS = -DGTEST_HAS_PTHREAD=0
 CXXFLAGS = -g
 EXECUTABLE = test.out
