@@ -19,22 +19,15 @@ class TimestampRequest
 public:
 	TimestampRequest();
 	TimestampRequest(TS_REQ *req);
-	TimestampRequest(std::string &pemEncoded) throw (EncodeException);
-	//TimestampRequest(ByteArray &derEncoded) throw (EncodeException);
+	//TimestampRequest(std::string &pemEncoded) throw (EncodeException);
+	TimestampRequest(ByteArray &derEncoded) throw (EncodeException);
 	//TimestampRequest(const	TimestampRequest& req); 
 	virtual 	~TimestampRequest();
-	/**
-	 * @deprecated
-	 * Retorna o conteudo da extensão em formato XML.
-	 * Esta função será substituida por toXml().
-	 * */
-	/*std::string getXmlEncoded();
-	std::string getXmlEncoded(std::string tab);
 	virtual std::string toXml(std::string tab = "");
-	std::string getPemEncoded()
-			throw (EncodeException);
-	ByteArray getDerEncoded() const
-			throw (EncodeException);
+	//std::string getPemEncoded()
+	//		throw (EncodeException);
+	//ByteArray getDerEncoded() const
+	//		throw (EncodeException);
 	MessageDigest::Algorithm getMessageDigestAlgorithm()
 			throw (MessageDigestException);
 	void setVersion(long version);
@@ -50,7 +43,7 @@ public:
 	std::vector<Extension *> getExtension(Extension::Name extensionName);
 	std::vector<Extension *> getExtensions();
 	TS_REQ* getTSReq() const;
-	TimestampRequest& operator =(const TimestampRequest& value);*/
+	TimestampRequest& operator =(const TimestampRequest& value);
 protected:
 	TS_REQ *req;
 };
