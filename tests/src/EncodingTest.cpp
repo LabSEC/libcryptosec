@@ -95,7 +95,7 @@ protected:
     		X509_NAME_ENTRY* entry = X509_NAME_get_entry(after, i);
     		if (OBJ_obj2nid(entry->object) != NID_countryName) {
     			int codification = entry->value->type;
-    			ASSERT_EQ(codification, expectedCodification);
+    			ASSERT_EQ(expectedCodification, codification);
     		}
     	}
     }

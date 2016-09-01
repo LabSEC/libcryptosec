@@ -610,39 +610,59 @@ void CertificateBuilder::alterSubject(RDNSequence &name)
 	std::vector<std::pair<ObjectIdentifier, std::string> > entries = name.getEntries();
 	X509_NAME_ENTRY *newEntry;
 
+	int addedFieldType = this->getCodification(name);
+
 	std::string data;
 	for(std::vector<std::pair<ObjectIdentifier, std::string> >::iterator entry = entries.begin(); entry != entries.end(); entry++)
 	{
 		data = entry->second;
 		newEntry = X509_NAME_ENTRY_new();
+
 		int position = X509_NAME_get_index_by_NID(subject, entry->first.getNid(), -1);
 
 		if(!data.empty()) // If entry is not empty, add entry
 		{
-			int entryType = MBSTRING_ASC;
-			if(position != -1) // If entry exists, get old type
+			if(position != -1)
 			{
 				X509_NAME_ENTRY* oldEntry = X509_NAME_get_entry(subject, position);
-				entryType = oldEntry->value->type;
-			}
 
-			if(!X509_NAME_ENTRY_set_object(newEntry, entry->first.getObjectIdentifier()))
-			{
-				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
-			}
+				int entryType = oldEntry->value->type;
 
-			if(!X509_NAME_ENTRY_set_data(newEntry, entryType, (unsigned char *)data.c_str(), data.length()))
-			{
-				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
-			}
+				if(!X509_NAME_ENTRY_set_object(newEntry, entry->first.getObjectIdentifier()))
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				}
 
-			if(!X509_NAME_add_entry(subjectName, newEntry, -1, 0))
+				if(!X509_NAME_ENTRY_set_data(newEntry, entryType, (unsigned char *)data.c_str(), data.length()))
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				}
+
+				if(!X509_NAME_add_entry(subjectName, newEntry, -1, 0))
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				}
+
+				X509_NAME_ENTRY_free(newEntry);
+
+			}
+			else
 			{
-				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				if(!X509_NAME_ENTRY_set_object(newEntry, entry->first.getObjectIdentifier()))
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				}
+				if(!X509_NAME_ENTRY_set_data(newEntry, addedFieldType, (unsigned char *)data.c_str(), data.length()))
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				}
+				if(!X509_NAME_add_entry(subjectName, newEntry, -1, 0))
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				}
+				X509_NAME_ENTRY_free(newEntry);
 			}
 		}
-
-		X509_NAME_ENTRY_free(newEntry);
 	}
 
 	int rc = X509_set_subject_name(this->cert, subjectName);
@@ -1107,4 +1127,30 @@ void CertificateBuilder::includeEcdsaParameters() {
 		this->setPublicKey(*publicKey);
 		delete publicKey;
 	}
+}
+
+int CertificateBuilder::getCodification(RDNSequence& name){
+	int entryType = MBSTRING_ASC;
+	X509_NAME *subject = X509_get_subject_name(this->cert);
+	if(subject == NULL)
+	{
+		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+	}
+
+	std::vector<std::pair<ObjectIdentifier, std::string> > entries = name.getEntries();
+
+	for(std::vector<std::pair<ObjectIdentifier, std::string> >::iterator entry = entries.begin(); entry != entries.end(); entry++)
+	{
+		int position = X509_NAME_get_index_by_NID(subject, entry->first.getNid(), -1);
+		if(position != -1 && entry->first.getNid() != NID_countryName)
+		{
+			X509_NAME_ENTRY* oldEntry = X509_NAME_get_entry(subject, position);
+			entryType = oldEntry->value->type;
+			if(entryType != MBSTRING_FLAG) {
+				return entryType;
+			}
+		}
+	}
+
+	return entryType;
 }
