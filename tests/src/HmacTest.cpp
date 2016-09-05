@@ -8,6 +8,10 @@ protected:
 	virtual void SetUp() {
 		hmac = Hmac();
 	}
+
+    virtual void TearDown() {
+    }
+
 	Hmac hmac;
 	static ByteArray emptyKey;
 	static ByteArray key30bytes;
@@ -23,11 +27,9 @@ protected:
 	static ByteArray pText;
 };
 
-
 /*
  * Declaração das variaveis usadas nos testes
  */
-
 ByteArray HmacTest::emptyKey = ByteArray(new unsigned char[0], 0);
 const char stringKey30bytes[] = "XthisIsMyFavoriteKeyOf30bytesX";
 ByteArray HmacTest::key30bytes = ByteArray(stringKey30bytes);
@@ -48,7 +50,6 @@ ByteArray HmacTest::hexKey40bytes = ByteArray(&hexKey[0], 10);
 const char plainText[] = "plainText";
 ByteArray HmacTest::pText(plainText);
 std::vector<ByteArray> HmacTest::plainTexts = std::vector<ByteArray>(30, pText);
-
 
 /**
  * Gera e testa Hmac com o algoritmo sha256 e chave de 30 bytes
@@ -182,6 +183,7 @@ TEST_F(HmacTest, HmacSha1FromBinaryFile_key63bytes) {
 		FAIL();
 	}
 }
+
 /**
  * Testa geracao do Hmac com texto vazio, sem chave, sem inicializacao e atraves do .doFinal()
  */
@@ -222,5 +224,3 @@ TEST_F(HmacTest, HmacDoFinalTwice) {
 	hmac.doFinal("");
 	EXPECT_THROW(hmac.doFinal(), InvalidStateException);
 }
-
-

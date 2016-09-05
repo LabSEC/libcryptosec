@@ -11,6 +11,9 @@ protected:
 	virtual void SetUp() {
 	}
 
+    virtual void TearDown() {
+    }
+
 	void testHardcodedCurve(BrainpoolCurveFactory::CurveName curveName){
 		const EllipticCurve * curve = BrainpoolCurveFactory::getCurve(curveName);
 			ECDSAKeyPair keypair (*curve);
@@ -45,9 +48,6 @@ protected:
 	}
 
 };
-
-
-
 
 TEST_F(BrainpoolEcTest, HardcodedBpTestBP160r1){
 
