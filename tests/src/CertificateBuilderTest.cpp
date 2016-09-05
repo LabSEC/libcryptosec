@@ -11,12 +11,12 @@ class CertificateBuilderTest : public ::testing::Test {
 
 protected:
 	virtual void SetUp() {
-		cbuilder = 0;
+		certBuilder = 0;
 		req = 0;
 	}
 
     virtual void TearDown() {
-        delete cbuilder;
+    	delete certBuilder;
         delete req;
     }
 
@@ -40,12 +40,11 @@ protected:
     			"+eX2YIRBXRS8KrwGWNo0CTiN1PDL2iceXJExrxKVjA51o9j9tVAnPw==" "\n"
     			"-----END CERTIFICATE REQUEST-----";
     	CertificateRequest certReq(pem);
-    	CertificateBuilder *certBuilder = new CertificateBuilder(certReq);
+    	certBuilder = new CertificateBuilder(certReq);
 
     	certBuilder->alterSubject(rdnAlterSubject);
     	RDNSequence newRdn = certBuilder->getSubject();
 
-    	delete certBuilder;
     	return newRdn;
     }
 
@@ -58,23 +57,6 @@ protected:
 		rdnSubject.addEntry(RDNSequence::COMMON_NAME, common_name);
 
 		return rdnSubject;
-    }
-
-    /*!
-     * @brief Inicializa os objetos utilizados nos testes.
-     */
-    void initializePEMEncoded() {
-        req = new CertificateRequest(req_pem_encoded);
-	    cbuilder = new CertificateBuilder(*req);
-
-        rdn = RDNSequence(cbuilder->getSubject().getX509Name());
-    }
-
-    void initializeNewRequest() {
-    	fillRDN();
-    	req = new CertificateRequest();
-    	req->setSubject(rdn);
-    	cbuilder = new CertificateBuilder(*req);
     }
 
     /*!
@@ -102,7 +84,7 @@ protected:
     }
 
     int getReqCodification() {
-    	X509_NAME* name = X509_get_subject_name(cbuilder->getX509());
+    	X509_NAME* name = X509_get_subject_name(certBuilder->getX509());
     	for (int i = 0; i < X509_NAME_entry_count(name); i++) {
     		X509_NAME_ENTRY* entry = X509_NAME_get_entry(name, i);
     		if (OBJ_obj2nid(entry->object) != NID_countryName) {
@@ -118,7 +100,7 @@ protected:
      * @param expectedCodification Codificacao esperada.
      */
     void testStringCodificaton(int expectedCodification) {
-        X509_NAME* after = X509_get_subject_name(cbuilder->getX509());
+        X509_NAME* after = X509_get_subject_name(certBuilder->getX509());
         for (int i = 0; i < X509_NAME_entry_count(after); i++) {
             X509_NAME_ENTRY* entry = X509_NAME_get_entry(after, i);
             if (OBJ_obj2nid(entry->object) != NID_countryName) {
@@ -179,107 +161,104 @@ protected:
      * @brief Define a requisica a ser testada como uma requisicao com o DN totalmente preenchido com codificacao
      *        V_ASN1_PRINTABLESTRING.
      */
-    void setPEMFullPrintable() {
-        using std::endl;
+    void initializeCertificateRequest(int type) {
         std::stringstream stream;
-        stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
-               << "MIIDYTCCAkkCAQAwfDELMAkGA1UEBhMCUVExFjAUBgNVBAoTDW9yZyB5d3lyYSBB" << endl
-               << "QzExGDAWBgNVBAsTD3Vub3JnIHl3eXJhIEFDMTEZMBcGA1UECBMQZXN0YWRvIHl3" << endl
-               << "eXJhIEFDMTESMBAGA1UEAxMJeXd5cmEgQUMxMQwwCgYDVQQrEwNZV1kwggEiMA0G" << endl
-               << "CSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCjNaz7BMH/QOpAjf85A1gu2MAiHNiK" << endl
-               << "Ne44BAwwWWz9tA3qyp543EF1ifj47zdL94rrP6+d/3YjaUNFPcaKf9cO+IFHv+OM" << endl
-               << "X5DL8bw4dX7kf1HAjmx4c0+h7weR2hhpDiPiit13GP5xjunBHppnoW1iS8sw2Mcw" << endl
-               << "m7iq6CqeNxGpsItJP2mvhPRxZvwDTo4X5BFyNwT33Z3eLZ6FBYWMUwvs44E2/Hwy" << endl
-               << "nMaCUyxuuGUtQ3vmRfwGZK8qIMuZ0q9ekPvrtOW5rsOc+hKDy4C38zMr7moOKkba" << endl
-               << "mHWLMKNKvT2+T7T82Hh0H/2IjtmQoDfZ+unmbCnmnicgqkmC6EV/23LtAgMBAAGg" << endl
-               << "gZ8wgZwGCSqGSIb3DQEJDjGBjjCBizAdBgNVHQ4EFgQUAievAyNbAkadZzZRAyn/" << endl
-               << "ZhvMFzcwKQYDVR0RBCIwIIIeY2FtcG8gcXVhbHF1ZXIgY29pc2EgeXd5cmEgQUMx" << endl
-               << "MA8GA1UdEwEB/wQFMAMBAf8wDwYDVR0PAQH/BAUDAwcHgDAdBgNVHSUEFjAUBggr" << endl
-               << "BgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQENBQADggEBAHGTUJZuOunsHq20" << endl
-               << "JkCz6rB36GhUiosFHgTzQrTfuU+th1us3gQTm76ZFA85nDKqcn7R1+QOPWDxF/1n" << endl
-               << "sgVljJqxPq23kd/P6dcKrsF7/bi/6DTbAQrIygHfIpjCRQWfbP/N7qg+cnZILXLI" << endl
-               << "slJZW7HHztvG6QicahLJm9SZttLhm8gcDOKMNbrrolGSalMrPUg4qGI/jzrLZ68E" << endl
-               << "nLTH+2ZKN8NdQpfTdgQ8BzcArYpXiYIe9VUUnFhFutWBh+cxcYXQuWRtbh+/AQiF" << endl
-               << "fQndDsfisQnMHy/F7zaKtuoIH46AcM52NkDxn0FXEQaUBefgvywhBD0biQvPPJQU" << endl
-               << "wfUDLbQ=" << endl
-               << "-----END CERTIFICATE REQUEST-----";
-        req_pem_encoded = stream.str();
-    }
+    	switch(type) {
+    	case FULL_PRINTABLE:
+            stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
+                   << "MIIDYTCCAkkCAQAwfDELMAkGA1UEBhMCUVExFjAUBgNVBAoTDW9yZyB5d3lyYSBB" << endl
+                   << "QzExGDAWBgNVBAsTD3Vub3JnIHl3eXJhIEFDMTEZMBcGA1UECBMQZXN0YWRvIHl3" << endl
+                   << "eXJhIEFDMTESMBAGA1UEAxMJeXd5cmEgQUMxMQwwCgYDVQQrEwNZV1kwggEiMA0G" << endl
+                   << "CSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCjNaz7BMH/QOpAjf85A1gu2MAiHNiK" << endl
+                   << "Ne44BAwwWWz9tA3qyp543EF1ifj47zdL94rrP6+d/3YjaUNFPcaKf9cO+IFHv+OM" << endl
+                   << "X5DL8bw4dX7kf1HAjmx4c0+h7weR2hhpDiPiit13GP5xjunBHppnoW1iS8sw2Mcw" << endl
+                   << "m7iq6CqeNxGpsItJP2mvhPRxZvwDTo4X5BFyNwT33Z3eLZ6FBYWMUwvs44E2/Hwy" << endl
+                   << "nMaCUyxuuGUtQ3vmRfwGZK8qIMuZ0q9ekPvrtOW5rsOc+hKDy4C38zMr7moOKkba" << endl
+                   << "mHWLMKNKvT2+T7T82Hh0H/2IjtmQoDfZ+unmbCnmnicgqkmC6EV/23LtAgMBAAGg" << endl
+                   << "gZ8wgZwGCSqGSIb3DQEJDjGBjjCBizAdBgNVHQ4EFgQUAievAyNbAkadZzZRAyn/" << endl
+                   << "ZhvMFzcwKQYDVR0RBCIwIIIeY2FtcG8gcXVhbHF1ZXIgY29pc2EgeXd5cmEgQUMx" << endl
+                   << "MA8GA1UdEwEB/wQFMAMBAf8wDwYDVR0PAQH/BAUDAwcHgDAdBgNVHSUEFjAUBggr" << endl
+                   << "BgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQENBQADggEBAHGTUJZuOunsHq20" << endl
+                   << "JkCz6rB36GhUiosFHgTzQrTfuU+th1us3gQTm76ZFA85nDKqcn7R1+QOPWDxF/1n" << endl
+                   << "sgVljJqxPq23kd/P6dcKrsF7/bi/6DTbAQrIygHfIpjCRQWfbP/N7qg+cnZILXLI" << endl
+                   << "slJZW7HHztvG6QicahLJm9SZttLhm8gcDOKMNbrrolGSalMrPUg4qGI/jzrLZ68E" << endl
+                   << "nLTH+2ZKN8NdQpfTdgQ8BzcArYpXiYIe9VUUnFhFutWBh+cxcYXQuWRtbh+/AQiF" << endl
+                   << "fQndDsfisQnMHy/F7zaKtuoIH46AcM52NkDxn0FXEQaUBefgvywhBD0biQvPPJQU" << endl
+                   << "wfUDLbQ=" << endl
+                   << "-----END CERTIFICATE REQUEST-----";
+    		break;
+    	case FULL_UTF8:
+        	stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
+        		   << "MIIDjzCCAncCAQAwgacxCzAJBgNVBAYTAkFBMRwwGgYDVQQKDBNvcmcgeXd5cmFB" << endl
+    			   << "QzEtMi41LjRjMR4wHAYDVQQLDBV1bm9yZyB5d3lyYUFDMS0yLjUuNGMxHzAdBgNV" << endl
+    			   << "BAgMFmVzdGFkbyB5d3lyYUFDMS0yLjUuNGMxGDAWBgNVBAMMD3l3eXJhQUMxLTIu" << endl
+    			   << "NS40YzEfMB0GA1UEDAwWdGl0dWxvIHl3eXJhQUMxLTIuNS40YzCCASIwDQYJKoZI" << endl
+    			   << "hvcNAQEBBQADggEPADCCAQoCggEBAJVY01W9ieCEfheLSrHcjxynj6fVwOyhGj1d" << endl
+    			   << "4PwSqe0l8M4vYPMGRuC0NqsvOrps+McdFXjdBoElDEZ+7UrxFXEW3jyNPw30aei9" << endl
+    			   << "3PtPWwS0UNj5ySs3nw3ybuZlmstFyeOldTbEFOctG/sVeHcz/pprVvqtCEXpLKtg" << endl
+    			   << "vtDgzjd68RRpJVIWIQ46HuoZZTRQomMiHZdkKKALkS0eAI7cKn1fVoLze2Hi/xnV" << endl
+    			   << "acPy6BN+nBhndUGye5KvmQUAI9hQk6UHORwLEuSW2tn8iWVopswmc1xMXez8sNPR" << endl
+    			   << "d2xwNnfA6xBZ1IZ0ZegzPLgegKQYraU93RofJa1bIWAHG/gtdx8CAwEAAaCBoTCB" << endl
+    			   << "ngYJKoZIhvcNAQkOMYGQMIGNMB0GA1UdDgQWBBSaXq9MlK7J+UHMhU84IwqvgUCY" << endl
+    			   << "qDAXBgNVHREEEDAOggxhc2Rhc2RzYWRhc2QwDwYDVR0TAQH/BAUwAwEB/zAPBgNV" << endl
+    			   << "HQ8BAf8EBQMDBz+AMDEGA1UdJQQqMCgGCCsGAQUFBwMDBggrBgEFBQcDBAYIKwYB" << endl
+    			   << "BQUHAwgGCCsGAQUFBwMJMA0GCSqGSIb3DQEBDQUAA4IBAQBhtwGISNB+nwpEJdB3" << endl
+    			   << "J1hYH28/61CpYhHGa5ysdCPaPpPw5P4+yrpC/iJFV4Lw/0pvauaTY8KVIZQnmLYq" << endl
+    			   << "rDB3Rv1d1qEC1owv1FLocnXVTfpyqLHtTZkNJ7ApHzUhUl+YCW+/cuIU+B9RxDug" << endl
+    			   << "H0511zsavlRO+9DkZYOC5hO/bDlWy1IdT51qepBWCRD2sHviMQRlzYrt/s2BpXKf" << endl
+    			   << "bhPfBWLL0wvV18WA3JmUOnjOCMXpHni9qoKS36eZVUr1pLbvwEmh0OLtSu9hhQGu" << endl
+    			   << "q3VVrMLsnvlcgBzTIZi4Nt52bqSHuYCrJh+pZdd3IPl5G0mra+HkuXnxKrbQM6YK" << endl
+    			   << "3aUS" << endl
+    			   << "-----END CERTIFICATE REQUEST-----";
+    		break;
+    	case INCOMPLETE_PRINTABLE:
+        	stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
+        		   << "MIIC+TCCAeECAQAwQzESMBAGA1UEBxMJeXd5cmEgQUMyMRIwEAYDVQQDEwl5d3ly" << endl
+    			   << "YSBBQzIxGTAXBgNVBAwTEHRpdHVsbyB5d3lyYSBBQzIwggEiMA0GCSqGSIb3DQEB" << endl
+    			   << "AQUAA4IBDwAwggEKAoIBAQDVh+Mi3eOz0YXK6J9hqCCwSLhAVpCHqxnGoq4g6bzL" << endl
+    			   << "igClV5GbwIaKhMVuOS/0mdth+v4aBA1gVFMtpmR3xxFrDnaARjM5bwx1FKVyyZkF" << endl
+    			   << "boNwaUGVWwPNraNNlnwMtL6oeksTDMSBRKTp8Jeu+sOPetL09ek4Ys29VGgRyu7i" << endl
+    			   << "tE44fRiY0g+KxJfYN9DGPXv0dfJHhhu4D3UjvafAE0b8eiQT+4dlLw1euU1sJ8IF" << endl
+    			   << "1y0109Jh5hexbLczhGuaV7bnG3xP+rrObiQ1iuQOdFMTgv1HTVnCmMM9Phh1lMXH" << endl
+    			   << "5Sy8T1DZSfe0uekJpFuzbBTjzDQvb2ZYE7XM0/uoTWDDAgMBAAGgcTBvBgkqhkiG" << endl
+    			   << "9w0BCQ4xYjBgMB0GA1UdDgQWBBRuVgfS7weLK4LybliWkb+q6LcVMjAPBgNVHRMB" << endl
+    			   << "Af8EBTADAQH/MA8GA1UdDwEB/wQFAwMHH4AwHQYDVR0lBBYwFAYIKwYBBQUHAwEG" << endl
+    			   << "CCsGAQUFBwMCMA0GCSqGSIb3DQEBDQUAA4IBAQCgEy2RmLok0IZizx9m++0v3YAn" << endl
+    			   << "eOD2VogN2QcncEz92uLsorRgGe5uwqRMxeHcJoFVzPNvYphe0R6lV4mxjDCgUIwT" << endl
+    			   << "hQl7GmCVEGMR+yCsgirYFHZz9jfuh7Q47ukSKo1sNrd50u8bFyUzu5CsnjEtJVE0" << endl
+    			   << "2gJBCuiyXuYBg/L4eZJDoJwY/iKyQKhRd68BtEUXFr7wF0U0CkggPU38Kiy/VQLH" << endl
+    			   << "XciyBd1S/BbTT9F8RW547rpeCF4oeqbN6kr2a+ykSIp3jLxz12vdXgGBVd+oBl6u" << endl
+    			   << "H42k/Nd8kyfCQCuZY0+8fQZv9lHLDIeCKV5EBrbz93esyWHFMmePiRXCCi3v" << endl
+    			   << "-----END CERTIFICATE REQUEST-----";
+    		break;
+    	case INCOMPLETE_UTF8:
+        	stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
+        		   << "MIIC7jCCAdYCAQAwPzEjMCEGA1UEBwwabG9jYWxpZGFkZSBZd3lyYUFDMi0yLjUu" << endl
+    			   << "NGMxGDAWBgNVBAMMD1l3eXJhQUMyLTIuNS40YzCCASIwDQYJKoZIhvcNAQEBBQAD" << endl
+    			   << "ggEPADCCAQoCggEBAL9rgsnYC+gfpoYdOTKqFn6JWsL56lrc0qPuXfx15OJ0JF1s" << endl
+    			   << "tX3hMxkM+Jnq53kEOmVwKsVyCYvCBqzARFqzmSy2RtNr9UUlsQWDIcPel9c4Zzj4" << endl
+    			   << "cufd2ve7ChAEzFTR4j+gLZAnx7J7UdrLSSToRIkQpclGjFy11a1ldj7EXfZjn7HY" << endl
+    			   << "PDgYbS9b3GUp9zcJ8YkGMBiQJmCTVfsGL+81e/shxjnSI4AFc2FLKv6BgRH+g97c" << endl
+    			   << "gXzn45FmacudY8T1gqt4/j5SlwXNXMmnIpG8FRgnEmd5DInT7sb9wVVf1Ei/YCRP" << endl
+    			   << "vqCMAmPEx9sS5H+Smy8eI6CM64IFj2ElEqgbVk0CAwEAAaBqMGgGCSqGSIb3DQEJ" << endl
+    			   << "DjFbMFkwHQYDVR0OBBYEFBfmUjxv/PjEd9kCwPZOeV2mjPXsMA8GA1UdEwEB/wQF" << endl
+    			   << "MAMBAf8wJwYDVR0lBCAwHgYIKwYBBQUHAwEGCCsGAQUFBwMCBggrBgEFBQcDAzAN" << endl
+    			   << "BgkqhkiG9w0BAQ0FAAOCAQEANczEwCLolws/rnLXFDJKgj3y4YmoH6L8BQ7tojwp" << endl
+    			   << "FFQolVhkBXFu80ZY6OnH6WhR2Ux/1H4rp7UC/m/yNcKA54Jru0VGm40YcbfZo9BT" << endl
+    			   << "gJoS0IZY9fjvalc4Wp7j2aeOAPoyPP75OrgZC3iGKxkZXe/0DmrmLgVPjUg3XtvE" << endl
+    			   << "BkkFtOBZxvjrv2fMWSKTgb4GkcF2Jl7DDx2TcZBltjxetyUmjUojhwyoCZoAJT4t" << endl
+    			   << "EyDVIOvHGRQYsl00eX+MWuqgzoosZkWc9LZTAasogMpeLQGG0016tfr4juPq2tOl" << endl
+    			   << "FNH73IwYynRBrS/XwxG/WZDPdyqf563Xq/FTF/CfsmJzrw==" << endl
+        		   << "-----END CERTIFICATE REQUEST-----";
+    		break;
+    	default:
+    		FAIL();
+    	}
 
-    void setPEMIncompletePrintable() {
-    	using std::endl;
-    	std::stringstream stream;
-    	stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
-    		   << "MIIC+TCCAeECAQAwQzESMBAGA1UEBxMJeXd5cmEgQUMyMRIwEAYDVQQDEwl5d3ly" << endl
-			   << "YSBBQzIxGTAXBgNVBAwTEHRpdHVsbyB5d3lyYSBBQzIwggEiMA0GCSqGSIb3DQEB" << endl
-			   << "AQUAA4IBDwAwggEKAoIBAQDVh+Mi3eOz0YXK6J9hqCCwSLhAVpCHqxnGoq4g6bzL" << endl
-			   << "igClV5GbwIaKhMVuOS/0mdth+v4aBA1gVFMtpmR3xxFrDnaARjM5bwx1FKVyyZkF" << endl
-			   << "boNwaUGVWwPNraNNlnwMtL6oeksTDMSBRKTp8Jeu+sOPetL09ek4Ys29VGgRyu7i" << endl
-			   << "tE44fRiY0g+KxJfYN9DGPXv0dfJHhhu4D3UjvafAE0b8eiQT+4dlLw1euU1sJ8IF" << endl
-			   << "1y0109Jh5hexbLczhGuaV7bnG3xP+rrObiQ1iuQOdFMTgv1HTVnCmMM9Phh1lMXH" << endl
-			   << "5Sy8T1DZSfe0uekJpFuzbBTjzDQvb2ZYE7XM0/uoTWDDAgMBAAGgcTBvBgkqhkiG" << endl
-			   << "9w0BCQ4xYjBgMB0GA1UdDgQWBBRuVgfS7weLK4LybliWkb+q6LcVMjAPBgNVHRMB" << endl
-			   << "Af8EBTADAQH/MA8GA1UdDwEB/wQFAwMHH4AwHQYDVR0lBBYwFAYIKwYBBQUHAwEG" << endl
-			   << "CCsGAQUFBwMCMA0GCSqGSIb3DQEBDQUAA4IBAQCgEy2RmLok0IZizx9m++0v3YAn" << endl
-			   << "eOD2VogN2QcncEz92uLsorRgGe5uwqRMxeHcJoFVzPNvYphe0R6lV4mxjDCgUIwT" << endl
-			   << "hQl7GmCVEGMR+yCsgirYFHZz9jfuh7Q47ukSKo1sNrd50u8bFyUzu5CsnjEtJVE0" << endl
-			   << "2gJBCuiyXuYBg/L4eZJDoJwY/iKyQKhRd68BtEUXFr7wF0U0CkggPU38Kiy/VQLH" << endl
-			   << "XciyBd1S/BbTT9F8RW547rpeCF4oeqbN6kr2a+ykSIp3jLxz12vdXgGBVd+oBl6u" << endl
-			   << "H42k/Nd8kyfCQCuZY0+8fQZv9lHLDIeCKV5EBrbz93esyWHFMmePiRXCCi3v" << endl
-			   << "-----END CERTIFICATE REQUEST-----";
-    	req_pem_encoded = stream.str();
-    }
-
-    void setPEMFullUTF8() {
-    	using std::endl;
-    	std::stringstream stream;
-    	stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
-    		   << "MIIDjzCCAncCAQAwgacxCzAJBgNVBAYTAkFBMRwwGgYDVQQKDBNvcmcgeXd5cmFB" << endl
-			   << "QzEtMi41LjRjMR4wHAYDVQQLDBV1bm9yZyB5d3lyYUFDMS0yLjUuNGMxHzAdBgNV" << endl
-			   << "BAgMFmVzdGFkbyB5d3lyYUFDMS0yLjUuNGMxGDAWBgNVBAMMD3l3eXJhQUMxLTIu" << endl
-			   << "NS40YzEfMB0GA1UEDAwWdGl0dWxvIHl3eXJhQUMxLTIuNS40YzCCASIwDQYJKoZI" << endl
-			   << "hvcNAQEBBQADggEPADCCAQoCggEBAJVY01W9ieCEfheLSrHcjxynj6fVwOyhGj1d" << endl
-			   << "4PwSqe0l8M4vYPMGRuC0NqsvOrps+McdFXjdBoElDEZ+7UrxFXEW3jyNPw30aei9" << endl
-			   << "3PtPWwS0UNj5ySs3nw3ybuZlmstFyeOldTbEFOctG/sVeHcz/pprVvqtCEXpLKtg" << endl
-			   << "vtDgzjd68RRpJVIWIQ46HuoZZTRQomMiHZdkKKALkS0eAI7cKn1fVoLze2Hi/xnV" << endl
-			   << "acPy6BN+nBhndUGye5KvmQUAI9hQk6UHORwLEuSW2tn8iWVopswmc1xMXez8sNPR" << endl
-			   << "d2xwNnfA6xBZ1IZ0ZegzPLgegKQYraU93RofJa1bIWAHG/gtdx8CAwEAAaCBoTCB" << endl
-			   << "ngYJKoZIhvcNAQkOMYGQMIGNMB0GA1UdDgQWBBSaXq9MlK7J+UHMhU84IwqvgUCY" << endl
-			   << "qDAXBgNVHREEEDAOggxhc2Rhc2RzYWRhc2QwDwYDVR0TAQH/BAUwAwEB/zAPBgNV" << endl
-			   << "HQ8BAf8EBQMDBz+AMDEGA1UdJQQqMCgGCCsGAQUFBwMDBggrBgEFBQcDBAYIKwYB" << endl
-			   << "BQUHAwgGCCsGAQUFBwMJMA0GCSqGSIb3DQEBDQUAA4IBAQBhtwGISNB+nwpEJdB3" << endl
-			   << "J1hYH28/61CpYhHGa5ysdCPaPpPw5P4+yrpC/iJFV4Lw/0pvauaTY8KVIZQnmLYq" << endl
-			   << "rDB3Rv1d1qEC1owv1FLocnXVTfpyqLHtTZkNJ7ApHzUhUl+YCW+/cuIU+B9RxDug" << endl
-			   << "H0511zsavlRO+9DkZYOC5hO/bDlWy1IdT51qepBWCRD2sHviMQRlzYrt/s2BpXKf" << endl
-			   << "bhPfBWLL0wvV18WA3JmUOnjOCMXpHni9qoKS36eZVUr1pLbvwEmh0OLtSu9hhQGu" << endl
-			   << "q3VVrMLsnvlcgBzTIZi4Nt52bqSHuYCrJh+pZdd3IPl5G0mra+HkuXnxKrbQM6YK" << endl
-			   << "3aUS" << endl
-			   << "-----END CERTIFICATE REQUEST-----";
-    	req_pem_encoded = stream.str();
-    }
-
-    void setPEMIncompleteUTF8() {
-    	using std::endl;
-    	std::stringstream stream;
-    	stream << "-----BEGIN CERTIFICATE REQUEST-----" << endl
-    		   << "MIIC7jCCAdYCAQAwPzEjMCEGA1UEBwwabG9jYWxpZGFkZSBZd3lyYUFDMi0yLjUu" << endl
-			   << "NGMxGDAWBgNVBAMMD1l3eXJhQUMyLTIuNS40YzCCASIwDQYJKoZIhvcNAQEBBQAD" << endl
-			   << "ggEPADCCAQoCggEBAL9rgsnYC+gfpoYdOTKqFn6JWsL56lrc0qPuXfx15OJ0JF1s" << endl
-			   << "tX3hMxkM+Jnq53kEOmVwKsVyCYvCBqzARFqzmSy2RtNr9UUlsQWDIcPel9c4Zzj4" << endl
-			   << "cufd2ve7ChAEzFTR4j+gLZAnx7J7UdrLSSToRIkQpclGjFy11a1ldj7EXfZjn7HY" << endl
-			   << "PDgYbS9b3GUp9zcJ8YkGMBiQJmCTVfsGL+81e/shxjnSI4AFc2FLKv6BgRH+g97c" << endl
-			   << "gXzn45FmacudY8T1gqt4/j5SlwXNXMmnIpG8FRgnEmd5DInT7sb9wVVf1Ei/YCRP" << endl
-			   << "vqCMAmPEx9sS5H+Smy8eI6CM64IFj2ElEqgbVk0CAwEAAaBqMGgGCSqGSIb3DQEJ" << endl
-			   << "DjFbMFkwHQYDVR0OBBYEFBfmUjxv/PjEd9kCwPZOeV2mjPXsMA8GA1UdEwEB/wQF" << endl
-			   << "MAMBAf8wJwYDVR0lBCAwHgYIKwYBBQUHAwEGCCsGAQUFBwMCBggrBgEFBQcDAzAN" << endl
-			   << "BgkqhkiG9w0BAQ0FAAOCAQEANczEwCLolws/rnLXFDJKgj3y4YmoH6L8BQ7tojwp" << endl
-			   << "FFQolVhkBXFu80ZY6OnH6WhR2Ux/1H4rp7UC/m/yNcKA54Jru0VGm40YcbfZo9BT" << endl
-			   << "gJoS0IZY9fjvalc4Wp7j2aeOAPoyPP75OrgZC3iGKxkZXe/0DmrmLgVPjUg3XtvE" << endl
-			   << "BkkFtOBZxvjrv2fMWSKTgb4GkcF2Jl7DDx2TcZBltjxetyUmjUojhwyoCZoAJT4t" << endl
-			   << "EyDVIOvHGRQYsl00eX+MWuqgzoosZkWc9LZTAasogMpeLQGG0016tfr4juPq2tOl" << endl
-			   << "FNH73IwYynRBrS/XwxG/WZDPdyqf563Xq/FTF/CfsmJzrw==" << endl
-    		   << "-----END CERTIFICATE REQUEST-----";
-    	req_pem_encoded = stream.str();
+    	std::string req_pem_encoded = stream.str();
+        req = new CertificateRequest(req_pem_encoded);
+	    certBuilder = new CertificateBuilder(*req);
+        rdn = RDNSequence(certBuilder->getSubject().getX509Name());
     }
 
     /*!
@@ -299,15 +278,22 @@ protected:
     	}
     }
 
-    CertificateBuilder* cbuilder;  //!< CertificateBuilder usado para aplicar a funcao testada.
+    enum CertificateRequestType {
+    	FULL_PRINTABLE,
+		FULL_UTF8,
+		INCOMPLETE_PRINTABLE,
+		INCOMPLETE_UTF8
+    };
+
+    CertificateBuilder *certBuilder;
     CertificateRequest* req;  //!< CertificateRequest usado para aplicar a funcao testada.
-    std::string req_pem_encoded;  //!< String usada para armazenar a requisicao PEM.
     RDNSequence rdn; //!< RDNSequence no qual a funcao deve ser aplicada.
 
 };
 
 TEST_F(CertificateBuilderTest, AlterSubject_EmptyCommonName) {
-	RDNSequence rdnAlterSubject = buildRDNSubject("BR", "ICP-Brasil", "Autoridade Certificadora Raiz Brasileira v2", "");
+	RDNSequence rdnAlterSubject = buildRDNSubject("BR", "ICP-Brasil",
+			"Autoridade Certificadora Raiz Brasileira v2", "");
 	RDNSequence rdnNewSubject = getRdnAfterUpdateSubject(rdnAlterSubject);
 
 	std::string country = rdnNewSubject.getEntries(RDNSequence::COUNTRY).back();
@@ -369,16 +355,14 @@ TEST_F(CertificateBuilderTest, AlterSubject_EmptyCountry) {
  * @brief Testa se o certificado mantem a formatacao antes de ser emitido.
  */
 TEST_F(CertificateBuilderTest, EncodingTest_PrintableCodification) {
-    setPEMFullPrintable();
-    initializePEMEncoded();
-    cbuilder->alterSubject(rdn);
+	initializeCertificateRequest(FULL_PRINTABLE);
+    certBuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
 TEST_F(CertificateBuilderTest, EncodingTest_UTF8Codification) {
-    setPEMFullUTF8();
-    initializePEMEncoded();
-    cbuilder->alterSubject(rdn);
+	initializeCertificateRequest(FULL_UTF8);
+    certBuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_UTF8STRING);
 }
 
@@ -386,9 +370,8 @@ TEST_F(CertificateBuilderTest, EncodingTest_UTF8Codification) {
  * @brief Testa se o certificado mantem a formatacao antes de ser emitido, com um campo adicionado durante a emissao.
  */
 TEST_F(CertificateBuilderTest, EncodingTest_StringValues) {
-    setPEMFullPrintable();
-    initializePEMEncoded();
-    cbuilder->alterSubject(rdn);
+	initializeCertificateRequest(FULL_PRINTABLE);
+    certBuilder->alterSubject(rdn);
     testStringValues(req->getSubject());
 }
 
@@ -396,76 +379,71 @@ TEST_F(CertificateBuilderTest, EncodingTest_StringValues) {
  * @brief Testa se o certificado mantem a formatacao antes de ser emitido, com um campo adicionado durante a emissao.
  */
 TEST_F(CertificateBuilderTest, EncodingTest_AddedFieldPrintableCodification) {
-    setPEMIncompletePrintable();
-    initializePEMEncoded();
+	initializeCertificateRequest(INCOMPLETE_PRINTABLE);
     rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "OUnitName");
-    cbuilder->alterSubject(rdn);
+    certBuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
 TEST_F(CertificateBuilderTest, EncodingTest_AddedFieldUTF8Codification) {
-    setPEMIncompleteUTF8();
-    initializePEMEncoded();
+	initializeCertificateRequest(INCOMPLETE_UTF8);
     rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "OUnitName");
-    cbuilder->alterSubject(rdn);
+    certBuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_UTF8STRING);
 }
 
 TEST_F(CertificateBuilderTest, EncodingTest_ModifiedFieldPrintableCodification) {
-    setPEMFullPrintable();
-    initializePEMEncoded();
+	initializeCertificateRequest(FULL_PRINTABLE);
     modifyRDN();
-    cbuilder->alterSubject(rdn);
+    certBuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
 TEST_F(CertificateBuilderTest, EncodingTest_ModifiedFieldUTF8Codification) {
-    setPEMFullUTF8();
-    initializePEMEncoded();
+	initializeCertificateRequest(FULL_UTF8);
     modifyRDN();
-    cbuilder->alterSubject(rdn);
+    certBuilder->alterSubject(rdn);
     testStringCodificaton(V_ASN1_UTF8STRING);
 }
 
 TEST_F(CertificateBuilderTest, EncodingTest_ModifiedFieldStringValues) {
-    setPEMFullPrintable();
-    initializePEMEncoded();
+	initializeCertificateRequest(FULL_PRINTABLE);
     modifyRDN();
     RDNSequence modified = rdn;
-    cbuilder->alterSubject(rdn);
+    certBuilder->alterSubject(rdn);
     testStringValues(modified);
 }
 
 TEST_F(CertificateBuilderTest, EncodingTest_ExportedCertificatePrintableCodification) {
-	setPEMFullPrintable();
-	initializePEMEncoded();
-	cbuilder->alterSubject(rdn);
+	initializeCertificateRequest(FULL_PRINTABLE);
+	certBuilder->alterSubject(rdn);
 	RSAKeyPair key = RSAKeyPair(4096);
-	Certificate* cert = cbuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
+	Certificate* cert = certBuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
 	testStringCodificaton(V_ASN1_PRINTABLESTRING, cert);
 }
 
 TEST_F(CertificateBuilderTest, EncodingTest_ExportedCertificateUTF8Codification) {
-	setPEMFullUTF8();
-	initializePEMEncoded();
-	cbuilder->alterSubject(rdn);
+	initializeCertificateRequest(FULL_UTF8);
+	certBuilder->alterSubject(rdn);
 	RSAKeyPair key = RSAKeyPair(4096);
-	Certificate* cert = cbuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
+	Certificate* cert = certBuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
 	testStringCodificaton(V_ASN1_UTF8STRING, cert);
 }
 
 TEST_F(CertificateBuilderTest, EncodingTest_ExportedCertificateStringValues) {
-	setPEMFullPrintable();
-	initializePEMEncoded();
-	cbuilder->alterSubject(rdn);
+	initializeCertificateRequest(FULL_PRINTABLE);
+	certBuilder->alterSubject(rdn);
 	RSAKeyPair key = RSAKeyPair(4096);
-	Certificate* cert = cbuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
+	Certificate* cert = certBuilder->sign(*key.getPrivateKey(), MessageDigest::SHA512);
 	testStringValues(cert->getSubject());
 }
 
 TEST_F(CertificateBuilderTest, EncodingTest_NewRequestDefaultCodification) {
-	initializeNewRequest();
+	fillRDN();
+	req = new CertificateRequest();
+	req->setSubject(rdn);
+	certBuilder = new CertificateBuilder(*req);
 	int expectedCodification = getReqCodification();
-	cbuilder->alterSubject(rdn);
+	certBuilder->alterSubject(rdn);
 	testStringCodificaton(expectedCodification);
 }
