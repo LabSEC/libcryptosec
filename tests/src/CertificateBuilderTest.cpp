@@ -5,6 +5,9 @@
 #include <iostream>
 #include <sstream>
 
+/**
+ * @brief Testes unitários da classe CertificateBuilder.
+ */
 class CertificateBuilderTest : public ::testing::Test {
 
 protected:
@@ -18,6 +21,11 @@ protected:
         delete req;
     }
 
+	/**
+	 * Altera assunto no CertificateBuilder e retorna os campos atualizados.
+	 * @param rdnAlterSubject campos e respectivos valores a serem atualizados.
+	 * @return RDN com os campos atualizados no CertificateBuilder.
+	 */
     RDNSequence getRdnAfterUpdateSubject(RDNSequence &rdnAlterSubject) {
     	std::string pem = "-----BEGIN CERTIFICATE REQUEST-----" "\n"
     			"MIIC9DCCAdwCAQAwga4xCzAJBgNVBAYTAkJSMRMwEQYDVQQIDApTb21lLVN0YXRl" "\n"
@@ -46,6 +54,14 @@ protected:
     	return newRdn;
     }
 
+	/**
+	 * Constrói objeto RDN.
+	 * @param country país.
+	 * @param organization organização.
+	 * @param oUnit unidade da organização.
+	 * @param common_name nome comum.
+	 * @return RDN construído a partir dos campos especificados.
+	 */
     RDNSequence buildRDNSubject(std::string country, std::string organization,
     		std::string oUnit, std::string common_name) {
     	RDNSequence rdnSubject;
@@ -57,8 +73,8 @@ protected:
 		return rdnSubject;
     }
 
-    /*!
-     * @brief Preenche as entradas de rdn.
+    /**
+     * Adiciona as entradas de rdn.
      */
     void fillRDN() {
         RDNSequence tmp = RDNSequence();
@@ -71,6 +87,9 @@ protected:
         rdn = tmp;
     }
 
+    /**
+     * Modifica o RDN.
+     */
     void modifyRDN() {
     	std::vector<std::pair<ObjectIdentifier, std::string> > entries = rdn.getEntries();
     	RDNSequence tmp;
@@ -81,6 +100,10 @@ protected:
     	rdn = tmp;
     }
 
+    /**
+     * Obtém a codificação da requisição.
+     * @return número correspondente à codificação.
+     */
     int getReqCodification() {
     	X509_NAME* name = X509_get_subject_name(certBuilder->getX509());
     	for (int i = 0; i < X509_NAME_entry_count(name); i++) {
@@ -92,10 +115,9 @@ protected:
     	return -1;
     }
 
-    /*!
-     * @brief Testa se a codificacao das entradas estao de acordo com o esperado.
-     *
-     * @param expectedCodification Codificacao esperada.
+    /**
+     * Testa se a codificação das entradas está de acordo com o esperado.
+     * @param expectedCodification codificação esperada.
      */
     void testStringCodificaton(int expectedCodification) {
         X509_NAME* after = X509_get_subject_name(certBuilder->getX509());
@@ -108,11 +130,10 @@ protected:
         }
     }
 
-    /*!
-     * @brief Testa se a codificacao do certificado esta de acordo com o esperado.
-     *
-     * @param expectedCodification Codificação esperada.
-     * @param cert Certificado exportado.
+    /**
+     * Testa se a codificação do certificado está de acordo com o esperado.
+     * @param expectedCodification codificação esperada.
+     * @param cert certificado exportado.
      */
     void testStringCodificaton(int expectedCodification, Certificate* cert) {
     	X509_NAME* after = X509_get_subject_name(cert->getX509());
@@ -125,9 +146,8 @@ protected:
     	}
     }
 
-    /*!
-     * @brief Testa se os valores das entradas sao mantidos apos a geracao do certificado.
-     *
+    /**
+     * Testa se os valores das entradas são mantidos após a geração do certificado.
      * @param r RDNSequence o qual se deseja comparar com rdn interno.
      */
     void testStringValues(RDNSequence r) {
@@ -142,8 +162,8 @@ protected:
         }
     }
 
-    /*!
-     * @brief Testa se os RDNs estão na ordem padrão OpenSSL.
+    /**
+     * Testa se os RDNs estão na ordem padrão OpenSSL.
      */
     void testRDNOrder() {
     	vector<pair<ObjectIdentifier, std::string> > entries = rdn.getEntries();
@@ -155,9 +175,10 @@ protected:
     	}
     }
 
-    /*!
-     * @brief Define a requisica a ser testada como uma requisicao com o DN totalmente preenchido com codificacao
-     *        V_ASN1_PRINTABLESTRING.
+    /**
+     * Inicializa a requisição e o CertificateBuilder, definindo a codificação
+     * de acordo com o tipo informado.
+     * @param type tipo informando a codificação da requisição.
      */
     void initializeCertRequestAndBuilder(int type) {
     	std::string req_pem_encoded = "";
@@ -259,10 +280,9 @@ protected:
         rdn = RDNSequence(certBuilder->getSubject().getX509Name());
     }
 
-    /*!
-     * @brief Converte um número representando um nid em um RDNSequence::EntryType.
-     *
-     * @param nid Nid OpenSSL.
+    /**
+     * onverte um número representando um nid em um RDNSequence::EntryType.
+     * @param nid NID do OpenSSL.
      */
     RDNSequence::EntryType id2Type(int nid) {
     	switch (nid) {
@@ -276,6 +296,9 @@ protected:
     	}
     }
 
+    /**
+     * Tipo (codificação) da requisição de certificado.
+     */
     enum CertificateRequestType {
     	FULL_PRINTABLE,
 		FULL_UTF8,
@@ -283,12 +306,15 @@ protected:
 		INCOMPLETE_UTF8
     };
 
-    CertificateBuilder *certBuilder;
-    CertificateRequest* req;  //!< CertificateRequest usado para aplicar a funcao testada.
-    RDNSequence rdn; //!< RDNSequence no qual a funcao deve ser aplicada.
+    CertificateBuilder *certBuilder; //!< CertificateBuilder utilizado nos testes.
+    CertificateRequest* req; //!< CertificateRequest utilizado nos testes.
+    RDNSequence rdn; //!< RDNSequence utilizado nos testes.
 
 };
 
+/**
+ * @brief Testa a atualização do assunto no CertificateBuilder informando um nome comum vazio.
+ */
 TEST_F(CertificateBuilderTest, AlterSubject_EmptyCommonName) {
 	RDNSequence rdnAlterSubject = buildRDNSubject("BR", "ICP-Brasil",
 			"Autoridade Certificadora Raiz Brasileira v2", "");
@@ -304,6 +330,9 @@ TEST_F(CertificateBuilderTest, AlterSubject_EmptyCommonName) {
 	EXPECT_EQ(0, (int) rdnNewSubject.getEntries(RDNSequence::COMMON_NAME).size());
 }
 
+/**
+ * @brief Testa a atualização do assunto no CertificateBuilder informando uma unidade de organização vazia.
+ */
 TEST_F(CertificateBuilderTest, AlterSubject_EmptyOrganizationUnit) {
 	RDNSequence rdnAlterSubject = buildRDNSubject("BR", "ICP-Brasil",
 			"", "Autoridade Certificadora da Casa da Moeda do Brasil v3");
@@ -319,6 +348,9 @@ TEST_F(CertificateBuilderTest, AlterSubject_EmptyOrganizationUnit) {
 	EXPECT_STREQ(commonName.c_str(), "Autoridade Certificadora da Casa da Moeda do Brasil v3");
 }
 
+/**
+ * @brief Testa a atualização do assunto no CertificateBuilder informando uma organização vazia.
+ */
 TEST_F(CertificateBuilderTest, AlterSubject_EmptyOrganization) {
 	RDNSequence rdnAlterSubject = buildRDNSubject("BR", "", "Autoridade Certificadora Raiz Brasileira v2",
 			"Autoridade Certificadora da Casa da Moeda do Brasil v3");
@@ -334,6 +366,9 @@ TEST_F(CertificateBuilderTest, AlterSubject_EmptyOrganization) {
 	EXPECT_STREQ(commonName.c_str(), "Autoridade Certificadora da Casa da Moeda do Brasil v3");
 }
 
+/**
+ * @brief Testa a atualização do assunto no CertificateBuilder informando um país vazio.
+ */
 TEST_F(CertificateBuilderTest, AlterSubject_EmptyCountry) {
 	RDNSequence rdnAlterSubject = buildRDNSubject("", "ICP-Brasil", "Autoridade Certificadora Raiz Brasileira v2",
 			"Autoridade Certificadora da Casa da Moeda do Brasil v3");
@@ -350,7 +385,7 @@ TEST_F(CertificateBuilderTest, AlterSubject_EmptyCountry) {
 }
 
 /*!
- * @brief Testa se o certificado mantem a formatacao antes de ser emitido.
+ * @brief Testa se o certificado mantém a formatação antes de ser emitido.
  */
 TEST_F(CertificateBuilderTest, EncodingTest_PrintableCodification) {
 	initializeCertRequestAndBuilder(FULL_PRINTABLE);
@@ -358,6 +393,9 @@ TEST_F(CertificateBuilderTest, EncodingTest_PrintableCodification) {
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
+/*!
+ * @brief Testa se o certificado mantém a formatação antes de ser emitido.
+ */
 TEST_F(CertificateBuilderTest, EncodingTest_UTF8Codification) {
 	initializeCertRequestAndBuilder(FULL_UTF8);
     certBuilder->alterSubject(rdn);
@@ -365,7 +403,7 @@ TEST_F(CertificateBuilderTest, EncodingTest_UTF8Codification) {
 }
 
 /*!
- * @brief Testa se o certificado mantem a formatacao antes de ser emitido, com um campo adicionado durante a emissao.
+ * @brief Testa se o certificado mantém a formatação antes de ser emitido, com um campo adicionado durante a emissão.
  */
 TEST_F(CertificateBuilderTest, EncodingTest_StringValues) {
 	initializeCertRequestAndBuilder(FULL_PRINTABLE);
@@ -374,7 +412,7 @@ TEST_F(CertificateBuilderTest, EncodingTest_StringValues) {
 }
 
 /*!
- * @brief Testa se o certificado mantem a formatacao antes de ser emitido, com um campo adicionado durante a emissao.
+ * @brief Testa se o certificado mantém a formatação antes de ser emitido, com um campo adicionado durante a emissão.
  */
 TEST_F(CertificateBuilderTest, EncodingTest_AddedFieldPrintableCodification) {
 	initializeCertRequestAndBuilder(INCOMPLETE_PRINTABLE);
@@ -383,6 +421,9 @@ TEST_F(CertificateBuilderTest, EncodingTest_AddedFieldPrintableCodification) {
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
+/*!
+ * @brief Testa se o certificado mantém a formatação antes de ser emitido, com um campo adicionado durante a emissão.
+ */
 TEST_F(CertificateBuilderTest, EncodingTest_AddedFieldUTF8Codification) {
 	initializeCertRequestAndBuilder(INCOMPLETE_UTF8);
     rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "OUnitName");
@@ -390,6 +431,9 @@ TEST_F(CertificateBuilderTest, EncodingTest_AddedFieldUTF8Codification) {
     testStringCodificaton(V_ASN1_UTF8STRING);
 }
 
+/*!
+ * @brief Testa se o certificado mantém a formatação antes de ser emitido, com um campo modificado durante a emissão.
+ */
 TEST_F(CertificateBuilderTest, EncodingTest_ModifiedFieldPrintableCodification) {
 	initializeCertRequestAndBuilder(FULL_PRINTABLE);
     modifyRDN();
@@ -397,6 +441,9 @@ TEST_F(CertificateBuilderTest, EncodingTest_ModifiedFieldPrintableCodification) 
     testStringCodificaton(V_ASN1_PRINTABLESTRING);
 }
 
+/*!
+ * @brief Testa se o certificado mantém a formatação antes de ser emitido, com um campo modificado durante a emissão.
+ */
 TEST_F(CertificateBuilderTest, EncodingTest_ModifiedFieldUTF8Codification) {
 	initializeCertRequestAndBuilder(FULL_UTF8);
     modifyRDN();
@@ -404,6 +451,9 @@ TEST_F(CertificateBuilderTest, EncodingTest_ModifiedFieldUTF8Codification) {
     testStringCodificaton(V_ASN1_UTF8STRING);
 }
 
+/*!
+ * @brief Testa se o certificado mantém a formatação antes de ser emitido, com um campo modificado durante a emissão.
+ */
 TEST_F(CertificateBuilderTest, EncodingTest_ModifiedFieldStringValues) {
 	initializeCertRequestAndBuilder(FULL_PRINTABLE);
     modifyRDN();
@@ -412,6 +462,9 @@ TEST_F(CertificateBuilderTest, EncodingTest_ModifiedFieldStringValues) {
     testStringValues(modified);
 }
 
+/*!
+ * @brief Testa se o certificado mantém a formatação após ser emitido.
+ */
 TEST_F(CertificateBuilderTest, EncodingTest_ExportedCertificatePrintableCodification) {
 	initializeCertRequestAndBuilder(FULL_PRINTABLE);
 	certBuilder->alterSubject(rdn);
@@ -420,6 +473,9 @@ TEST_F(CertificateBuilderTest, EncodingTest_ExportedCertificatePrintableCodifica
 	testStringCodificaton(V_ASN1_PRINTABLESTRING, cert);
 }
 
+/*!
+ * @brief Testa se o certificado mantém a formatação após ser emitido.
+ */
 TEST_F(CertificateBuilderTest, EncodingTest_ExportedCertificateUTF8Codification) {
 	initializeCertRequestAndBuilder(FULL_UTF8);
 	certBuilder->alterSubject(rdn);
@@ -428,6 +484,9 @@ TEST_F(CertificateBuilderTest, EncodingTest_ExportedCertificateUTF8Codification)
 	testStringCodificaton(V_ASN1_UTF8STRING, cert);
 }
 
+/*!
+ * @brief Testa se o certificado mantém a formatação após ser emitido.
+ */
 TEST_F(CertificateBuilderTest, EncodingTest_ExportedCertificateStringValues) {
 	initializeCertRequestAndBuilder(FULL_PRINTABLE);
 	certBuilder->alterSubject(rdn);
@@ -436,6 +495,9 @@ TEST_F(CertificateBuilderTest, EncodingTest_ExportedCertificateStringValues) {
 	testStringValues(cert->getSubject());
 }
 
+/*!
+ * @brief Testa a emissão de uma requisição com a codificação padrão.
+ */
 TEST_F(CertificateBuilderTest, EncodingTest_NewRequestDefaultCodification) {
 	fillRDN();
 	req = new CertificateRequest();

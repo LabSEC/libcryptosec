@@ -5,6 +5,9 @@
 #include "gtest.h"
 #include <stdio.h>
 
+/**
+ * @brief Testes unitários de curvas elípticas Brainpool.
+ */
 class BrainpoolEcTest : public ::testing::Test {
 
 protected:
