@@ -134,6 +134,9 @@ protected:
 	X509 *cert;
 	bool includeECDSAParameters;
 
+private:
+	int getCodification(RDNSequence& name);
+
 
 };
 

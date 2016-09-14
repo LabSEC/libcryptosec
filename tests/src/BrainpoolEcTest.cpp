@@ -5,11 +5,17 @@
 #include "gtest.h"
 #include <stdio.h>
 
+/**
+ * @brief Testes unitários de curvas elípticas Brainpool.
+ */
 class BrainpoolEcTest : public ::testing::Test {
 
 protected:
 	virtual void SetUp() {
 	}
+
+    virtual void TearDown() {
+    }
 
 	void testHardcodedCurve(BrainpoolCurveFactory::CurveName curveName){
 		const EllipticCurve * curve = BrainpoolCurveFactory::getCurve(curveName);
@@ -45,9 +51,6 @@ protected:
 	}
 
 };
-
-
-
 
 TEST_F(BrainpoolEcTest, HardcodedBpTestBP160r1){
 
