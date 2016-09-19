@@ -619,35 +619,35 @@ void CertificateBuilder::alterSubject(RDNSequence &name)
 		newEntry = X509_NAME_ENTRY_new();
 
 		int position = X509_NAME_get_index_by_NID(subject, entry->first.getNid(), -1);
-		if(position != -1)
+
+		if(!data.empty()) // If entry is not empty, add entry
 		{
-			X509_NAME_ENTRY* oldEntry = X509_NAME_get_entry(subject, position);
-
-			int entryType = oldEntry->value->type;
-
-			if(!X509_NAME_ENTRY_set_object(newEntry, entry->first.getObjectIdentifier()))
+			if(position != -1)
 			{
-				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				X509_NAME_ENTRY* oldEntry = X509_NAME_get_entry(subject, position);
+
+				int entryType = oldEntry->value->type;
+
+				if(!X509_NAME_ENTRY_set_object(newEntry, entry->first.getObjectIdentifier()))
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				}
+
+				if(!X509_NAME_ENTRY_set_data(newEntry, entryType, (unsigned char *)data.c_str(), data.length()))
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				}
+
+				if(!X509_NAME_add_entry(subjectName, newEntry, -1, 0))
+				{
+					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
+				}
+
+				X509_NAME_ENTRY_free(newEntry);
+
 			}
-
-			if(!X509_NAME_ENTRY_set_data(newEntry, entryType, (unsigned char *)data.c_str(), data.length()))
+			else
 			{
-				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
-			}
-
-			if(!X509_NAME_add_entry(subjectName, newEntry, -1, 0))
-			{
-				throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
-			}
-
-			X509_NAME_ENTRY_free(newEntry);
-
-		}
-		else
-		{
-			if(!data.empty())
-			{
-
 				if(!X509_NAME_ENTRY_set_object(newEntry, entry->first.getObjectIdentifier()))
 				{
 					throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
@@ -664,7 +664,11 @@ void CertificateBuilder::alterSubject(RDNSequence &name)
 			}
 		}
 	}
-	if(!X509_set_subject_name(this->cert, subjectName))
+
+	int rc = X509_set_subject_name(this->cert, subjectName);
+	X509_NAME_free(subjectName);
+
+	if(!rc)
 	{
 		throw CertificationException(CertificationException::INTERNAL_ERROR, "CertificateBuilder::alterSubject");
 	}

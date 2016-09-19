@@ -2,32 +2,37 @@
 #include <fstream>
 #include "gtest.h"
 
+/**
+ * @brief Testes unitários da classe Hmac.
+ */
 class HmacTest : public ::testing::Test {
 
 protected:
 	virtual void SetUp() {
 		hmac = Hmac();
 	}
-	Hmac hmac;
-	static ByteArray emptyKey;
-	static ByteArray key30bytes;
-	static ByteArray key63bytes;
-	static ByteArray key64bytes;
-	static ByteArray key128bytes;
-	static ByteArray key129bytes;
-	static ByteArray key150bytes;
-	static ByteArray binaryText;
-	static ByteArray hexKey40bytes;
-	static std::vector<ByteArray> plainTexts;
-	static unsigned char hexKey[10];
-	static ByteArray pText;
+
+    virtual void TearDown() {
+    }
+
+	Hmac hmac; //!< Objeto para geração do Hmac.
+	static ByteArray emptyKey; //!< Chave vazia.
+	static ByteArray key30bytes; //!< Chave de 30 bytes.
+	static ByteArray key63bytes; //!< Chave de 63 bytes.
+	static ByteArray key64bytes; //!< Chave de 64 bytes.
+	static ByteArray key128bytes; //!< Chave de 128 bytes.
+	static ByteArray key129bytes; //!< Chave de 129 bytes.
+	static ByteArray key150bytes; //!< Chave de 150 bytes.
+	static ByteArray binaryText; //!< Texto binário.
+	static ByteArray hexKey40bytes; //!< Chave hexadecimal de 40 bytes.
+	static std::vector<ByteArray> plainTexts; //!< Vetor the textos planos.
+	static unsigned char hexKey[10]; //!< Chave hexadecimal.
+	static ByteArray pText; //!< Texto plano.
 };
 
-
 /*
- * Declaração das variaveis usadas nos testes
+ * Inicialização das variáveis utilizadas nos testes.
  */
-
 ByteArray HmacTest::emptyKey = ByteArray(new unsigned char[0], 0);
 const char stringKey30bytes[] = "XthisIsMyFavoriteKeyOf30bytesX";
 ByteArray HmacTest::key30bytes = ByteArray(stringKey30bytes);
@@ -49,9 +54,8 @@ const char plainText[] = "plainText";
 ByteArray HmacTest::pText(plainText);
 std::vector<ByteArray> HmacTest::plainTexts = std::vector<ByteArray>(30, pText);
 
-
 /**
- * Gera e testa Hmac com o algoritmo sha256 e chave de 30 bytes
+ * @brief Gera e testa Hmac com o algoritmo sha256 e chave de 30 bytes.
  */
 TEST_F(HmacTest, HmacSha256_key30bytes) {
 	hmac.init(HmacTest::key30bytes, MessageDigest::SHA256);
@@ -60,7 +64,7 @@ TEST_F(HmacTest, HmacSha256_key30bytes) {
 }
 
 /**
- * Gera e testa Hmac com o algoritmo sha256 e chave de 64 bytes
+ * @brief Gera e testa Hmac com o algoritmo sha256 e chave de 64 bytes.
  */
 TEST_F(HmacTest, HmacSha256_key64bytes) {
 	hmac.init(HmacTest::key64bytes, MessageDigest::SHA256);
@@ -69,7 +73,7 @@ TEST_F(HmacTest, HmacSha256_key64bytes) {
 }
 
 /**
- * Gera e testa Hmac com o algoritmo sha256 e chave de 150 bytes
+ * @brief Gera e testa Hmac com o algoritmo sha256 e chave de 150 bytes.
  */
 TEST_F(HmacTest, HmacSha256_key150bytes) {
 	hmac.init(HmacTest::key150bytes, MessageDigest::SHA256);
@@ -78,7 +82,7 @@ TEST_F(HmacTest, HmacSha256_key150bytes) {
 }
 
 /**
- * Gera e testa Hmac com o algoritmo sha512 e chave de 30 bytes
+ * @brief Gera e testa Hmac com o algoritmo sha512 e chave de 30 bytes.
  */
 TEST_F(HmacTest, HmacSha512_key30bytes) {
 	hmac.init(HmacTest::key63bytes, MessageDigest::SHA512);
@@ -88,7 +92,7 @@ TEST_F(HmacTest, HmacSha512_key30bytes) {
 }
 
 /**
- * Gera e testa Hmac com o algoritmo sha512 e chave de 64 bytes
+ * @brief Gera e testa Hmac com o algoritmo sha512 e chave de 64 bytes.
  */
 TEST_F(HmacTest, HmacSha512_key64bytes) {
 	hmac.init(HmacTest::key128bytes, MessageDigest::SHA512);
@@ -98,7 +102,7 @@ TEST_F(HmacTest, HmacSha512_key64bytes) {
 }
 
 /**
- * Gera e testa Hmac com o algoritmo sha512 e chave de 150 bytes
+ * @brief Gera e testa Hmac com o algoritmo sha512 e chave de 150 bytes.
  */
 TEST_F(HmacTest, HmacSha512_key150bytes) {
 	hmac.init(HmacTest::key129bytes, MessageDigest::SHA512);
@@ -108,7 +112,7 @@ TEST_F(HmacTest, HmacSha512_key150bytes) {
 }
 
 /**
- * Testa geracao do Hmac com algoritmo sha1 e chave binaria
+ * @brief Testa geração do Hmac com algoritmo sha1 e chave binária.
  */
 TEST_F(HmacTest, HmacSha1_keyHex10bytes){
 	hmac.init(HmacTest::hexKey40bytes, MessageDigest::SHA1);
@@ -118,7 +122,7 @@ TEST_F(HmacTest, HmacSha1_keyHex10bytes){
 }
 
 /**
- * Stress test para geracao de Hmac com o algoritmo sha512 e chave de 150 bytes
+ * @brief Teste de exaustivo para geração de Hmac com o algoritmo sha512 e chave de 150 bytes.
  */
 TEST_F(HmacTest, HmacSha512Stress_key150bytes) {
 	for(int i = 0; i < 100000; i++) {
@@ -130,7 +134,7 @@ TEST_F(HmacTest, HmacSha512Stress_key150bytes) {
 }
 
 /**
- * Gera e testa Hmac com o algoritmo sha512 a partir de um vetor de chaves de 63 bytes
+ * @brief Gera e testa Hmac com o algoritmo sha512 a partir de um vetor de chaves de 63 bytes.
  */
 TEST_F(HmacTest, HmacSha256FromVector_key63bytes) {
 	hmac.init(HmacTest::key63bytes, MessageDigest::SHA256);
@@ -140,7 +144,7 @@ TEST_F(HmacTest, HmacSha256FromVector_key63bytes) {
 }
 
 /**
- * Gera e testa Hmac com o algoritmo MD5 a partir de uma chave vazia
+ * @brief Gera e testa Hmac com o algoritmo MD5 a partir de uma chave vazia.
  */
 TEST_F(HmacTest, HmacMd5_emptyKey) {
 	hmac.init(HmacTest::emptyKey, MessageDigest::MD5);
@@ -149,7 +153,7 @@ TEST_F(HmacTest, HmacMd5_emptyKey) {
 }
 
 /**
- * Gera e testa Hmac com o algoritmo sha256 a partir de uma chave de 150 bytes e texto vazio
+ * @brief Gera e testa Hmac com o algoritmo sha256 a partir de uma chave de 150 bytes e texto vazio.
  */
 TEST_F(HmacTest, HmacSha256FromEmptyText_key150bytes) {
 	hmac.init(HmacTest::key150bytes, MessageDigest::SHA256);
@@ -158,7 +162,7 @@ TEST_F(HmacTest, HmacSha256FromEmptyText_key150bytes) {
 }
 
 /**
- * Gera e testa Hmac com o algoritmo sha1 de um arquivo binario e chave de 63 bytes
+ * @brief Gera e testa Hmac com o algoritmo sha1 de um arquivo binário e chave de 63 bytes.
  */
 TEST_F(HmacTest, HmacSha1FromBinaryFile_key63bytes) {
 	fstream file ("files/binaryFile", ios::in|ios::binary|ios::ate);
@@ -182,22 +186,23 @@ TEST_F(HmacTest, HmacSha1FromBinaryFile_key63bytes) {
 		FAIL();
 	}
 }
+
 /**
- * Testa geracao do Hmac com texto vazio, sem chave, sem inicializacao e atraves do .doFinal()
+ * @brief Testa geração do Hmac com texto vazio, sem chave, sem inicialização e através do .doFinal().
  */
 TEST_F(HmacTest, HmacNoInitializationAndDoFinal) {
 	EXPECT_THROW(hmac.doFinal(), InvalidStateException);
 }
 
 /**
- * Testa geracao do Hmac com texto vazio, sem chave, sem inicializacao e atraves do .doUpdate()
+ * @brief Testa geração do Hmac com texto vazio, sem chave, sem inicialização e através do .doUpdate().
  */
 TEST_F(HmacTest, HmacNoInitializationAndUpdate) {
 	EXPECT_THROW(hmac.update(""), InvalidStateException);
 }
 
 /**
- * Testa geracao do Hmac com algoritmo sha256, inicializando o hmac duas vezes com algoritmo e chaves diferentes
+ * @brief Testa geração do Hmac com algoritmo sha256, inicializando o hmac duas vezes com algoritmo e chaves diferentes.
  */
 TEST_F(HmacTest, HmacInitializationTwice) {
 	hmac.init(HmacTest::key30bytes, MessageDigest::SHA256);
@@ -207,7 +212,7 @@ TEST_F(HmacTest, HmacInitializationTwice) {
 }
 
 /**
- * Testa geracao do Hmac com algoritmo sha256, com chave de 64 bytes, sem atualizar e através do .doFinal()
+ * @brief Testa geração do Hmac com algoritmo sha256, com chave de 64 bytes, sem atualizar e através do .doFinal().
  */
 TEST_F(HmacTest, HmacNoUpdateAndDoFinal) {
 	hmac.init(HmacTest::key64bytes, MessageDigest::SHA256);
@@ -215,12 +220,10 @@ TEST_F(HmacTest, HmacNoUpdateAndDoFinal) {
 }
 
 /**
- * Testa geracao do Hmac com algoritmo sha256, utilizando .doFinal() duas vezes seguidas (sem inicializar a segunda vez)
+ * @brief Testa geração do Hmac com algoritmo sha256, utilizando .doFinal() duas vezes seguidas (sem inicializar a segunda vez).
  */
 TEST_F(HmacTest, HmacDoFinalTwice) {
 	hmac.init(HmacTest::key30bytes, MessageDigest::SHA256);
 	hmac.doFinal("");
 	EXPECT_THROW(hmac.doFinal(), InvalidStateException);
 }
-
-
