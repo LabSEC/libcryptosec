@@ -1,6 +1,6 @@
 Summary: libcryptosec
 Name: libcryptosec
-Version: 2.2.7
+Version: 2.2.8
 Release: 1
 Source0: %{name}-%{version}.zip
 License: GPL
@@ -25,6 +25,11 @@ make install
 %{_includedir}/libcryptosec/
 
 %changelog
+* Mon Sep 19 2016 Lucas Perin <lucas.perin@posgrad.ufsc.br> - 2.2.8
+- Must use OpenSSL 1.0.1h with Brainpool patch if using Brainpool curves;
+- Fixes bug with empty DN when using alterSubject.
+- Automated test cases for altersubject. 
+
 * Fri Jun 17 2016 Lucas Perin <lucas.perin@posgrad.ufsc.br> - 2.2.7
 - Must use OpenSSL 1.0.1h with Brainpool patch if using Brainpool curves;
 - Add backward compability with previous openssl version  in alterSubject. 
