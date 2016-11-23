@@ -19,13 +19,10 @@ class TimestampRequest
 public:
 	TimestampRequest();
 	TimestampRequest(TS_REQ *req);
-	//TimestampRequest(std::string &pemEncoded) throw (EncodeException);
 	TimestampRequest(ByteArray &derEncoded) throw (EncodeException);
 	//TimestampRequest(const	TimestampRequest& req); 
 	virtual 	~TimestampRequest();
-	virtual std::string toXml(std::string tab = "");
-	//std::string getPemEncoded()
-	//		throw (EncodeException);
+	//virtual std::string toXml(std::string tab = "");
 	//ByteArray getDerEncoded() const
 	//		throw (EncodeException);
 	MessageDigest::Algorithm getMessageDigestAlgorithm()
