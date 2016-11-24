@@ -3,11 +3,38 @@
 TimestampRequest::TimestampRequest()
 {
 	this->req = TS_REQ_new();
+	TS_REQ_set_version(this->req, 1);
 }
 
 TimestampRequest::TimestampRequest(TS_REQ* req)
 {
 	this->req = req;
+}
+
+void TimestampRequest::setVersion(long version = 1){
+	TS_REQ_set_version(this->req, version);
+}
+
+long TimestampRequest::getVersion() {
+	return TS_REQ_get_version(this->req);
+}
+
+void TimestampRequest::setMessageImprint(ObjectIdentifier algOid, ByteArray &hash){
+	X509_ALGOR* algo = X509_ALGOR_new();
+	algo->algorithm = algOid.getObjectIdentifier();
+	algo->parameter = ASN1_TYPE_new();
+	algo->parameter->type = V_ASN1_NULL;
+
+	TS_MSG_IMPRINT *msg_imprint = TS_MSG_IMPRINT_new();
+	TS_MSG_IMPRINT_set_algo(msg_imprint, algo);
+
+	TS_MSG_IMPRINT_set_msg(msg_imprint, hash.getDataPointer(), hash.size());
+
+	TS_REQ_set_msg_imprint(this->req, msg_imprint);
+
+	X509_ALGOR_free(algo);
+
+	TS_MSG_IMPRINT_free(msg_imprint);
 }
 
 //TimestampRequest::TimestampRequest(std::string &pemEncoded)
@@ -170,9 +197,9 @@ TimestampRequest::~TimestampRequest()
 //
 //}
 
-MessageDigest::Algorithm TimestampRequest::getMessageDigestAlgorithm() throw (MessageDigestException){
-
-}
+//MessageDigest::Algorithm TimestampRequest::getMessageDigestAlgorithm() throw (MessageDigestException){
+//
+//}
 //	void setVersion(long version);
 //	long getVersion();
 //	void setMessageImprintDigest(ByteArray &publicKey);

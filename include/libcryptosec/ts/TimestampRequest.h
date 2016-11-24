@@ -29,9 +29,8 @@ public:
 			throw (MessageDigestException);
 	void setVersion(long version);
 	long getVersion();
-	void setMessageImprintDigest(ByteArray &publicKey);
+	void setMessageImprint(ObjectIdentifier algOid, ByteArray &hash);
 	ByteArray* getMessageImprintDigest();
-	void setMessageImprintDigestAlg(ObjectIdentifier algOid);
 	ObjectIdentifier getMessageImprintDigestAlg();
 	void setNonce(BigInteger &nonce);
 	BigInteger getNonce();
