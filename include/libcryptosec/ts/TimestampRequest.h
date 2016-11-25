@@ -23,10 +23,7 @@ public:
 	//TimestampRequest(const	TimestampRequest& req); 
 	virtual 	~TimestampRequest();
 	//virtual std::string toXml(std::string tab = "");
-	//ByteArray getDerEncoded() const
-	//		throw (EncodeException);
-	MessageDigest::Algorithm getMessageDigestAlgorithm()
-			throw (MessageDigestException);
+	ByteArray getDerEncoded() const throw (EncodeException);
 	void setVersion(long version);
 	long getVersion();
 	void setMessageImprint(ObjectIdentifier algOid, ByteArray &hash);
@@ -36,10 +33,11 @@ public:
 	BigInteger getNonce();
 	void setCertReq(bool certReq);
 	bool getCertReq();
-	std::vector<Extension *> getExtension(Extension::Name extensionName);
-	std::vector<Extension *> getExtensions();
+	//std::vector<Extension *> getExtension(Extension::Name extensionName);
+	//std::vector<Extension *> getExtensions();
 	TS_REQ* getTSReq() const;
 	TimestampRequest& operator =(const TimestampRequest& value);
+	bool operator ==(const TimestampRequest& value);
 protected:
 	TS_REQ *req;
 };
