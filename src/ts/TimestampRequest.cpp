@@ -32,13 +32,13 @@ void TimestampRequest::setMessageImprint(ObjectIdentifier algOid, ByteArray &has
 
 	TS_REQ_set_msg_imprint(this->req, msg_imprint);
 
-	X509_ALGOR_free(algo);
+	//X509_ALGOR_free(algo);
 
 	TS_MSG_IMPRINT_free(msg_imprint);
 }
 
-ByteArray* TimestampRequest::getMessageImprintDigest(){
-	return new ByteArray(this->req->msg_imprint->hashed_msg->data, this->req->msg_imprint->hashed_msg->length);
+ByteArray TimestampRequest::getMessageImprintDigest(){
+	return ByteArray(this->req->msg_imprint->hashed_msg->data, this->req->msg_imprint->hashed_msg->length);
 }
 
 ObjectIdentifier TimestampRequest::getMessageImprintDigestAlg(){
@@ -46,7 +46,8 @@ ObjectIdentifier TimestampRequest::getMessageImprintDigestAlg(){
 }
 
 void TimestampRequest::setNonce(BigInteger &nonce){
-	TS_REQ_set_nonce(this->req, nonce.getASN1Value());
+	this->req->nonce = nonce.getASN1Value();
+	//TS_REQ_set_nonce(this->req, nonce.getASN1Value());
 
 }
 BigInteger TimestampRequest::getNonce(){
@@ -104,7 +105,7 @@ TimestampRequest::TimestampRequest(ByteArray &derEncoded) throw (EncodeException
 		BIO_free(buffer);
 		throw EncodeException(EncodeException::DER_DECODE, "TimestampRequest::TimestampRequest");
 	}
-	BIO_free(buffer);
+	BIO_free_all(buffer);
 
 }
 

@@ -180,6 +180,44 @@ const EVP_MD* MessageDigest::getMessageDigest(MessageDigest::Algorithm algorithm
 	return md;
 }
 
+ObjectIdentifier MessageDigest::getMessageDigestOid(MessageDigest::Algorithm algorithm) throw (MessageDigestException)
+{
+	ASN1_OBJECT* asn1object = NULL;
+	switch (algorithm)
+	{
+		case MessageDigest::MD4:
+			asn1object = OBJ_nid2obj(NID_md4);
+			break;
+		case MessageDigest::MD5:
+			asn1object = OBJ_nid2obj(NID_md5);
+			break;
+		case MessageDigest::RIPEMD160:
+			asn1object = OBJ_nid2obj(NID_ripemd160);
+			break;
+		case MessageDigest::SHA:
+			asn1object = OBJ_nid2obj(NID_sha);
+			break;
+		case MessageDigest::SHA1:
+			asn1object = OBJ_nid2obj(NID_sha1);
+			break;
+		case MessageDigest::SHA224:
+			asn1object = OBJ_nid2obj(NID_sha224);
+			break;
+		case MessageDigest::SHA256:
+			asn1object = OBJ_nid2obj(NID_sha256);
+			break;
+		case MessageDigest::SHA384:
+			asn1object = OBJ_nid2obj(NID_sha384);
+			break;
+		case MessageDigest::SHA512:
+			asn1object = OBJ_nid2obj(NID_sha512);
+			break;
+		default:
+			throw MessageDigestException(MessageDigestException::INVALID_ALGORITHM, "MessageDigest::getMessageDigest");
+	}
+	return ObjectIdentifier(asn1object);
+}
+
 MessageDigest::Algorithm MessageDigest::getMessageDigest(int algorithmNid)
 		throw (MessageDigestException)
 {
