@@ -1,7 +1,7 @@
-LIBS = -lp11 -L/usr/local/opt/openssl/lib 
-INCLUDES = -I/usr/local/opt/openssl/include -I/usr/local/Cellar/libp11/0.2.8_1/include -I./include
+LIBS = -lp11 -L /Users/martin/openssl/
+INCLUDES = -I/Users/martin/openssl/include -I/usr/local/Cellar/libp11/0.2.8_1/include -I./include
 FLAGS = -shared
-CC = clang++ -stdlib=libc++
+CC = clang++ -stdlib=libc++ -g
 EXECUTABLES = libcryptosec.so
 ARQ= $(shell uname -m)
 LIBDIR = /usr/lib

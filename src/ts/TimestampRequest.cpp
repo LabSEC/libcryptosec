@@ -32,9 +32,17 @@ void TimestampRequest::setMessageImprint(ObjectIdentifier algOid, ByteArray &has
 
 	TS_REQ_set_msg_imprint(this->req, msg_imprint);
 
-	X509_ALGOR_free(algo);
+	//X509_ALGOR_free(algo);
 
 	TS_MSG_IMPRINT_free(msg_imprint);
+}
+
+ObjectIdentifier TimestampRequest::getMessageImprintDigestAlg(){
+	return ObjectIdentifier(OBJ_dup(this->req->msg_imprint->hash_algo->algorithm));
+}
+
+ByteArray* TimestampRequest::getMessageImprintDigest(){
+	return new ByteArray(this->req->msg_imprint->hashed_msg->data, this->req->msg_imprint->hashed_msg->length);
 }
 
 //TimestampRequest::TimestampRequest(std::string &pemEncoded)
@@ -60,27 +68,27 @@ void TimestampRequest::setMessageImprint(ObjectIdentifier algOid, ByteArray &has
 	BIO_free(buffer);*/
 //}
 
-//TimestampRequest::TimestampRequest(ByteArray &derEncoded) throw (EncodeException){
-//	BIO *buffer;
-//	buffer = BIO_new(BIO_s_mem());
-//	if (buffer == NULL)
-//	{
-//		throw EncodeException(EncodeException::BUFFER_CREATING, "TimestampRequest::TimestampRequest");
-//	}
-//	if ((unsigned int)(BIO_write(buffer, derEncoded.getDataPointer(), derEncoded.size())) != derEncoded.size())
-//	{
-//		BIO_free(buffer);
-//		throw EncodeException(EncodeException::BUFFER_WRITING, "TimestampRequest::TimestampRequest");
-//	}
-//	this->req = d2i_TS_REQ_bio(buffer, NULL); /* TODO: will the second parameter work fine ? */
-//	if (this->req == NULL)
-//	{
-//		BIO_free(buffer);
-//		throw EncodeException(EncodeException::DER_DECODE, "TimestampRequest::TimestampRequest");
-//	}
-//	BIO_free(buffer);
-//
-//}
+TimestampRequest::TimestampRequest(ByteArray &derEncoded) throw (EncodeException){
+	BIO *buffer;
+	buffer = BIO_new(BIO_s_mem());
+	if (buffer == NULL)
+	{
+		throw EncodeException(EncodeException::BUFFER_CREATING, "TimestampRequest::TimestampRequest");
+	}
+	if ((unsigned int)(BIO_write(buffer, derEncoded.getDataPointer(), derEncoded.size())) != derEncoded.size())
+	{
+		BIO_free(buffer);
+		throw EncodeException(EncodeException::BUFFER_WRITING, "TimestampRequest::TimestampRequest");
+	}
+	this->req = d2i_TS_REQ_bio(buffer, NULL); /* TODO: will the second parameter work fine ? */
+	if (this->req == NULL)
+	{
+		BIO_free(buffer);
+		throw EncodeException(EncodeException::DER_DECODE, "TimestampRequest::TimestampRequest");
+	}
+	BIO_free(buffer);
+
+}
 
 TimestampRequest::~TimestampRequest()
 {
@@ -197,14 +205,7 @@ TimestampRequest::~TimestampRequest()
 //
 //}
 
-//MessageDigest::Algorithm TimestampRequest::getMessageDigestAlgorithm() throw (MessageDigestException){
-//
-//}
-//	void setVersion(long version);
-//	long getVersion();
-//	void setMessageImprintDigest(ByteArray &publicKey);
-//ByteArray* TimestampRequest::getMessageImprintDigest(){
-//	return new ByteArray(this->req->message_imprint->hashed_msg);
-//}
+
+
 //	void setMessageImprintDigestAlg(ObjectIdentifier algOid);
 //	ObjectIdentifier getMessageImprintDigestAlg();
