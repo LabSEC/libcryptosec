@@ -19,11 +19,28 @@ long TimestampRequest::getVersion() {
 	return TS_REQ_get_version(this->req);
 }
 
-void TimestampRequest::setMessageImprint(ObjectIdentifier algOid, ByteArray &hash){
+void TimestampRequest::setCertReq(bool certReq){
+	TS_REQ_set_cert_req(this->req, certReq);
+}
+
+bool TimestampRequest::getCertReq(){
+	return TS_REQ_get_cert_req(this->req);
+}
+
+void TimestampRequest::setNonce(BigInteger &nonce){
+	ASN1_INTEGER * asn1int = nonce.getASN1Value();
+	TS_REQ_set_nonce(this->req, asn1int);
+	ASN1_INTEGER_free(asn1int);
+}
+
+BigInteger TimestampRequest::getNonce(){
+	return BigInteger(this->req->nonce);
+}
+
+/*void TimestampRequest::setMessageImprint(ObjectIdentifier algOid, ByteArray &hash){
 	X509_ALGOR* algo = X509_ALGOR_new();
-	algo->algorithm = algOid.getObjectIdentifier();
-	algo->parameter = ASN1_TYPE_new();
-	algo->parameter->type = V_ASN1_NULL;
+	ASN1_OBJECT* aobj = OBJ_dup(algOid.getObjectIdentifier());
+	X509_ALGOR_set0(algo, aobj, V_ASN1_NULL, 0);
 
 	TS_MSG_IMPRINT *msg_imprint = TS_MSG_IMPRINT_new();
 	TS_MSG_IMPRINT_set_algo(msg_imprint, algo);
@@ -32,9 +49,24 @@ void TimestampRequest::setMessageImprint(ObjectIdentifier algOid, ByteArray &has
 
 	TS_REQ_set_msg_imprint(this->req, msg_imprint);
 
-	//X509_ALGOR_free(algo);
+	X509_ALGOR_free(algo);
 
 	TS_MSG_IMPRINT_free(msg_imprint);
+}*/
+
+//The same as above but freeing memory fewer times.
+void TimestampRequest::setMessageImprint(ObjectIdentifier algOid, ByteArray &hash){
+	X509_ALGOR* algo = X509_ALGOR_new();
+	ASN1_OBJECT* aobj = OBJ_dup(algOid.getObjectIdentifier());
+	X509_ALGOR_set0(algo, aobj, V_ASN1_NULL, 0);
+
+	TS_MSG_IMPRINT *msg_imprint = new TS_MSG_IMPRINT();
+	msg_imprint->hash_algo = algo;
+	msg_imprint->hashed_msg = ASN1_OCTET_STRING_new();
+	ASN1_OCTET_STRING_set(msg_imprint->hashed_msg, hash.getDataPointer(), hash.size());
+
+	TS_MSG_IMPRINT_free(this->req->msg_imprint);
+	this->req->msg_imprint = msg_imprint;
 }
 
 ObjectIdentifier TimestampRequest::getMessageImprintDigestAlg(){
@@ -86,7 +118,8 @@ TimestampRequest::TimestampRequest(ByteArray &derEncoded) throw (EncodeException
 		BIO_free(buffer);
 		throw EncodeException(EncodeException::DER_DECODE, "TimestampRequest::TimestampRequest");
 	}
-	BIO_free(buffer);
+	BIO_free_all(buffer);
+	ERR_remove_state(0);//Martin: address a memory leak in d2i_TS_REQ_bio. See http://marc.info/?l=openssl-users&m=98789085217030&w=2
 
 }
 
