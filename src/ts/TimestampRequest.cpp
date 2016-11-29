@@ -78,7 +78,7 @@ ByteArray TimestampRequest::getDerEncoded() const throw (EncodeException) {
 
 	TS_REQ_set_msg_imprint(this->req, msg_imprint);
 
-	X509_ALGOR_free(algo);
+	//X509_ALGOR_free(algo);
 
 	TS_MSG_IMPRINT_free(msg_imprint);
 }*/
@@ -98,13 +98,31 @@ void TimestampRequest::setMessageImprint(ObjectIdentifier algOid, ByteArray &has
 	this->req->msg_imprint = msg_imprint;
 }
 
-ObjectIdentifier TimestampRequest::getMessageImprintDigestAlg(){
-	return ObjectIdentifier(OBJ_dup(this->req->msg_imprint->hash_algo->algorithm));
+ByteArray TimestampRequest::getMessageImprintDigest(){
+	return ByteArray(this->req->msg_imprint->hashed_msg->data, this->req->msg_imprint->hashed_msg->length);
 }
 
-ByteArray* TimestampRequest::getMessageImprintDigest(){
-	return new ByteArray(this->req->msg_imprint->hashed_msg->data, this->req->msg_imprint->hashed_msg->length);
+ObjectIdentifier TimestampRequest::getMessageImprintDigestAlg(){
+	return ObjectIdentifier(this->req->msg_imprint->hash_algo->algorithm);
 }
+
+void TimestampRequest::setNonce(BigInteger &nonce){
+	this->req->nonce = nonce.getASN1Value();
+	//TS_REQ_set_nonce(this->req, nonce.getASN1Value());
+
+}
+BigInteger TimestampRequest::getNonce(){
+	return BigInteger(this->req->nonce);
+}
+
+void TimestampRequest::setCertReq(bool certReq){
+	TS_REQ_set_cert_req(this->req, certReq);
+}
+
+bool TimestampRequest::getCertReq(){
+	return this->req->cert_req;
+}
+
 
 //TimestampRequest::TimestampRequest(std::string &pemEncoded)
 //		throw (EncodeException)
@@ -130,6 +148,7 @@ ByteArray* TimestampRequest::getMessageImprintDigest(){
 //}
 
 TimestampRequest::TimestampRequest(ByteArray &derEncoded) throw (EncodeException){
+	this->req = NULL;
 	BIO *buffer;
 	buffer = BIO_new(BIO_s_mem());
 	if (buffer == NULL)
@@ -141,14 +160,13 @@ TimestampRequest::TimestampRequest(ByteArray &derEncoded) throw (EncodeException
 		BIO_free(buffer);
 		throw EncodeException(EncodeException::BUFFER_WRITING, "TimestampRequest::TimestampRequest");
 	}
-	this->req = d2i_TS_REQ_bio(buffer, NULL); /* TODO: will the second parameter work fine ? */
+	this->req = d2i_TS_REQ_bio(buffer, NULL);
 	if (this->req == NULL)
 	{
 		BIO_free(buffer);
 		throw EncodeException(EncodeException::DER_DECODE, "TimestampRequest::TimestampRequest");
 	}
 	BIO_free_all(buffer);
-	ERR_remove_state(0);//Martin: address a memory leak in d2i_TS_REQ_bio. See http://marc.info/?l=openssl-users&m=98789085217030&w=2
 
 }
 
@@ -156,6 +174,34 @@ TimestampRequest::~TimestampRequest()
 {
 	TS_REQ_free(this->req);
 }
+
+ByteArray TimestampRequest::getDerEncoded() const throw (EncodeException){
+	BIO *buffer;
+	int ndata, wrote;
+	ByteArray ret;
+	unsigned char *data;
+	buffer = BIO_new(BIO_s_mem());
+	if (buffer == NULL)
+	{
+		throw EncodeException(EncodeException::BUFFER_CREATING, "TimestampRequest::getDerEncoded");
+	}
+	wrote = i2d_TS_REQ_bio(buffer, this->req);
+	if (!wrote)
+	{
+		BIO_free(buffer);
+		throw EncodeException(EncodeException::DER_ENCODE, "TimestampRequest::getDerEncoded");
+	}
+	ndata = BIO_get_mem_data(buffer, &data);
+	if (ndata <= 0)
+	{
+		BIO_free(buffer);
+		throw EncodeException(EncodeException::BUFFER_READING, "TimestampRequest::getDerEncoded");
+	}
+	ret = ByteArray(data, ndata);
+	BIO_free(buffer);
+	return ret;
+}
+
 
 //std::string TimestampRequest::toXml(std::string tab){
 //	string ret = "", anAlgor, aCertReq;
@@ -267,3 +313,18 @@ TimestampRequest::~TimestampRequest()
 //
 //}
 
+TS_REQ* TimestampRequest::getTSReq() const{
+	return this->req;
+}
+
+TimestampRequest& TimestampRequest::operator =(const TimestampRequest& value){
+	if (this->req)
+	{
+		TS_REQ_free(this->req);
+	}
+	this->req = TS_REQ_dup(value.getTSReq());
+	return (*this);
+}
+bool TimestampRequest::operator ==(const TimestampRequest& value){
+	return value.getDerEncoded() == this->getDerEncoded();
+}
