@@ -29,3 +29,5 @@
 *.out
 *.app
 
+.cproject
+.settings/language.settings.xml

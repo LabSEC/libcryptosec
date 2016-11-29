@@ -27,7 +27,7 @@ public:
 	void setVersion(long version);
 	long getVersion();
 	void setMessageImprint(ObjectIdentifier algOid, ByteArray &hash);
-	ByteArray getMessageImprintDigest();
+	ByteArray* getMessageImprintDigest();
 	ObjectIdentifier getMessageImprintDigestAlg();
 	void setNonce(BigInteger &nonce);
 	BigInteger getNonce();
