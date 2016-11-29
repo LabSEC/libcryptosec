@@ -1,6 +1,6 @@
 Summary: libcryptosec
 Name: libcryptosec
-Version: 2.2.8
+Version: 2.2.9
 Release: 1
 Source0: %{name}-%{version}.zip
 License: GPL
@@ -25,6 +25,11 @@ make install
 %{_includedir}/libcryptosec/
 
 %changelog
+%changelog
+* Tue Nov 29 2016 Pablo Montezano <pablo.montezano@grad.ufsc.br> - 2.2.9
+- Added support to native openssl brainpool curves;
+- Must use OpenSSl-1.0.2j with if using Brainpool curves.
+
 * Mon Sep 19 2016 Lucas Perin <lucas.perin@posgrad.ufsc.br> - 2.2.8
 - Must use OpenSSL 1.0.1h with Brainpool patch if using Brainpool curves;
 - Fixes bug with empty DN when using alterSubject.
