@@ -28,13 +28,42 @@ bool TimestampRequest::getCertReq(){
 }
 
 void TimestampRequest::setNonce(BigInteger &nonce){
-	ASN1_INTEGER * asn1int = nonce.getASN1Value();
-	TS_REQ_set_nonce(this->req, asn1int);
-	ASN1_INTEGER_free(asn1int);
+	if(this->req->nonce != NULL){
+		ASN1_INTEGER_free(this->req->nonce);
+	}
+	this->req->nonce = nonce.getASN1Value();
 }
 
 BigInteger TimestampRequest::getNonce(){
 	return BigInteger(this->req->nonce);
+}
+
+ByteArray TimestampRequest::getDerEncoded() const throw (EncodeException) {
+	BIO *buffer;
+	int ndata, wrote;
+	ByteArray ret;
+	unsigned char *data;
+	buffer = BIO_new(BIO_s_mem());
+	if (buffer == NULL)
+	{
+		throw EncodeException(EncodeException::BUFFER_CREATING, "TimestampRequest::getDerEncoded");
+	}
+	wrote = i2d_TS_REQ_bio(buffer, this->req);
+	if (!wrote)
+	{
+		BIO_free(buffer);
+		throw EncodeException(EncodeException::DER_ENCODE, "TimestampRequest::getDerEncoded");
+	}
+	ndata = BIO_get_mem_data(buffer, &data);
+	if (ndata <= 0)
+	{
+		BIO_free(buffer);
+		throw EncodeException(EncodeException::BUFFER_READING, "TimestampRequest::getDerEncoded");
+	}
+	ret = ByteArray(data, ndata);
+	BIO_free_all(buffer);
+	ERR_remove_state(0);
+	return ret;
 }
 
 /*void TimestampRequest::setMessageImprint(ObjectIdentifier algOid, ByteArray &hash){
@@ -238,7 +267,3 @@ TimestampRequest::~TimestampRequest()
 //
 //}
 
-
-
-//	void setMessageImprintDigestAlg(ObjectIdentifier algOid);
-//	ObjectIdentifier getMessageImprintDigestAlg();

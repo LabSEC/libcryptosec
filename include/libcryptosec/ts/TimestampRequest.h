@@ -23,8 +23,7 @@ public:
 	//TimestampRequest(const	TimestampRequest& req); 
 	virtual 	~TimestampRequest();
 	//virtual std::string toXml(std::string tab = "");
-	//ByteArray getDerEncoded() const
-	//		throw (EncodeException);
+	ByteArray getDerEncoded() const	throw (EncodeException);
 	MessageDigest::Algorithm getMessageDigestAlgorithm()
 			throw (MessageDigestException);
 	void setVersion(long version);
