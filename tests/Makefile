@@ -1,5 +1,5 @@
 LIBS = -lcryptosec -L../ 
-INCLUDES = -I./$(GTEST_DIR) -I../include/
+INCLUDES = -I./$(GTEST_DIR) -I../include/ -I~/openssl/include
 CC = clang++ -stdlib=libc++
 CPPFLAGS = -DGTEST_HAS_PTHREAD=0
 CXXFLAGS = -g
