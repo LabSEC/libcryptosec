@@ -43,7 +43,57 @@ void TimestampResponseBuilder::setTimestampRequest(TimestampRequest& tsreq) thro
 	}
 }
 
+void TimestampResponseBuilder::setSignerCert(Certificate &cert){
+	TS_RESP_CTX_set_signer_cert(this->ctx, X509_dup(cert.getX509()));
+}
+
 void TimestampResponseBuilder::setSerial(long int num) {
 	serial = num;
 	TS_RESP_CTX_set_serial_cb(this->ctx, serial_cb, NULL);
+}
+
+void TimestampResponseBuilder::setStatusInfo(PKIStatus status, string statusString){
+	if(statusString.compare("")){
+		TS_RESP_CTX_set_status_info(this->ctx, (int)status, NULL);
+	}
+	else {
+		TS_RESP_CTX_set_status_info(this->ctx, (int)status, statusString.c_str());
+	}
+}
+
+TS_RESP* TimestampResponseBuilder::generateFailResponse(PrivateKey &privateKey, MessageDigest::Algorithm messageDigestAlgorithm,
+		PKIStatus status, PKIFailureInfo failInfo, string statusString) throw (AsymmetricKeyException){
+
+	TS_RESP* ret = NULL;
+
+	if(status != granted && status != grantedWithMods)
+	{
+		this->setStatusInfo(status, statusString);
+		TS_RESP_CTX_add_failure_info(this->ctx,(int)failInfo);
+		ret = this->sign(privateKey, messageDigestAlgorithm);
+	}
+
+	return ret;
+}
+TS_RESP* TimestampResponseBuilder::generateGrantedResponse(PrivateKey &privateKey, MessageDigest::Algorithm messageDigestAlgorithm,
+		PKIStatus status, string statusString) throw (AsymmetricKeyException) {
+
+	TS_RESP* ret = NULL;
+
+	if(status == granted || status == grantedWithMods)
+	{
+		this->setStatusInfo(status, statusString);
+		ret = this->sign(privateKey, messageDigestAlgorithm);
+	}
+
+	return ret;
+}
+
+TS_RESP* TimestampResponseBuilder::sign(PrivateKey &privateKey, MessageDigest::Algorithm messageDigestAlgorithm)
+	throw (AsymmetricKeyException) {
+	TS_RESP_CTX_set_signer_key(this->ctx, privateKey.getEvpPkey());
+
+	if(this->ctx-> != NULL){
+		EVP_MD_CTX_free(this-)
+	}
 }
