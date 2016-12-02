@@ -2,6 +2,7 @@
 
 SymmetricCipher::SymmetricCipher()
 {
+	this->ctx = EVP_CIPHER_CTX_new();
 	this->state = SymmetricCipher::NO_INIT;
 	this->buffer = NULL;
 }
@@ -18,13 +19,13 @@ SymmetricCipher::SymmetricCipher(SymmetricKey &key, SymmetricCipher::Operation o
 	newKey = keyIv.first;
 	iv = keyIv.second;
 	
-	EVP_CIPHER_CTX_init(&this->ctx);
-	int rc = EVP_CipherInit_ex(&this->ctx, cipher, NULL, newKey->getDataPointer(), iv->getDataPointer(), (operation == this->ENCRYPT)?1:0);
+	EVP_CIPHER_CTX_init(this->ctx);
+	int rc = EVP_CipherInit_ex(this->ctx, cipher, NULL, newKey->getDataPointer(), iv->getDataPointer(), (operation == this->ENCRYPT)?1:0);
 	if (!rc)
 	{
 		delete newKey;
 		delete iv;
-		EVP_CIPHER_CTX_cleanup(&this->ctx);
+		EVP_CIPHER_CTX_cleanup(this->ctx);
 		throw SymmetricCipherException(SymmetricCipherException::CTX_INIT, "SymmetricCipher::SymmetricCipher");
 	}
 	delete newKey;
@@ -45,13 +46,13 @@ SymmetricCipher::SymmetricCipher(SymmetricKey &key, SymmetricCipher::OperationMo
 	newKey = keyIv.first;
 	iv = keyIv.second;
 	
-	EVP_CIPHER_CTX_init(&this->ctx);
-	int rc = EVP_CipherInit_ex(&this->ctx, cipher, NULL, newKey->getDataPointer(), iv->getDataPointer(), (operation == this->ENCRYPT)?1:0);
+	EVP_CIPHER_CTX_init(this->ctx);
+	int rc = EVP_CipherInit_ex(this->ctx, cipher, NULL, newKey->getDataPointer(), iv->getDataPointer(), (operation == this->ENCRYPT)?1:0);
 	if (!rc)
 	{
 		delete newKey;
 		delete iv;
-		EVP_CIPHER_CTX_cleanup(&this->ctx);
+		EVP_CIPHER_CTX_cleanup(this->ctx);
 		throw SymmetricCipherException(SymmetricCipherException::CTX_INIT, "SymmetricCipher::SymmetricCipher");
 	}
 	delete newKey;
@@ -62,7 +63,7 @@ SymmetricCipher::SymmetricCipher(SymmetricKey &key, SymmetricCipher::OperationMo
 
 SymmetricCipher::~SymmetricCipher()
 {
-	EVP_CIPHER_CTX_cleanup(&this->ctx);
+	EVP_CIPHER_CTX_free(this->ctx);
 	if (this->buffer)
 	{
 		delete this->buffer;
@@ -108,7 +109,7 @@ void SymmetricCipher::init(SymmetricKey &key, SymmetricCipher::Operation operati
 void SymmetricCipher::init(SymmetricKey &key, SymmetricCipher::OperationMode mode, SymmetricCipher::Operation operation)
 		throw (SymmetricCipherException)
 {
-	EVP_CIPHER_CTX_cleanup(&this->ctx);
+	EVP_CIPHER_CTX_cleanup(this->ctx);
 	if (this->buffer)
 	{
 		delete this->buffer;
@@ -123,13 +124,13 @@ void SymmetricCipher::init(SymmetricKey &key, SymmetricCipher::OperationMode mod
 	newKey = keyIv.first;
 	iv = keyIv.second;
 	
-	EVP_CIPHER_CTX_init(&this->ctx);
-	int rc = EVP_CipherInit_ex(&this->ctx, cipher, NULL, newKey->getDataPointer(), iv->getDataPointer(), (operation == this->ENCRYPT)?1:0);
+	EVP_CIPHER_CTX_init(this->ctx);
+	int rc = EVP_CipherInit_ex(this->ctx, cipher, NULL, newKey->getDataPointer(), iv->getDataPointer(), (operation == this->ENCRYPT)?1:0);
 	if (!rc)
 	{
 		delete newKey;
 		delete iv;
-		EVP_CIPHER_CTX_cleanup(&this->ctx);
+		EVP_CIPHER_CTX_cleanup(this->ctx);
 		throw SymmetricCipherException(SymmetricCipherException::CTX_INIT, "SymmetricCipher::init");
 	}
 	delete newKey;
@@ -171,12 +172,12 @@ void SymmetricCipher::update(ByteArray &data)
 	{
 		memcpy(newBuffer->getDataPointer(), this->buffer->getDataPointer(), this->buffer->size());
 	}
-	ret = EVP_CipherUpdate(&this->ctx, &((newBuffer->getDataPointer())[totalEncrypted]), &encrypted, data.getDataPointer(), data.size());
+	ret = EVP_CipherUpdate(this->ctx, &((newBuffer->getDataPointer())[totalEncrypted]), &encrypted, data.getDataPointer(), data.size());
 	if (!ret)
 	{
 		delete newBuffer;
 		this->state = this->NO_INIT;
-		EVP_CIPHER_CTX_cleanup(&this->ctx);
+		EVP_CIPHER_CTX_cleanup(this->ctx);
 		throw SymmetricCipherException(SymmetricCipherException::CTX_UPDATE, "SymmetricCipher::update");
 	}
 	totalEncrypted += encrypted;
@@ -202,7 +203,7 @@ ByteArray SymmetricCipher::doFinal()
 	this->state = this->NO_INIT;
 	newBuffer = new ByteArray(EVP_MAX_BLOCK_LENGTH + EVP_MAX_BLOCK_LENGTH + this->buffer->size());
 	memcpy(newBuffer->getDataPointer(), this->buffer->getDataPointer(), this->buffer->size());
-	rc = EVP_CipherFinal_ex(&this->ctx, &((newBuffer->getDataPointer())[totalEncrypted]), &encrypted);
+	rc = EVP_CipherFinal_ex(this->ctx, &((newBuffer->getDataPointer())[totalEncrypted]), &encrypted);
 	if (!rc)
 	{
 		delete newBuffer;
@@ -252,7 +253,7 @@ SymmetricCipher::Operation SymmetricCipher::getOperation() throw (InvalidStateEx
 	{
 		throw InvalidStateException("SymmetricCipher::getOperation");
 	}
-	if (this->ctx.encrypt)
+	if (this->ctx->encrypt)
 	{
 		operation = this->ENCRYPT;
 	}

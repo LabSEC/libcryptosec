@@ -3,6 +3,10 @@
 AsymmetricKey::AsymmetricKey(EVP_PKEY *key)
 		throw (AsymmetricKeyException)
 {
+	if(this->key != NULL){
+		EVP_PKEY_free(this->key);
+	}
+	this->key = key;
 }
 
 AsymmetricKey::~AsymmetricKey()
@@ -14,7 +18,7 @@ AsymmetricKey::Algorithm AsymmetricKey::getAlgorithm()
 		throw (AsymmetricKeyException)
 {
 	AsymmetricKey::Algorithm type;
-	switch (EVP_PKEY_type(this->key->type))
+	switch (EVP_PKEY_base_id(this->key))
 	{
 		case EVP_PKEY_RSA: /* TODO: confirmar porque tem estes dois tipos */
 		case EVP_PKEY_RSA2:
@@ -37,7 +41,7 @@ AsymmetricKey::Algorithm AsymmetricKey::getAlgorithm()
 //			type = AsymmetricKey::EC;
 //			break;
 		default:
-			throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "There is no support for this type: " + std::string(OBJ_nid2sn(this->key->type)), "AsymmetricKey::getAlgorithm");
+			throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "There is no support for this type: " + std::string(OBJ_nid2sn(EVP_PKEY_id(this->key))), "AsymmetricKey::getAlgorithm");
 	}
 	return type;
 }
@@ -71,7 +75,7 @@ int AsymmetricKey::getSizeBits() throw (AsymmetricKeyException)
 	ret = EVP_PKEY_bits(this->key);
 	if (ret == 0)
 	{
-		throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "There is no support for this type: " + std::string(OBJ_nid2sn(this->key->type)), "AsymmetricKey::getSizeBits");
+		throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "There is no support for this type: " + std::string(OBJ_nid2sn(EVP_PKEY_id(this->key))), "AsymmetricKey::getSizeBits");
 	}
 	return ret;
 }

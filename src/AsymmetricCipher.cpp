@@ -8,7 +8,7 @@ ByteArray AsymmetricCipher::encrypt(RSAPublicKey &key, ByteArray &data, Asymmetr
 	paddingValue = AsymmetricCipher::getPadding(padding);
 	rsaSize = key.getSize();
 	ret = ByteArray(rsaSize);
-	rc = RSA_public_encrypt(data.size(), data.getDataPointer(), ret.getDataPointer(), key.getEvpPkey()->pkey.rsa, paddingValue);
+	rc = RSA_public_encrypt(data.size(), data.getDataPointer(), ret.getDataPointer(), EVP_PKEY_get0_RSA(key.getEvpPkey()), paddingValue);
 	if (rc == -1 || rc != rsaSize)
 	{
 		throw AsymmetricCipherException(AsymmetricCipherException::ENCRYPTING_DATA, "AsymmetricCipher::encrypt");
@@ -24,7 +24,7 @@ ByteArray AsymmetricCipher::encrypt(RSAPublicKey &key, std::string &data, Asymme
 	paddingValue = AsymmetricCipher::getPadding(padding);
 	rsaSize = key.getSize();
 	ret = ByteArray(rsaSize);
-	rc = RSA_public_encrypt(data.size(), (const unsigned char *)data.c_str(), ret.getDataPointer(), key.getEvpPkey()->pkey.rsa, paddingValue);
+	rc = RSA_public_encrypt(data.size(), (const unsigned char *)data.c_str(), ret.getDataPointer(), EVP_PKEY_get0_RSA(key.getEvpPkey()), paddingValue);
 	if (rc == -1 || rc != rsaSize)
 	{
 		throw AsymmetricCipherException(AsymmetricCipherException::ENCRYPTING_DATA, "AsymmetricCipher::encrypt");
@@ -40,7 +40,7 @@ ByteArray AsymmetricCipher::decrypt(RSAPrivateKey &key, ByteArray &ciphered, Asy
 	paddingValue = AsymmetricCipher::getPadding(padding);
 	rsaSize = key.getSize();
 	retTemp = new ByteArray(rsaSize);
-	rc = RSA_private_decrypt(ciphered.size(), ciphered.getDataPointer(), retTemp->getDataPointer(), key.getEvpPkey()->pkey.rsa, paddingValue);
+	rc = RSA_private_decrypt(ciphered.size(), ciphered.getDataPointer(), retTemp->getDataPointer(), EVP_PKEY_get0_RSA(key.getEvpPkey()), paddingValue);
 	if (rc <= 0)
 	{
 		delete retTemp;
