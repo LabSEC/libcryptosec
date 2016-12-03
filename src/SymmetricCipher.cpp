@@ -253,7 +253,7 @@ SymmetricCipher::Operation SymmetricCipher::getOperation() throw (InvalidStateEx
 	{
 		throw InvalidStateException("SymmetricCipher::getOperation");
 	}
-	if (this->ctx->encrypt)
+	if (EVP_CIPHER_CTX_encrypting(this->ctx))
 	{
 		operation = this->ENCRYPT;
 	}
@@ -268,8 +268,8 @@ std::pair<ByteArray*, ByteArray*> SymmetricCipher::keyToKeyIv(ByteArray &key, co
 {
 	int rc;
 	std::pair<ByteArray*, ByteArray*> ret;
-	ByteArray *newKey = new ByteArray(cipher->key_len);
-    ByteArray *iv = new ByteArray(cipher->iv_len);
+	ByteArray *newKey = new ByteArray(EVP_CIPHER_key_length(cipher));
+    ByteArray *iv = new ByteArray(EVP_CIPHER_iv_length(cipher));
     rc = EVP_BytesToKey(cipher, EVP_md5(), NULL, key.getDataPointer(), key.size(), 1, newKey->getDataPointer(), iv->getDataPointer()); 
 	ret.first = newKey;
 	ret.second = iv;

@@ -412,7 +412,7 @@ MessageDigest::Algorithm Certificate::getMessageDigestAlgorithm()
 		throw (MessageDigestException)
 {
 	MessageDigest::Algorithm ret;
-	ret = MessageDigest::getMessageDigest(OBJ_obj2nid(this->cert->sig_alg->algorithm));
+	ret = MessageDigest::getMessageDigest(X509_get_signature_nid(this->cert)); //martin: OBJ_obj2nid(this->cert->sig_alg->algorithm)) -> X509_get_signature_nid
 	return ret;
 }
 
