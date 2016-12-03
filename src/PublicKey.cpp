@@ -137,6 +137,9 @@ ByteArray PublicKey::getKeyIdentifier() throw (EncodeException)
 	ByteArray ret;
 	unsigned int size;
 	X509_PUBKEY *pubkey = NULL;
+	 const unsigned char* pubkeyData = NULL;
+	 int pubkeyDataLength;
+
 	
 	if(X509_PUBKEY_set(&pubkey, this->key) == 0)
 	{
@@ -144,7 +147,12 @@ ByteArray PublicKey::getKeyIdentifier() throw (EncodeException)
 	}
 			
 	ret = ByteArray(EVP_MAX_MD_SIZE);
-	EVP_Digest(pubkey->public_key->data, pubkey->public_key->length, ret.getDataPointer(), &size, EVP_sha1(), NULL);
+
+	X509_PUBKEY_get0_param(NULL, &pubkeyData, &pubkeyDataLength, NULL, pubkey); //martin: obtem X509_PUBKEY->public_key->data e X509_PUBKEY->public_key->length
+	EVP_Digest(pubkeyData, pubkeyDataLength, ret.getDataPointer(), &size, EVP_sha1(), NULL); //martin: testar! faz o mesmo da linha abaixo comentada
+
+	//EVP_Digest(pubkey->public_key->data, pubkey->public_key->length, ret.getDataPointer(), &size, EVP_sha1(), NULL);
+
 	ret = ByteArray(ret.getDataPointer(), size);
 
 	X509_PUBKEY_free(pubkey);

@@ -49,7 +49,7 @@ void MessageDigest::init(MessageDigest::Algorithm algorithm)
 	int rc;
 	const EVP_MD *md;
 	if (this->state != MessageDigest::NO_INIT){
-		EVP_MD_CTX_cleanup(this->ctx);
+		EVP_MD_CTX_reset(this->ctx); //martin: EVP_MD_CTX_cleanup -> EVP_MD_CTX_reset see openssl1.1.c/CHANGES:647
 	}
 	this->algorithm = algorithm;
 	md = MessageDigest::getMessageDigest(this->algorithm);
@@ -67,7 +67,7 @@ void MessageDigest::init(MessageDigest::Algorithm algorithm, Engine &engine)
 	int rc;
 	const EVP_MD *md;
 	if (this->state != MessageDigest::NO_INIT){
-		EVP_MD_CTX_cleanup(this->ctx);
+		EVP_MD_CTX_reset(this->ctx); //martin: EVP_MD_CTX_cleanup -> EVP_MD_CTX_reset see openssl1.1.c/CHANGES:647
 	}
 	this->algorithm = algorithm;
 	md = MessageDigest::getMessageDigest(this->algorithm);
@@ -112,7 +112,7 @@ ByteArray MessageDigest::doFinal() throw (MessageDigestException, InvalidStateEx
 	}
 	digest = (unsigned char *)calloc(EVP_MAX_MD_SIZE + 1, sizeof(unsigned char));
 	rc = EVP_DigestFinal_ex(this->ctx, digest, &ndigest);
-	EVP_MD_CTX_cleanup(this->ctx);
+	EVP_MD_CTX_reset(this->ctx); //martin: EVP_MD_CTX_cleanup -> EVP_MD_CTX_reset see openssl1.1.c/CHANGES:647
 	this->state = MessageDigest::NO_INIT;
 	if (!rc)
 	{
@@ -160,9 +160,9 @@ const EVP_MD* MessageDigest::getMessageDigest(MessageDigest::Algorithm algorithm
 		case MessageDigest::RIPEMD160:
 			md = EVP_ripemd160();
 			break;
-		case MessageDigest::SHA:
-			md = EVP_sha();
-			break;
+		//case MessageDigest::SHA: //removido no OpenSSL1.1.c?
+		//	md = EVP_sha();
+		//	break;
 		case MessageDigest::SHA1:
 			md = EVP_sha1();
 			break;

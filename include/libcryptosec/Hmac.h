@@ -192,7 +192,7 @@ protected:
 	/**
 	 * Estrutura OpenSSL que representa o Hmac.
 	 */
-	HMAC_CTX ctx;
+	HMAC_CTX* ctx;
 
 };
 
