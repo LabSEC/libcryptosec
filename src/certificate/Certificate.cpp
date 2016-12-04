@@ -99,7 +99,7 @@ std::string Certificate::getXmlEncoded(std::string tab)
 		catch (...)
 		{
 		}
-		string = OBJ_nid2ln(OBJ_obj2nid(this->cert->sig_alg->algorithm));
+		string = OBJ_nid2ln(X509_get_signature_type(this->cert)); //OBJ_nid2ln(OBJ_obj2nid(this->cert->sig_alg->algorithm));
 		ret += "\t\t<signature>" + string + "</signature>\n";
 
 		ret += "\t\t<issuer>\n";
@@ -140,9 +140,21 @@ std::string Certificate::getXmlEncoded(std::string tab)
 		ret += "\t\t</subject>\n";
 
 		ret += "\t\t<subjectPublicKeyInfo>\n";
-			string = OBJ_nid2ln(OBJ_obj2nid(this->cert->cert_info->key->algor->algorithm));
+			string = OBJ_nid2ln(EVP_PKEY_base_id(X509_get0_pubkey(this->cert))); //OBJ_obj2nid(this->cert->cert_info->key->algor->algorithm)
 			ret += "\t\t\t<algorithm>" + string + "</algorithm>\n";
-			data = ByteArray(this->cert->cert_info->key->public_key->data, this->cert->cert_info->key->public_key->length);
+
+			int pkeyLength;
+			unsigned char* pkeyData;
+			EVP_PKEY* evppkey = X509_get0_pubkey(this->cert);
+			pkeyLength = i2d_PUBKEY(evppkey, NULL);
+			pkeyData = (unsigned char*) OPENSSL_malloc(pkeyLength);
+			i2d_PUBKEY(evppkey, &pkeyData);
+
+			//data = ByteArray(this->cert->cert_info->key->public_key->data, this->cert->cert_info->key->public_key->length);
+			data = ByteArray(pkeyData, pkeyLength);
+			OPENSSL_free(pkeyData);
+			EVP_PKEY_free(evppkey);
+
 			string = Base64::encode(data);
 			ret += "\t\t\t<subjectPublicKey>" + string + "</subjectPublicKey>\n";
 		ret += "\t\t</subjectPublicKeyInfo>\n";
