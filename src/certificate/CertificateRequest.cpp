@@ -277,11 +277,14 @@ ByteArray CertificateRequest::getPublicKeyInfo()
 	ByteArray ret;
 	unsigned int size;
 	ASN1_BIT_STRING *temp;
-	if (this->req->req_info->pubkey->public_key == NULL)
+	//if (this->req->req_info->pubkey->public_key == NULL) //martin:
+	if(X509_REQ_get_pubkey(this->req))
 	{
 		throw CertificationException(CertificationException::SET_NO_VALUE, "CertificateBuilder::getPublicKeyInfo");
 	}
-	temp = this->req->req_info->pubkey->public_key;
+	temp = this->req->req_info->pubkey->public_key; 
+	//X509_PUBKEY * pubk = X509_REQ_get_X509_PUBKEY(this->req);
+	temp = pubk->public_key;
 	ret = ByteArray(EVP_MAX_MD_SIZE);
 	EVP_Digest(temp->data, temp->length, ret.getDataPointer(), &size, EVP_sha1(), NULL);
 	ret = ByteArray(ret.getDataPointer(), size);
@@ -662,7 +665,26 @@ bool CertificateRequest::verify()
 
 bool CertificateRequest::isSigned() const throw()
 {
-	return ASN1_STRING_data(this->req->signature) != NULL;
+	//return ASN1_STRING_data(this->req->signature) != NULL; //martin: omiti codigo openssl 1.0.x
+	
+	//Primeira opcao: mais parecida com codigo acima
+	  ASN1_BIT_STRING *psig = ASN1_BIT_STRING_new();
+	  X509_ALGOR *palg = X509_ALGOR_new();
+
+	  const ASN1_BIT_STRING *psig2 = const_cast<const ASN1_BIT_STRING *>(psig);
+	  const X509_ALGOR *palg2 = const_cast<const X509_ALGOR *>(palg);
+
+
+	 X509_REQ_get0_signature(this->req, &psig2, &palg2);
+	bool isSigned = psig->data != NULL;
+
+	 ASN1_BIT_STRING_free(psig);
+	 X509_ALGOR_free(palg);
+	return isSigned;
+	//Fim primeira opcao
+
+	//Segunda opcao: acho que se não houver assinatura, então o Nid/oid da assinatura nao vai estar definido e a funcao OBJ_obj2nid vai retornar NID_undef
+	//return X509_REQ_get_signature_nid(this->req) != NID_undef;
 }
 
 
