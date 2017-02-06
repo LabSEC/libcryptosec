@@ -9,7 +9,7 @@ SubjectKeyIdentifierExtension::SubjectKeyIdentifierExtension(X509_EXTENSION *ext
 		throw (CertificationException) : Extension(ext)
 {
 	ASN1_OCTET_STRING *octetString;
-	if (OBJ_obj2nid(ext->object) != NID_subject_key_identifier)
+	if (OBJ_obj2nid(X509_EXTENSION_get_object(ext)) != NID_subject_key_identifier)
 	{
 		throw CertificationException(CertificationException::INVALID_TYPE, "SubjectKeyIdentifierExtension::SubjectKeyIdentifierExtension");
 	}

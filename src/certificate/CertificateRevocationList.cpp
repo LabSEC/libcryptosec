@@ -114,15 +114,26 @@ std::string CertificateRevocationList::getXmlEncoded(std::string tab)
 	ret += tab + "\t</tbsCertList>\n";
 
 	ret += tab + "\t<signatureAlgorithm>\n";
-		string = OBJ_nid2ln(OBJ_obj2nid(this->crl->sig_alg->algorithm));
+		string = OBJ_nid2ln(X509_CRL_get_signature_nid(this->crl));
+//		string = OBJ_nid2ln(OBJ_obj2nid(this->crl->sig_alg->algorithm)); Pablo
 		ret += tab + "\t\t<algorithm>" + string + "</algorithm>\n";
 	ret += tab + "\t</signatureAlgorithm>\n";
 	
-	data = ByteArray(this->crl->signature->data, this->crl->signature->length); 
+	ASN1_BIT_STRING *tempSig = ASN1_BIT_STRING_new();
+	X509_ALGOR *tempAlg = X509_ALGOR_new();
+
+	const ASN1_BIT_STRING *psig = const_cast<const ASN1_BIT_STRING *>(tempSig);
+	const X509_ALGOR *palg = const_cast<const X509_ALGOR *>(tempAlg);
+
+	X509_CRL_get0_signature(this->crl, &psig, &palg);
+
+	data = ByteArray(psig->data, psig->length);
 	string = Base64::encode(data);
 	ret += tab + "\t<signatureValue>" + string + "</signatureValue>\n";
 
 	ret += tab + "</certificateRevocationList>\n";
+	ASN1_BIT_STRING_free(tempSig);
+	X509_ALGOR_free(tempAlg);
 	return ret;
 }
 

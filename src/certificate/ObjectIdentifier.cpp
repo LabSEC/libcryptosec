@@ -46,7 +46,8 @@ std::string ObjectIdentifier::getOid()
 		throw (CertificationException)
 {
 	char data[30];
-	if (!this->asn1Object->data)
+
+	if (!OBJ_get0_data(this->asn1Object))
 	{
 		throw CertificationException(CertificationException::SET_NO_VALUE, "ObjectIdentifier::getOid");
 	}
@@ -63,18 +64,18 @@ std::string ObjectIdentifier::getName()
 {
 	const char *data;
 	std::string ret;
-	if (!this->asn1Object->data)
+	if (!OBJ_get0_data(this->asn1Object))
 	{
 		return "undefined";
 	}
-	if (this->asn1Object->nid)
+	if (OBJ_obj2nid(this->asn1Object))
 	{
-		data = OBJ_nid2sn(this->asn1Object->nid);
+		data = OBJ_nid2sn(OBJ_obj2nid(this->asn1Object));
 		ret = data;
 	}
-	else if ((this->asn1Object->nid = OBJ_obj2nid(this->asn1Object)) != NID_undef)
+	else if (OBJ_obj2nid(this->asn1Object) != NID_undef)
 	{
-		data = OBJ_nid2sn(this->asn1Object->nid);
+		data = OBJ_nid2sn(OBJ_obj2nid(this->asn1Object));
 		ret = data;
 	}
 	else
@@ -95,7 +96,8 @@ ObjectIdentifier& ObjectIdentifier::operator =(const ObjectIdentifier& value)
 	{
 		ASN1_OBJECT_free(this->asn1Object);
 	}
-	if (value.getObjectIdentifier()->length > 0)
+
+	if (OBJ_length(value.getObjectIdentifier()) > 0)
 	{
 		this->asn1Object = OBJ_dup(value.getObjectIdentifier());
 	}

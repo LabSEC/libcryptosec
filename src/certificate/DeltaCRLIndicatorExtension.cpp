@@ -10,7 +10,7 @@ DeltaCRLIndicatorExtension::DeltaCRLIndicatorExtension(X509_EXTENSION* ext) thro
 {
 	ASN1_INTEGER* serialAsn1 = NULL;
 	
-	if (OBJ_obj2nid(ext->object) != NID_delta_crl)
+	if (OBJ_obj2nid(X509_EXTENSION_get_object(ext)) != NID_delta_crl)
 	{
 		X509_EXTENSION_free(ext);
 		throw CertificationException(CertificationException::INVALID_TYPE, "DeltaCRLIndicatorExtension::DeltaCRLIndicatorExtension");

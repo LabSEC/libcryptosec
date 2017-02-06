@@ -53,8 +53,7 @@ CertificateRequestSPKAC* CertificateRequestFactory::fromSPKAC(std::string &path)
 	/*
 	 * Build up the subject name set.
 	 */
-	ri=req->req_info;
-	n = ri->subject;
+	n = X509_REQ_get_subject_name(req);
 
 	for (i = 0; ; i++)
 	{

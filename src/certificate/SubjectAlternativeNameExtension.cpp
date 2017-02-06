@@ -9,7 +9,7 @@ SubjectAlternativeNameExtension::SubjectAlternativeNameExtension(X509_EXTENSION 
 		throw (CertificationException) : Extension(ext)
 {
 	GENERAL_NAMES *generalNames;
-	if (OBJ_obj2nid(ext->object) != NID_subject_alt_name)
+	if (OBJ_obj2nid(X509_EXTENSION_get_object(ext)) != NID_subject_alt_name)
 	{
 		throw CertificationException(CertificationException::INVALID_TYPE, "SubjectAlternativeNameExtension::SubjectAlternativeNameExtension");
 	}
