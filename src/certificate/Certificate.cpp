@@ -139,25 +139,34 @@ Certificate::~Certificate()
  			}
  		ret += "\t\t</subject>\n";
 
- 		ret += "\t\t<subjectPublicKeyInfo>\n";
- 		//TODO it don't want the id, but the algorithm used
- 			string = OBJ_nid2ln(EVP_PKEY_base_id(X509_get0_pubkey(this->cert))); //OBJ_obj2nid(this->cert->cert_info->key->algor->algorithm)
- 			ret += "\t\t\t<algorithm>" + string + "</algorithm>\n";
+		ret += "\t\t<subjectPublicKeyInfo>\n";
 
- 			int pkeyLength;
- 			unsigned char* pkeyData;
- 			EVP_PKEY* evppkey = X509_get0_pubkey(this->cert);
- 			pkeyLength = i2d_PUBKEY(evppkey, NULL);
- 			pkeyData = (unsigned char*) OPENSSL_malloc(pkeyLength);
- 			i2d_PUBKEY(evppkey, &pkeyData);
+		X509_PUBKEY *pk = X509_get_X509_PUBKEY(this->cert);
 
- 			//data = ByteArray(this->cert->cert_info->key->public_key->data, this->cert->cert_info->key->public_key->length);
- 			data = ByteArray(pkeyData, pkeyLength);
- 			OPENSSL_free(pkeyData);
- 			EVP_PKEY_free(evppkey);
+ 			if (pk)
+ 			{
 
- 			string = Base64::encode(data);
- 			ret += "\t\t\t<subjectPublicKey>" + string + "</subjectPublicKey>\n";
+				ASN1_OBJECT *ppkalg = ASN1_OBJECT_new();
+				const unsigned char *pkString;
+				int ppklen;
+				X509_ALGOR *pa;
+				X509_PUBKEY_get0_param(&ppkalg, &pkString, &ppklen, &pa, pk);
+
+				string = OBJ_nid2ln(OBJ_obj2nid(ppkalg));
+				ret += "\t\t\t<algorithm>" + string + "</algorithm>\n";
+
+				data = ByteArray(pkString, ppklen);
+				string = Base64::encode(data);
+
+				ret += "\t\t\t<subjectPublicKey>" + string + "</subjectPublicKey>\n";
+
+				ASN1_OBJECT_free(ppkalg);
+				X509_ALGOR_free(pa);
+
+ 			}
+
+ 			X509_PUBKEY_free(pk);
+
  		ret += "\t\t</subjectPublicKeyInfo>\n";
 
  		const ASN1_BIT_STRING *piuid = ASN1_BIT_STRING_new();
@@ -202,6 +211,9 @@ Certificate::~Certificate()
  	data = ByteArray(psig->data, psig->length);
  	string = Base64::encode(data);
  	ret += "\t<signatureValue>" + string + "</signatureValue>\n";
+
+	ASN1_BIT_STRING_free(tempSig);
+	X509_ALGOR_free(tempAlg);
 
  	ret += "</certificate>\n";
  	return ret;
@@ -276,19 +288,37 @@ Certificate::~Certificate()
  			}
  		ret += "\t\t</subject>\n";
 
- 		ret += "\t\t<subjectPublicKeyInfo>\n";
- 			ASN1_OBJECT *ppkalg = ASN1_OBJECT_new();
- 			const unsigned char *pk;
-			int ppklen;
-			X509_ALGOR *pa;
- 			X509_PUBKEY_get0_param(&ppkalg, &pk, &ppklen, &pa, X509_get_X509_PUBKEY(this->cert));
- 			string = OBJ_nid2ln(OBJ_obj2nid(ppkalg));
- 			ret += "\t\t\t<algorithm>" + string + "</algorithm>\n";
+		ret += "\t\t<subjectPublicKeyInfo>\n";
 
- 			data = ByteArray(pk, ppklen);
- 			string = Base64::encode(data);
- 			ret += "\t\t\t<subjectPublicKey>" + string + "</subjectPublicKey>\n";
+		X509_PUBKEY *pk = X509_get_X509_PUBKEY(this->cert);
+
+ 			if (pk)
+ 			{
+
+				ASN1_OBJECT *ppkalg = ASN1_OBJECT_new();
+				const unsigned char *pkString;
+				int ppklen;
+				X509_ALGOR *pa;
+				X509_PUBKEY_get0_param(&ppkalg, &pkString, &ppklen, &pa, pk);
+
+				string = OBJ_nid2ln(OBJ_obj2nid(ppkalg));
+				ret += "\t\t\t<algorithm>" + string + "</algorithm>\n";
+
+				data = ByteArray(pkString, ppklen);
+				string = Base64::encode(data);
+
+				ret += "\t\t\t<subjectPublicKey>" + string + "</subjectPublicKey>\n";
+
+				ASN1_OBJECT_free(ppkalg);
+				X509_ALGOR_free(pa);
+
+ 			}
+
+ 			X509_PUBKEY_free(pk);
+
  		ret += "\t\t</subjectPublicKeyInfo>\n";
+
+
 
  		const ASN1_BIT_STRING *piuid = ASN1_BIT_STRING_new();
 		const ASN1_BIT_STRING *psuid = ASN1_BIT_STRING_new();
@@ -306,7 +336,8 @@ Certificate::~Certificate()
  			string = Base64::encode(data);
  			ret += "\t\t<subjectUniqueID>" + string + "</subjectUniqueID>\n";
  		}
-
+ 		ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING *>(piuid));
+ 		ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING *>(psuid));
  		ret += "\t\t<extensions>\n";
  		extensions = this->getExtensions();
  		for (i=0;i<extensions.size();i++)
@@ -332,7 +363,11 @@ Certificate::~Certificate()
 	X509_get0_signature(&psig, &palg, this->cert);
 	data = ByteArray(psig->data, psig->length);
 	string = Base64::encode(data);
+
  	ret += "\t<signatureValue>" + string + "</signatureValue>\n";
+
+	ASN1_BIT_STRING_free(tempSig);
+	X509_ALGOR_free(tempAlg);
 
  	ret += "</certificate>\n";
  	return ret;
