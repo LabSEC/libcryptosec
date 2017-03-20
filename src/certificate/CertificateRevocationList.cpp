@@ -134,6 +134,10 @@ std::string CertificateRevocationList::getXmlEncoded(std::string tab)
 	ret += tab + "</certificateRevocationList>\n";
 	ASN1_BIT_STRING_free(tempSig);
 	X509_ALGOR_free(tempAlg);
+
+	ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING*>(psig));
+	X509_ALGOR_free(const_cast<X509_ALGOR*>(palg));
+
 	return ret;
 }
 

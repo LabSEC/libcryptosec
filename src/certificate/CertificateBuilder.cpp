@@ -239,9 +239,6 @@ CertificateBuilder::~CertificateBuilder()
 				ret += "\t\t<subjectUniqueID>" + string + "</subjectUniqueID>\n";
 			}
 
-	 		ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING *>(piuid));
-	 		ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING *>(psuid));
-
 			ret += "\t\t<extensions>\n";
 			extensions = this->getExtensions();
 			for (i=0;i<extensions.size();i++)
@@ -250,6 +247,8 @@ CertificateBuilder::~CertificateBuilder()
 				delete extensions.at(i);
 			}
 			ret += "\t\t</extensions>\n";
+	 		ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING *>(piuid));
+	 		ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING *>(psuid));
 
 		ret += "\t</tbsCertificate>\n";
 
@@ -381,9 +380,6 @@ CertificateBuilder::~CertificateBuilder()
 				ret += "\t\t<subjectUniqueID>" + string + "</subjectUniqueID>\n";
 			}
 
-	 		ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING *>(piuid));
-	 		ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING *>(psuid));
-
 			ret += "\t\t<extensions>\n";
 			extensions = this->getExtensions();
 			for (i=0;i<extensions.size();i++)
@@ -392,6 +388,8 @@ CertificateBuilder::~CertificateBuilder()
 				delete extensions.at(i);
 			}
 			ret += "\t\t</extensions>\n";
+	 		ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING *>(piuid));
+	 		ASN1_BIT_STRING_free(const_cast<ASN1_BIT_STRING *>(psuid));
 
 		ret += "\t</tbsCertificate>\n";
 
