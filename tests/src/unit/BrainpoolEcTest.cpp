@@ -20,317 +20,219 @@
 class BrainpoolEcTest : public ::testing::Test {
 
 private:
-    ECDSAPrivateKey *prKey;
-    ECDSAPublicKey *pubKey;
+	ECDSAPrivateKey *prKey;
+	ECDSAPublicKey *pubKey;
 
 protected:
 	virtual void SetUp()
-    {
-        MessageDigest::loadMessageDigestAlgorithms();
-        SymmetricCipher::loadSymmetricCiphersAlgorithms();
-    }
+	{
+		MessageDigest::loadMessageDigestAlgorithms();
+		SymmetricCipher::loadSymmetricCiphersAlgorithms();
+	}
 
-    virtual void TearDown()
-    {
-        delete(prKey);
-        delete(pubKey);
-    }
+	virtual void TearDown()
+	{
+		delete(prKey);
+		delete(pubKey);
+	}
 
-    void testGenerateBrainpoolKeyPair(AsymmetricKey::Curve curve)
-    {
+	void testGenerateBrainpoolKeyPair(AsymmetricKey::Curve curve)
+	{
 		//Fixture Setup
 
 		//Exercise SUT
-    	ECDSAKeyPair keypair (curve);
-        prKey = (ECDSAPrivateKey*) keypair.getPrivateKey();
-        pubKey = (ECDSAPublicKey*) keypair.getPublicKey();
+		ECDSAKeyPair keypair (curve);
+		prKey = (ECDSAPrivateKey*) keypair.getPrivateKey();
+		pubKey = (ECDSAPublicKey*) keypair.getPublicKey();
 
-    	std::string pem = keypair.getPemEncoded();
-    	ByteArray der = keypair.getDerEncoded();
+		std::string pem = keypair.getPemEncoded();
+		ByteArray der = keypair.getDerEncoded();
 
-        std::string pubPem = pubKey->getPemEncoded();
-        std::string prPem = prKey->getPemEncoded();
+		std::string pubPem = pubKey->getPemEncoded();
+		std::string prPem = prKey->getPemEncoded();
 
-    	//Result Verification
-    	ASSERT_TRUE(keypair.getSize() > 0);
-    	ASSERT_TRUE(keypair.getSizeBits() > 0);
-    	ASSERT_TRUE(pem.size() > 0);
-    	ASSERT_TRUE(der.size() > 0);
+		//Result Verification
+		ASSERT_TRUE(keypair.getSize() > 0);
+		ASSERT_TRUE(keypair.getSizeBits() > 0);
+		ASSERT_TRUE(pem.size() > 0);
+		ASSERT_TRUE(der.size() > 0);
 
-        ASSERT_TRUE(pubPem.size() > 0);
-        ASSERT_TRUE(pubKey->getSize() > 0);
-        ASSERT_TRUE(prPem.size() > 0);
-        ASSERT_TRUE(prKey->getSize() > 0);
-    	
-        ASSERT_EQ(keypair.getAlgorithm(), AsymmetricKey::ECDSA);
+		ASSERT_TRUE(pubPem.size() > 0);
+		ASSERT_TRUE(pubKey->getSize() > 0);
+		ASSERT_TRUE(prPem.size() > 0);
+		ASSERT_TRUE(prKey->getSize() > 0);
+		
+		ASSERT_EQ(keypair.getAlgorithm(), AsymmetricKey::ECDSA);
 
-    	//Fixture Teardown
-    }
+		//Fixture Teardown
+	}
 
-    // void testSignBrainpoolKey(AsymmetricKey::Curve curve, MessageDigest::Algorithm algorithm)
-    // {
-    // 	//Fixture Setup
-    // 	char string[6] = "hello";
-    // 	ByteArray byteEntry(&string[0]);
+	void testSignCertificateBrainpool(AsymmetricKey::Curve curve, MessageDigest::Algorithm algorithm)
+	{
+		//Fixture Setup
+		CertificateBuilder *certBuilder = new CertificateBuilder();
 
-    //     MessageDigest md(algorithm);
-    //     md.init(algorithm);
-    //     md.update(byteEntry);
-    //     ByteArray message = md.doFinal();
+		ECDSAKeyPair keypair (curve);
+		prKey = (ECDSAPrivateKey*) keypair.getPrivateKey();
+		pubKey = (ECDSAPublicKey*) keypair.getPublicKey();
 
-    // 	ECDSAKeyPair keypair (curve);
-    // 	prKey = (ECDSAPrivateKey*) keypair.getPrivateKey();
-    // 	pubKey = (ECDSAPublicKey*) keypair.getPublicKey();
+		//Exercise SUT
+		certBuilder->setPublicKey(*pubKey);
+		certBuilder->includeEcdsaParameters();
 
-    // 	//Exercise SUT
-    // 	ByteArray signResult = Signer::sign(*prKey, message, algorithm);
+		Certificate *cert = certBuilder->sign(*prKey, algorithm);
+		std::string pem = cert->getPemEncoded();
 
-    // 	//Result Verification
-    //     ASSERT_TRUE(message.size() > 0);
-    //     ASSERT_TRUE(signResult.size() > 0);
-    //     ASSERT_TRUE(Signer::verify(*pubKey, signResult, message, algorithm));
+		//Result Verification
+		ASSERT_TRUE(pem.size() > 0);
+		ASSERT_TRUE(cert->verify(*pubKey));
 
-    // 	//Fixture Teardown
-    // }
-
-    void testSignCertificateBrainpool(AsymmetricKey::Curve curve, MessageDigest::Algorithm algorithm)
-    {
-        //Fixture Setup
-        CertificateBuilder *certBuilder = new CertificateBuilder();
-
-        ECDSAKeyPair keypair (curve);
-        prKey = (ECDSAPrivateKey*) keypair.getPrivateKey();
-        pubKey = (ECDSAPublicKey*) keypair.getPublicKey();
-
-        //Exercise SUT
-        certBuilder->setPublicKey(*pubKey);
-        certBuilder->includeEcdsaParameters();
-
-        Certificate *cert = certBuilder->sign(*prKey, algorithm);
-        std::string pem = cert->getPemEncoded();
-
-        //Result Verification
-        ASSERT_TRUE(pem.size() > 0);
-        ASSERT_TRUE(cert->verify(*pubKey));
-
-        //Fixture Teardown
-        delete(cert);
-        delete(certBuilder);
-    }
+		//Fixture Teardown
+		delete(cert);
+		delete(certBuilder);
+	}
 };
 
 // CertificateBuilder
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P160R1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P160R1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P160R1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P160T1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P160T1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P160T1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P192R1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P192R1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P192R1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P224R1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P224R1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P224R1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P192T1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P192T1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P192T1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P224T1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P224T1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P224T1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P256R1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P256R1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P256R1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P256T1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P256T1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P256T1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P320R1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P320R1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P320R1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P320T1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P320T1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P320T1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P384R1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P384R1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P384R1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P384T1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P384T1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P384T1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P512R1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P512R1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P512R1, MessageDigest::SHA1);
 }
 
 TEST_F(BrainpoolEcTest, SignCertificateEC_BRAINPOOL_P512T1_SHA1)
 {
-    testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P512T1, MessageDigest::SHA1);
+	testSignCertificateBrainpool(AsymmetricKey::BRAINPOOL_P512T1, MessageDigest::SHA1);
 }
-
-// Sign
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P160R1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P160R1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P160T1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P160T1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P192R1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P192R1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P224R1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P224R1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P192T1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P192T1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P224T1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P224T1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P256R1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P256R1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P256T1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P256T1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P320R1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P320R1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P320T1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P320T1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P384R1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P384R1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P384T1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P384T1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P512R1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P512R1, MessageDigest::SHA1);
-// }
-
-// TEST_F(BrainpoolEcTest, SignECKey_BRAINPOOL_P512T1_SHA1)
-// {
-//     testSignBrainpoolKey(AsymmetricKey::BRAINPOOL_P512T1, MessageDigest::SHA1);
-// }
 
 // Generate 
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P160R1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P160R1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P160R1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P160T1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P160T1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P160T1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P192R1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P192R1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P192R1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P224R1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P224R1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P224R1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P192T1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P192T1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P192T1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P224T1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P224T1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P224T1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P256R1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P256R1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P256R1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P256T1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P256T1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P256T1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P320R1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P320R1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P320R1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P320T1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P320T1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P320T1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P384R1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P384R1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P384R1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P384T1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P384T1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P384T1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P512R1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P512R1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P512R1);
 }
 
 TEST_F(BrainpoolEcTest, GenerateECKeyPair_BRAINPOOL_P512T1)
 {
-    testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P512T1);
+	testGenerateBrainpoolKeyPair(AsymmetricKey::BRAINPOOL_P512T1);
 }
