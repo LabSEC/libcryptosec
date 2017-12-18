@@ -1,4 +1,4 @@
-LIBS = -lcryptosec
+LIBS = -lcryptosec -lssl -lcrypto
 INCLUDES = -I./$(GTEST_DIR) -I../include/libcryptosec
 CC = g++
 CPPFLAGS = -DGTEST_HAS_PTHREAD=0
@@ -6,7 +6,7 @@ CXXFLAGS = -g
 EXECUTABLE = test.out
 
 GTEST_DIR = gtest
-SRC_DIR = src
+SRC_DIR = src/unit
 LIBCRYPTOSEC = ../libcryptosec.so
 
 TEST_SRCS += $(wildcard $(SRC_DIR)/*.cpp)

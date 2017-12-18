@@ -1,17 +1,26 @@
+sudo: required
+
 language: cpp
 
-compiler:
-- g++
+matrix:
+  include:
+      env: 
+        - UBUNTU=latest
+  allow_failures:
+      env: 
+        - UBUNTU=trusty
+
+services:
+  - docker
+
+before_install:
+  - docker --version
+  - docker run -d --name ubuntu-test -v $(pwd):/travis ubuntu:$UBUNTU tail -f /dev/null
+  - docker ps
 
 install:
-- sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-- sudo apt-get update -qq
-- sudo apt-get install -qq libp11-dev
-- sudo apt-get install -qq g++-4.9
+  - docker exec -t ubuntu-test bash -c "apt-get update -qq && apt-get install software-properties-common -y && add-apt-repository ppa:ubuntu-toolchain-r/test -y && apt-get update -qq; apt-get install openssl -y &&apt-get install -qq libp11-dev -y && apt-get install -qq g++-4.9 -y"
 
 script:
-- openssl version
-- make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so
-- sudo make install
-- make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so -C tests test
-
+  - docker exec -t ubuntu-test bash -c "cd /travis && ls && openssl version && make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so -j4 && make install && make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so -C tests test"
+ 
