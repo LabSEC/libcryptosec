@@ -7,6 +7,9 @@ License: GPL
 Group: Development/Tools
 BuildArch: i386
 Requires: libp11
+BuildRoot: %{_tmppath}/%{name}-%{version}
+AutoReqProv: no
+
 %description
 libcryptosec is an OpenSSL c++ wrapper with extra features
 
@@ -15,8 +18,19 @@ libcryptosec is an OpenSSL c++ wrapper with extra features
 %build
 make
 strip libcryptosec.so
+
 %install
-make install
+#Copy executables
+mkdir -p %{buildroot}%{_libdir}
+cp libcryptosec.so %{buildroot}%{_libdir}
+mkdir -m 0755 -p %{buildroot}%{_includedir}/libcryptosec
+mkdir -m 0755 -p %{buildroot}%{_includedir}/libcryptosec/exception
+mkdir -m 0755 -p %{buildroot}%{_includedir}/libcryptosec/certificate
+mkdir -m 0755 -p %{buildroot}%{_includedir}/libcryptosec/ec
+cp -f include/libcryptosec/*.h %{buildroot}%{_includedir}/libcryptosec/
+cp -f include/libcryptosec/exception/* %{buildroot}%{_includedir}/libcryptosec/exception
+cp -f include/libcryptosec/certificate/* %{buildroot}%{_includedir}/libcryptosec/certificate
+cp -f include/libcryptosec/ec/* %{buildroot}%{_includedir}/libcryptosec/ec
 
 %files
 #arquivos contidos no pacote
@@ -26,6 +40,7 @@ make install
 
 %changelog
 %changelog
+
 * Tue Nov 29 2016 Pablo Montezano <pablo.montezano@grad.ufsc.br> - 2.2.9
 - Added support to native openssl brainpool curves;
 - Must use OpenSSl-1.0.2j with if using Brainpool curves.
