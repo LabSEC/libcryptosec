@@ -1,5 +1,4 @@
 #include <libcryptosec/certificate/CertificateBuilder.h>
-#include <iostream>
 
 CertificateBuilder::CertificateBuilder()
 {
