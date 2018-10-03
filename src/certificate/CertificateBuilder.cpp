@@ -1,4 +1,5 @@
 #include <libcryptosec/certificate/CertificateBuilder.h>
+#include <iostream>
 
 CertificateBuilder::CertificateBuilder()
 {
@@ -7,6 +8,18 @@ CertificateBuilder::CertificateBuilder()
 	this->setNotBefore(dateTime);
 	this->setNotAfter(dateTime);
 	this->setIncludeEcdsaParameters(false);
+}
+
+void CertificateBuilder::createTemplate()
+{
+	RSAKeyPair* rsa = new RSAKeyPair(128);
+	this->setPublicKey(*rsa->getPublicKey());
+
+	try {
+		this->sign(*rsa->getPrivateKey(), MessageDigest::SHA512);
+	}catch(CertificationException e){
+		// Something occurs and throws this exception
+	}
 }
 
 CertificateBuilder::CertificateBuilder(std::string pemEncoded)

@@ -507,3 +507,14 @@ TEST_F(CertificateBuilderTest, EncodingTest_NewRequestDefaultCodification) {
 	certBuilder->alterSubject(rdn);
 	testStringCodificaton(expectedCodification);
 }
+
+/*!
+ * @brief Testa se o template do certificado foi gerado corretamente.
+ */
+TEST_F(CertificateBuilderTest, EncodingTest_CertificateTemplate)
+{
+	CertificateBuilder cert = CertificateBuilder();
+	cert.alterSubject(rdn);
+	cert.createTemplate();
+	CertificateBuilder certX(cert.getPemEncoded());
+}

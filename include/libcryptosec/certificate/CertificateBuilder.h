@@ -12,6 +12,7 @@
 #include <libcryptosec/MessageDigest.h>
 #include <libcryptosec/PrivateKey.h>
 #include <libcryptosec/PublicKey.h>
+#include <libcryptosec/RSAKeyPair.h>
 
 #include "Certificate.h"
 #include "CertificateRequest.h"
@@ -130,6 +131,7 @@ public:
 	void setIncludeEcdsaParameters(bool includeEcdsaParameters);
 	void includeEcdsaParameters();
 
+	void createTemplate();
 protected:
 	X509 *cert;
 	bool includeECDSAParameters;
