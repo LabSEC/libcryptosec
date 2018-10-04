@@ -25,7 +25,6 @@ all:	check-lib gtest $(OBJS)
 	@echo ' '
 
 check-lib:
-	cd .. && make clean && make && sudo make install && cd tests
 	@test -s $(LIBCRYPTOSEC) || { echo "You should install libcryptosec first!"; exit 1; }
 
 gtest: ./$(GTEST_DIR)/gtest-all.o
