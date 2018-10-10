@@ -1,5 +1,5 @@
-LIBS = -lcryptosec -lssl -lcrypto
-INCLUDES = -I./$(GTEST_DIR) -I../include/libcryptosec
+LIBS =
+INCLUDES = -I./$(GTEST_DIR) -I../include/ -I/include
 CC = g++
 CPPFLAGS = -DGTEST_HAS_PTHREAD=0
 CXXFLAGS = -g
@@ -20,7 +20,7 @@ OBJS += $(TEST_SRCS:.cpp=.o)
 	@echo ' '
 
 all:	check-lib gtest $(OBJS)
-	$(CC) $(CPPFLAGS) $(CXXFLAGS) -o $(EXECUTABLE) $(OBJS) ./$(GTEST_DIR)/gtest-all.o $(LIBS)
+	$(CC) -fPIC $(CPPFLAGS) $(CXXFLAGS) -o $(EXECUTABLE) $(OBJS) ./$(GTEST_DIR)/gtest-all.o $(LIBCRYPTOSEC) $(LIBS)
 	@echo 'Build complete!'
 	@echo ' '
 

@@ -1,5 +1,6 @@
 LIBS = -lp11
 INCLUDES = -I/usr/local/ssl/include -I./include
+USER_OBJS=/usr/lib/libcrypto.a
 FLAGS = -shared
 CC = g++
 EXECUTABLES = libcryptosec.so
