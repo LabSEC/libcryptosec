@@ -5,10 +5,10 @@ language: cpp
 matrix:
   include:
       env: 
-        - UBUNTU=latest
+        - UBUNTU=xenial
   allow_failures:
       env: 
-        - UBUNTU=trusty
+        - UBUNTU=latest
 
 services:
   - docker
