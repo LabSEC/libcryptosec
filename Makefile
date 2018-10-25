@@ -1,4 +1,4 @@
-LIBS = -lp11 -lssl -lcrypto
+LIBS = -lp11
 INCLUDES = -I/usr/local/ssl/include -I./include -I./usr/include
 FLAGS = -shared
 CC = g++
