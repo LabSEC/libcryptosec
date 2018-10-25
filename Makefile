@@ -1,11 +1,9 @@
-LIBS = -lp11
-INCLUDES = -I/usr/local/ssl/include -I./include
-USER_OBJS=/usr/lib/libcrypto.a
+LIBS = -lp11 -lssl -lcrypto
+INCLUDES = -I/usr/local/ssl/include -I./include -I./usr/include
 FLAGS = -shared
 CC = g++
 EXECUTABLES = libcryptosec.so
 ARQ= $(shell uname -m)
-LIBDIR = /usr/lib
 
 CPP_SRCS += \
 ./src/AsymmetricCipher.cpp \
@@ -96,6 +94,12 @@ OBJS += $(CPP_SRCS:.cpp=.o)
 
 CPP_DEPS += $(CPP_SRCS:.cpp=.d)
 
+LIBDIR = /usr/lib
+ifeq ($(ARQ), x86_64)
+LIBDIR=/usr/lib64
+endif
+USER_OBJS=$(LIBDIR)/libcrypto.a
+
 src/%.o: ./src/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
@@ -111,12 +115,7 @@ clean:
 	rm -rf $(CPP_DEPS) $(OBJS) $(EXECUTABLES)
 	
 
-libdir:
-ifeq ($(ARQ), x86_64)
-LIBDIR=/usr/lib64
-endif
-
-install: $(EXECUTABLES) libdir
+install: $(EXECUTABLES)
 	@echo 'Installing libcryptosec ...'
 	@mkdir -p $(LIBDIR)
 	@cp libcryptosec.so $(LIBDIR)
@@ -130,7 +129,7 @@ install: $(EXECUTABLES) libdir
 	@cp -f include/libcryptosec/ec/* /usr/include/libcryptosec/ec
 	@echo 'Instalation complete!'
 
-uninstall: libdir
+uninstall:
 	@echo 'Uninstalling libcryptosec ...'
 	@rm -rf $(LIBDIR)/$(EXECUTABLES)
 	@rm -rf /usr/include/libcryptosec

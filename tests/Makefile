@@ -1,13 +1,12 @@
-LIBS = 
-INCLUDES = -I./$(GTEST_DIR) -I../include/ -I/include
+LIBCRYPTOSEC = ../libcryptosec.so
+
+LIBS = $(LIBCRYPTOSEC) -lgtest 
+SRC_DIR = src/unit
+INCLUDES = -I../include/ -I/usr/include/gtest
 CC = g++
-CPPFLAGS = -DGTEST_HAS_PTHREAD=0
-CXXFLAGS = -g
+CPPFLAGS = -g
 EXECUTABLE = test.out
 
-GTEST_DIR = gtest
-SRC_DIR = src/unit
-LIBCRYPTOSEC = ../libcryptosec.so
 
 TEST_SRCS += $(wildcard $(SRC_DIR)/*.cpp)
 OBJS += $(TEST_SRCS:.cpp=.o)
@@ -19,17 +18,16 @@ OBJS += $(TEST_SRCS:.cpp=.o)
 	@echo 'Finished building: $<'
 	@echo ' '
 
-all:	check-lib gtest $(OBJS)
-	$(CC) -fPIC $(CPPFLAGS) $(CXXFLAGS) -o $(EXECUTABLE) $(OBJS) ./$(GTEST_DIR)/gtest-all.o $(LIBCRYPTOSEC) $(LIBS)
+all: check-lib $(OBJS)
+	$(CC) -fPIC $(CPPFLAGS) -o $(EXECUTABLE) $(OBJS) $(LIBS)
 	@echo 'Build complete!'
 	@echo ' '
 
 check-lib:
 	@test -s $(LIBCRYPTOSEC) || { echo "You should install libcryptosec first!"; exit 1; }
-	
-gtest: ./$(GTEST_DIR)/gtest-all.o
 
-test:	all
+test: all
+	@echo 'Building libcryptosec'
 	@echo 'Executing tests...'
 	./$(EXECUTABLE)
 	@echo 'Done!'
@@ -37,5 +35,3 @@ test:	all
 clean:
 	rm -rf ./$(SRC_DIR)/*.o $(EXECUTABLE)
 
-veryclean: clean
-	rm -rf ./$(GTEST_DIR)/*.o
