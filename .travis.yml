@@ -22,4 +22,4 @@ install:
   - docker exec -t image-build bash -c "dnf update -y && dnf install openssl-static libp11-devel gcc-g++ make"
 
 script:
-  - docker exec -t image-build bash -c "cd /travis && ls && openssl version && make -j `nproc` && make -C tests test && make install"
+  - docker exec -t image-build bash -c "cd /travis && ls && openssl version && make -j `nproc` && make install && make 'LIBS=-lcryptosec -lgtest' -C tests test"
