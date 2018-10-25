@@ -4,7 +4,7 @@ LIBS = $(LIBCRYPTOSEC) -lgtest
 SRC_DIR = src/unit
 INCLUDES = -I../include/ -I/usr/include/gtest
 CC = g++
-CPPFLAGS = -g
+CPPFLAGS = -g -DFIPS
 EXECUTABLE = test.out
 
 
