@@ -5,22 +5,21 @@ language: cpp
 matrix:
   include:
       env: 
-        - UBUNTU=latest
+        - IMAGE=fedora:25
   allow_failures:
       env: 
-        - UBUNTU=trusty
+        - IMAGE=fedora:latest
 
 services:
   - docker
 
 before_install:
   - docker --version
-  - docker run -d --name ubuntu-test -v $(pwd):/travis ubuntu:$UBUNTU tail -f /dev/null
+  - docker run -d --name image-build -v $(pwd):/travis $IMAGE tail -f /dev/null
   - docker ps
 
 install:
-  - docker exec -t ubuntu-test bash -c "apt-get update -qq && apt-get install software-properties-common -y && add-apt-repository ppa:ubuntu-toolchain-r/test -y && apt-get update -qq; apt-get install openssl -y &&apt-get install -qq libp11-dev -y && apt-get install -qq g++-4.9 -y"
+  - docker exec -t image-build bash -c "dnf update -y && dnf install openssl openssl-static libp11-devel gcc-c++ make gtest-devel -y"
 
 script:
-  - docker exec -t ubuntu-test bash -c "cd /travis && ls && openssl version && make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so -j4 && make install && make CC=g++-4.9 USER_OBJS=/usr/lib/x86_64-linux-gnu/libcrypto.so -C tests test"
- 
+  - docker exec -t image-build bash -c "cd /travis && ls && openssl version && make -j `nproc` && make install && make 'LIBS=-lcryptosec -lgtest' -C tests test"
