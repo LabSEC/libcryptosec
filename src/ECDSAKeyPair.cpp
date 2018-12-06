@@ -32,14 +32,22 @@ ECDSAKeyPair::ECDSAKeyPair(AsymmetricKey::Curve curve, bool named)
 	this->engine = NULL;
 	eckey = NULL;
 	eckey = EC_KEY_new_by_curve_name(curve);
-	if (named)
-		EC_KEY_set_asn1_flag(eckey, OPENSSL_EC_NAMED_CURVE);
-	EC_KEY_generate_key(eckey);
+
 	if (!eckey) {
 		throw AsymmetricKeyException(AsymmetricKeyException::INTERNAL_ERROR,
 				"ECDSAKeyPair::ECDSAKeyPair");
 	}
+	
+	if (named)
+		EC_KEY_set_asn1_flag(eckey, OPENSSL_EC_NAMED_CURVE);
+	EC_KEY_generate_key(eckey);
+	
 	this->key = EVP_PKEY_new();
+	if (!this->key) {
+		throw AsymmetricKeyException(AsymmetricKeyException::INTERNAL_ERROR,
+				"ECDSAKeyPair::ECDSAKeyPair");
+	}
+
 	EVP_PKEY_assign_EC_KEY(this->key, eckey);
 	if (!this->key) {
 		throw AsymmetricKeyException(AsymmetricKeyException::INTERNAL_ERROR,

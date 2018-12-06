@@ -4,7 +4,6 @@ FLAGS = -shared
 CC = g++
 EXECUTABLES = libcryptosec.so
 ARQ= $(shell uname -m)
-LIBDIR = /usr/lib
 
 CPP_SRCS += \
 ./src/AsymmetricCipher.cpp \
@@ -90,10 +89,16 @@ CPP_SRCS += \
 ./src/certificate/UserNotice.cpp \
 ./src/ec/EllipticCurve.cpp \
 ./src/ec/BrainpoolCurveFactory.cpp \
- 
+
 OBJS += $(CPP_SRCS:.cpp=.o)
 
 CPP_DEPS += $(CPP_SRCS:.cpp=.d)
+
+LIBDIR = /usr/lib
+ifeq ($(ARQ), x86_64)
+LIBDIR=/usr/lib64
+endif
+USER_OBJS=$(LIBDIR)/libcrypto.a
 
 src/%.o: ./src/%.cpp
 	@echo 'Building file: $<'
@@ -103,34 +108,29 @@ src/%.o: ./src/%.cpp
 	@echo ' '
 
 $(EXECUTABLES):	$(OBJS)
-	$(CC) -fPIC $(FLAGS) -o $(EXECUTABLES) $(OBJS) $(USER_OBJS) $(LIBS)  
+	$(CC) -fPIC $(FLAGS) -o $(EXECUTABLES) $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Build complete!'
 
 clean:
 	rm -rf $(CPP_DEPS) $(OBJS) $(EXECUTABLES)
-	
 
-libdir:
-ifeq ($(ARQ), x86_64)
-	LIBDIR=/usr/lib64
-endif
 
-install: $(EXECUTABLES) libdir
+install: $(EXECUTABLES)
 	@echo 'Installing libcryptosec ...'
-	@mkdir -p $(DESTDIR)$(LIBDIR)
-	@cp libcryptosec.so $(DESTDIR)$(LIBDIR)
-	@mkdir -m 0755 -p $(DESTDIR)/usr/include/libcryptosec
-	@mkdir -m 0755 -p $(DESTDIR)/usr/include/libcryptosec/exception
-	@mkdir -m 0755 -p $(DESTDIR)/usr/include/libcryptosec/certificate
-	@mkdir -m 0755 -p $(DESTDIR)/usr/include/libcryptosec/ec
-	@cp -f include/libcryptosec/*.h $(DESTDIR)/usr/include/libcryptosec/
-	@cp -f include/libcryptosec/exception/* $(DESTDIR)/usr/include/libcryptosec/exception
-	@cp -f include/libcryptosec/certificate/* $(DESTDIR)/usr/include/libcryptosec/certificate
-	@cp -f include/libcryptosec/ec/* $(DESTDIR)/usr/include/libcryptosec/ec
+	@mkdir -p $(LIBDIR)
+	@cp libcryptosec.so $(LIBDIR)
+	@mkdir -m 0755 -p /usr/include/libcryptosec
+	@mkdir -m 0755 -p /usr/include/libcryptosec/exception
+	@mkdir -m 0755 -p /usr/include/libcryptosec/certificate
+	@mkdir -m 0755 -p /usr/include/libcryptosec/ec
+	@cp -f include/libcryptosec/*.h /usr/include/libcryptosec/
+	@cp -f include/libcryptosec/exception/* /usr/include/libcryptosec/exception
+	@cp -f include/libcryptosec/certificate/* /usr/include/libcryptosec/certificate
+	@cp -f include/libcryptosec/ec/* /usr/include/libcryptosec/ec
 	@echo 'Instalation complete!'
 
 uninstall:
 	@echo 'Uninstalling libcryptosec ...'
-	@rm -rf $(DESTDIR)$(LIBDIR)/$(EXECUTABLES)
-	@rm -rf $(DESTDIR)/usr/include/libcryptosec
+	@rm -rf $(LIBDIR)/$(EXECUTABLES)
+	@rm -rf /usr/include/libcryptosec
 	@echo 'Uninstalation complete!'
