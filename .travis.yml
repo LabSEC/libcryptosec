@@ -19,7 +19,7 @@ before_install:
   - docker ps
 
 install:
-  - docker exec -t image-build bash -c "dnf update -y && dnf install openssl openssl-static libp11-devel gcc-c++ make gtest-devel -y"
+  - docker exec -t image-build bash -c "dnf update -y && dnf install openssl openssl-static libp11-devel gcc-c++ make gtest-devel findutils -y"
 
 script:
   - docker exec -t image-build bash -c "cd /travis && ls && openssl version"
