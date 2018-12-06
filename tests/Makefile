@@ -1,25 +1,23 @@
-LIBCRYPTOSEC = ../libcryptosec.so
-
-LIBS = $(LIBCRYPTOSEC) -lgtest 
-SRC_DIR = src/unit
-INCLUDES = -I../include/ -I/usr/include/gtest
 CC = g++
-CPPFLAGS = -g -DFIPS
+CPPFLAGS = -g -DFIPS -std=c++98
 EXECUTABLE = test.out
 
+LIBCRYPTOSEC = ../libcryptosec.so
+LIBS = $(LIBCRYPTOSEC) -lgtest
+SRC_DIR = src/unit
+SSL_INCLUDES = -I/usr/local/ssl/include
+INCLUDES = -I../include/ -I/usr/include/gtest $(SSL_INCLUDES)
 
 TEST_SRCS += $(wildcard $(SRC_DIR)/*.cpp)
 OBJS += $(TEST_SRCS:.cpp=.o)
 
 %.o: %.cpp
 	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C++ Compiler'
-	$(CC) -fPIC $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -O0 -Wall -c -o "$@" "$<"
-	@echo 'Finished building: $<'
+	$(CC) $(CPPFLAGS) $(INCLUDES) -O0 -Wall -c -o "$@" "$<"
 	@echo ' '
 
 all: check-lib $(OBJS)
-	$(CC) -fPIC $(CPPFLAGS) -o $(EXECUTABLE) $(OBJS) $(LIBS)
+	$(CC) $(CPPFLAGS) -o $(EXECUTABLE) $(OBJS) $(LIBS)
 	@echo 'Build complete!'
 	@echo ' '
 
