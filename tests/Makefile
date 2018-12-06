@@ -1,5 +1,5 @@
 LIBS = -lcryptosec -lssl -lcrypto
-INCLUDES = -I./$(GTEST_DIR) -I../include/libcryptosec
+INCLUDES = -I/home/labsec/Desktop/openssl-1.0.2q/include -I./$(GTEST_DIR) -I../include/libcryptosec
 CC = g++
 CPPFLAGS = -DGTEST_HAS_PTHREAD=0
 CXXFLAGS = -g

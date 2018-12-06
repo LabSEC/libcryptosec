@@ -387,7 +387,7 @@ int KeyPair::getSize() throw (AsymmetricKeyException)
 	{
 		throw AsymmetricKeyException(AsymmetricKeyException::SET_NO_VALUE, "KeyPair::getSize");
 	}
-	/* TODO: this function will br right only for RSA, DSA and EC. The others algorithms (DH) must be used 
+	/* TODO: this function will br right only for RSA, DSA and EC. The others algorithms (DH) must be used
 	 * individual functions */
 	ret = EVP_PKEY_size(this->key);
 	if (ret == 0)
@@ -404,7 +404,7 @@ int KeyPair::getSizeBits() throw (AsymmetricKeyException)
 	{
 		throw AsymmetricKeyException(AsymmetricKeyException::SET_NO_VALUE, "KeyPair::getSizeBits");
 	}
-	/* TODO: this function will br right only for RSA, DSA and EC. The others algorithms (DH) must be used 
+	/* TODO: this function will br right only for RSA, DSA and EC. The others algorithms (DH) must be used
 	 * individual functions */
 	ret = EVP_PKEY_bits(this->key);
 	if (ret == 0)
@@ -464,12 +464,12 @@ EVP_PKEY* KeyPair::getEvpPkey() const
 {
 	return this->key;
 }
-		
+
 ENGINE* KeyPair::getEngine() const
 {
 	return this->engine;
 }
-	
+
 std::string KeyPair::getKeyId() const
 {
 	return this->keyId;

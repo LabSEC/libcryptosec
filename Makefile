@@ -1,5 +1,5 @@
 LIBS = -lp11
-INCLUDES = -I/usr/local/ssl/include -I./include
+INCLUDES = -I/home/labsec/Desktop/openssl-1.0.2q/include/ -I./include
 FLAGS = -shared
 CC = g++
 EXECUTABLES = libcryptosec.so
