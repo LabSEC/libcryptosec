@@ -1,11 +1,11 @@
 Summary: libcryptosec
 Name: libcryptosec
-Version: 2.2.9
+Version: 2.3.0
 Release: 1
 Source0: %{name}-%{version}.zip
 License: GPL
 Group: Development/Tools
-BuildArch: i386
+BuildArch: x86_64
 Requires: libp11
 BuildRoot: %{_tmppath}/%{name}-%{version}
 AutoReqProv: no
