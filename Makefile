@@ -18,7 +18,6 @@ ifeq ($(ARQ), x86_64)
 LIBDIR=/usr/lib64
 endif
 
-
 src/%.o: ./src/%.cpp
 	@echo 'Building file: $<'
 	$(CC) $(CPPFLAGS) $(INCLUDES) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
