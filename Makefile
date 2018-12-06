@@ -1,121 +1,45 @@
-LIBS = -lp11
-INCLUDES = -I/usr/local/ssl/include -I./include -I./usr/include
-FLAGS = -shared
 CC = g++
-EXECUTABLES = libcryptosec.so
-ARQ= $(shell uname -m)
+CPPFLAGS = -std=c++98 -fPIC
 
-CPP_SRCS += \
-./src/AsymmetricCipher.cpp \
-./src/AsymmetricKey.cpp \
-./src/Base64.cpp \
-./src/BigInteger.cpp \
-./src/ByteArray.cpp \
-./src/DSAKeyPair.cpp \
-./src/DSAPrivateKey.cpp \
-./src/DSAPublicKey.cpp \
-./src/ECDSAKeyPair.cpp \
-./src/ECDSAPrivateKey.cpp \
-./src/ECDSAPublicKey.cpp \
-./src/DateTime.cpp \
-./src/DynamicEngine.cpp \
-./src/Engine.cpp \
-./src/Engines.cpp \
-./src/Hmac.cpp \
-./src/KeyPair.cpp \
-./src/MessageDigest.cpp \
-./src/NetscapeSPKI.cpp \
-./src/NetscapeSPKIBuilder.cpp \
-./src/OpenSSLErrorHandler.cpp \
-./src/Pkcs7.cpp \
-./src/Pkcs7Builder.cpp \
-./src/Pkcs7CertificateBundle.cpp \
-./src/Pkcs7CertificateBundleBuilder.cpp \
-./src/Pkcs7EnvelopedData.cpp \
-./src/Pkcs7EnvelopedDataBuilder.cpp \
-./src/Pkcs7Factory.cpp \
-./src/Pkcs7SignedData.cpp \
-./src/Pkcs7SignedDataBuilder.cpp \
-./src/Pkcs12.cpp \
-./src/Pkcs12Factory.cpp \
-./src/Pkcs12Builder.cpp \
-./src/PrivateKey.cpp \
-./src/PublicKey.cpp \
-./src/RSAKeyPair.cpp \
-./src/RSAPrivateKey.cpp \
-./src/RSAPublicKey.cpp \
-./src/Random.cpp \
-./src/SecretSharer.cpp \
-./src/Signer.cpp \
-./src/SmartcardCertificate.cpp \
-./src/SmartcardReader.cpp \
-./src/SmartcardSlot.cpp \
-./src/SmartcardSlots.cpp \
-./src/SymmetricCipher.cpp \
-./src/SymmetricKey.cpp \
-./src/SymmetricKeyGenerator.cpp \
-./src/certificate/AccessDescription.cpp \
-./src/certificate/AuthorityKeyIdentifierExtension.cpp \
-./src/certificate/AuthorityInformationAccessExtension.cpp \
-./src/certificate/BasicConstraintsExtension.cpp \
-./src/certificate/Certificate.cpp \
-./src/certificate/CertificateBuilder.cpp \
-./src/certificate/CertificatePoliciesExtension.cpp \
-./src/certificate/CertificateRequest.cpp \
-./src/certificate/CertificateRequestSPKAC.cpp \
-./src/certificate/CertificateRequestFactory.cpp \
-./src/certificate/CertificateRevocationList.cpp \
-./src/certificate/CertificateRevocationListBuilder.cpp \
-./src/certificate/CRLDistributionPointsExtension.cpp \
-./src/certificate/CRLNumberExtension.cpp \
-./src/certificate/DeltaCRLIndicatorExtension.cpp \
-./src/certificate/DistributionPoint.cpp \
-./src/certificate/DistributionPointName.cpp \
-./src/certificate/ExtendedKeyUsageExtension.cpp \
-./src/certificate/Extension.cpp \
-./src/certificate/GeneralName.cpp \
-./src/certificate/GeneralNames.cpp \
-./src/certificate/IssuerAlternativeNameExtension.cpp \
-./src/certificate/KeyUsageExtension.cpp \
-./src/certificate/ObjectIdentifier.cpp \
-./src/certificate/ObjectIdentifierFactory.cpp \
-./src/certificate/PolicyInformation.cpp \
-./src/certificate/PolicyQualifierInfo.cpp \
-./src/certificate/RDNSequence.cpp \
-./src/certificate/RevokedCertificate.cpp \
-./src/certificate/SubjectAlternativeNameExtension.cpp \
-./src/certificate/SubjectInformationAccessExtension.cpp \
-./src/certificate/SubjectKeyIdentifierExtension.cpp \
-./src/certificate/UserNotice.cpp \
-./src/ec/EllipticCurve.cpp \
-./src/ec/BrainpoolCurveFactory.cpp \
- 
+#LIBS
+LIBS = -lp11 -lcrypto -lssl
+LIBS_STATIC= /usr/local/ssl/lib/libcrypto.a /usr/local/ssl/lib/libssl.a -lp11 
+SSL_INCLUDES = -I/usr/local/ssl/include/
+INCLUDES = -I./include $(SSL_INCLUDES)
+NAME = libcryptosec.so
+
+CPP_SRCS := $(shell find src -name "*.cpp")
 OBJS += $(CPP_SRCS:.cpp=.o)
-
 CPP_DEPS += $(CPP_SRCS:.cpp=.d)
 
+ARQ= $(shell uname -m)
 LIBDIR = /usr/lib
 ifeq ($(ARQ), x86_64)
 LIBDIR=/usr/lib64
 endif
-USER_OBJS=$(LIBDIR)/libcrypto.a
+
 
 src/%.o: ./src/%.cpp
 	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C++ Compiler'
-	$(CC) -fPIC $(INCLUDES) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
-	@echo 'Finished building: $<'
+	$(CC) $(CPPFLAGS) $(INCLUDES) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 
-$(EXECUTABLES):	$(OBJS)
-	$(CC) -fPIC $(FLAGS) -o $(EXECUTABLES) $(OBJS) $(USER_OBJS) $(LIBS)  
+$(NAME): $(OBJS)
+	$(CC) $(CPPFLAGS) -shared -o $(NAME) $(OBJS) $(LIBS)
 	@echo 'Build complete!'
 
+static: $(OBJS)
+	$(CC) $(CPPFLAGS) -shared -o $(NAME) $(OBJS) $(LIBS_STATIC)
+	@echo 'Build complete!'
+
+static_release: static
+	strip $(NAME)
+
 clean:
-	rm -rf $(CPP_DEPS) $(OBJS) $(EXECUTABLES)
+	rm -rf $(CPP_DEPS) $(OBJS) $(NAME)
 	
 
-install: $(EXECUTABLES)
+install: $(NAME)
 	@echo 'Installing libcryptosec ...'
 	@mkdir -p $(LIBDIR)
 	@cp libcryptosec.so $(LIBDIR)
@@ -131,6 +55,6 @@ install: $(EXECUTABLES)
 
 uninstall:
 	@echo 'Uninstalling libcryptosec ...'
-	@rm -rf $(LIBDIR)/$(EXECUTABLES)
+	@rm -rf $(LIBDIR)/$(NAME)
 	@rm -rf /usr/include/libcryptosec
 	@echo 'Uninstalation complete!'
