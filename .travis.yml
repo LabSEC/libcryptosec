@@ -23,5 +23,5 @@ install:
 
 script:
   - docker exec -t image-build bash -c "cd /travis && ls && openssl version"
-  - docker exec -t image-build bash -c "cd /travis && make SSL_INCLUDES='/usr/include/'  LIBS_STATIC='/usr/lib64/libcrypto.a /usr/lib64/libssl.a -lp11' static -j `nproc` && make install"
-  - docker exec -t image-build bash -c "cd /travis/tests && make SSL_INCLUDES='/usr/include/' test -j `nproc`"
+  - docker exec -t image-build bash -c "cd /travis && make SSL_INCLUDES='-I/usr/include/'  LIBS_STATIC='/usr/lib64/libcrypto.a /usr/lib64/libssl.a -lp11' static -j `nproc` && make install"
+  - docker exec -t image-build bash -c "cd /travis/tests && make SSL_INCLUDES='-I/usr/include/' test -j `nproc`"
