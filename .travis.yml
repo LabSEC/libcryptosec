@@ -6,13 +6,13 @@ matrix:
   include:
       env: 
         - IMAGE=fedora:25
-        - INC='-I/usr/include/'
-        - LIB='/usr/lib64/libcrypto.a /usr/lib64/libssl.a -lp11'
+        - INC="-I/usr/include/"
+        - LIB="/usr/lib64/libcrypto.a /usr/lib64/libssl.a -lp11"
   allow_failures:
       env: 
         - IMAGE=fedora:latest
-        - INC='-I/usr/include/'
-        - LIB='/usr/lib64/libcrypto.a /usr/lib64/libssl.a -lp11'
+        - INC="-I/usr/include/"
+        - LIB="/usr/lib64/libcrypto.a /usr/lib64/libssl.a -lp11"
 
 services:
   - docker
