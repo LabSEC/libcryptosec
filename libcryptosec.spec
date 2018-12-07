@@ -1,6 +1,6 @@
 Summary: libcryptosec
 Name: libcryptosec
-Version: 2.3.0
+Version: 2.2.10
 Release: 1
 Source0: %{name}-%{version}.zip
 License: GPL
@@ -40,6 +40,9 @@ cp -f include/libcryptosec/ec/* %{buildroot}%{_includedir}/libcryptosec/ec
 
 %changelog
 %changelog
+
+* Tue Dec 07 2018 Lucas Perin <lucas.perin@posgrad.ufsc.br> - 2.2.10
+- Minor test changes and static compilation option on Makefile.
 
 * Tue Nov 29 2016 Pablo Montezano <pablo.montezano@grad.ufsc.br> - 2.2.9
 - Added support to native openssl brainpool curves;
