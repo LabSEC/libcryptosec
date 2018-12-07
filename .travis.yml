@@ -27,5 +27,5 @@ install:
 
 script:
   - docker exec -t image-build bash -c "cd /travis && ls && openssl version"
-  - docker exec -t image-build bash -c "cd /travis && make SSL_INCLUDES=$INC  LIBS_STATIC=$LIB static -j `nproc` && make install"
-  - docker exec -t image-build bash -c "cd /travis/tests && make SSL_INCLUDES=$INC test -j `nproc`"
+  - docker exec -t image-build bash -c "cd /travis && make SSL_INCLUDES='$INC'  LIBS_STATIC='$LIB' static -j `nproc` && make install"
+  - docker exec -t image-build bash -c "cd /travis/tests && make SSL_INCLUDES='$INC' test -j `nproc`"
