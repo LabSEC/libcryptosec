@@ -5,67 +5,84 @@
 #include <libcryptosec/certificate/CertificateBuilder.h>
 #include <ostream>
 
-TEST(ENGINE_TEST, setup) {
-   std::string path = "";
-   std::string id = "";
+#define PATH ""
+#define ID ""
+#define ADDR ""
+#define PORT ""
+#define USER ""
+#define PW ""
+#define KEY ""
 
-   std::vector<std::pair<std::string, std::string> > extraCommands;
-   std::pair<std::string, std::string> addr("", "");
-   std::pair<std::string, std::string> port("", "");
-   std::pair<std::string, std::string> user("", "");
-   std::pair<std::string, std::string> pw("", "");
+/**
+ * @brief Testes unitários da classe Engine.
+ */
+class EngineTest : public ::testing::Test {
 
-  ASSERT_EXIT(
-  {
-    {
-      DynamicEngine engine = DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
-    }
-    exit(0);
-  },::testing::ExitedWithCode(0),".*");
-}
+protected:
 
-TEST(ENGINE_TEST, testInit) {
-   std::string path = "";
-   std::string id = "";
+  virtual void SetUp() {
+    path = PATH;
+    id = ID;
+    keyid = KEY;
 
-   std::vector<std::pair<std::string, std::string> > extraCommands;
-   std::pair<std::string, std::string> addr("", "");
-   std::pair<std::string, std::string> port("", "");
-   std::pair<std::string, std::string> user("", "");
-   std::pair<std::string, std::string> pw("", "");
+    std::pair<std::string, std::string> addr("ADDRESS_CONN", ADDR);
+    // std::pair<std::string, std::string> port("PORT_CONN", PORT);
+    // std::pair<std::string, std::string> user("USERNAME", USER);
+    // std::pair<std::string, std::string> pw("PW", PW);
+    extraCommands.push_back(addr);
+    // extraCommands.push_back(port);
+    // extraCommands.push_back(user);
+    // extraCommands.push_back(pw);
+  }
 
-  DynamicEngine engine = DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
-
-  ASSERT_EXIT(
-  {
-    {
-      ASSERT_EQ(true, engine.testInit());
-    }
-    exit(0);
-  },::testing::ExitedWithCode(0),".*");
-}
-
-
-TEST(ENGINE_TEST, testSign) {
-  // std::string path = "";
-  // std::string id = "";
-  // std::string keyid = "";
-  // static const long version = 2L;
-  //
-  // std::vector<std::pair<std::string, std::string> > extraCommands;
-  // std::pair<std::string, std::string> addr("", "");
-  // std::pair<std::string, std::string> port("", "");
-  // std::pair<std::string, std::string> user("", "");
-  // std::pair<std::string, std::string> pw("", "");
-
-  std::string path = "/home/labsec/Desktop/engine_openhsmd-2.0-static.x86_64.so";
-  std::string id = "openhsmd";
-  std::string keyid = "chave-2048";
-  static const long version = 2L;
-
+  DynamicEngine* engine;
+  std::string path;
+  std::string id;
   std::vector<std::pair<std::string, std::string> > extraCommands;
-  std::pair<std::string, std::string> addr("ADDRESS_CONN", "192.168.66.48");
+  std::string keyid;
+};
 
+/**
+ * @brief Gera e testa engine.
+ */
+TEST_F(EngineTest, CreateDynamicEngine) {
+  ASSERT_EXIT(
+  {
+    {
+      engine = new DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
+    }
+    exit(0);
+  },::testing::ExitedWithCode(0),".*");
+}
+
+/**
+ * @brief Inicia a engine.
+ */
+TEST_F(EngineTest, InitEngine) {
+  engine = new DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
+  ASSERT_EQ(true, engine->testInit());
+}
+
+/**
+ * @brief Carrega a chave da engine.
+ */
+TEST_F(EngineTest, LoadEngineKey) {
+  engine = new DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
+
+  ASSERT_EXIT(
+  {
+    {
+      KeyPair kpair(engine, keyid);
+    }
+    exit(0);
+  },::testing::ExitedWithCode(0),".*");
+}
+
+/**
+ * @brief Assina usando a engine.
+ */
+TEST_F(EngineTest, SignWithEngine) {
+  static const long version = 2L;
   RDNSequence rdn = RDNSequence();
   rdn.addEntry(RDNSequence::COUNTRY, "CO");
   rdn.addEntry(RDNSequence::STATE_OR_PROVINCE, "State");
@@ -74,12 +91,9 @@ TEST(ENGINE_TEST, testSign) {
   rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "Organization Unit");
   rdn.addEntry(RDNSequence::COMMON_NAME, "Common Name");
 
-  DynamicEngine engine = DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
+  engine = new DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
 
-  engine.testInit();
-  std::cout << "AA" << std::endl;
-
-  KeyPair kpair(&engine, keyid);
+  KeyPair kpair(engine, keyid);
 
   CertificateBuilder certBuilder;
   certBuilder.setSerialNumber(11444);
@@ -90,7 +104,7 @@ TEST(ENGINE_TEST, testSign) {
   ASSERT_EXIT(
   {
     {
-      Certificate* cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA512);
+      Certificate* cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA256);
     }
     exit(0);
   },::testing::ExitedWithCode(0),".*");
