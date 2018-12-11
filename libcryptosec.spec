@@ -1,11 +1,11 @@
 Summary: libcryptosec
 Name: libcryptosec
-Version: 2.2.9
+Version: 2.2.10
 Release: 1
 Source0: %{name}-%{version}.zip
 License: GPL
 Group: Development/Tools
-BuildArch: i386
+BuildArch: x86_64
 Requires: libp11
 BuildRoot: %{_tmppath}/%{name}-%{version}
 AutoReqProv: no
@@ -40,6 +40,9 @@ cp -f include/libcryptosec/ec/* %{buildroot}%{_includedir}/libcryptosec/ec
 
 %changelog
 %changelog
+
+* Tue Dec 07 2018 Lucas Perin <lucas.perin@posgrad.ufsc.br> - 2.2.10
+- Minor test changes and static compilation option on Makefile.
 
 * Tue Nov 29 2016 Pablo Montezano <pablo.montezano@grad.ufsc.br> - 2.2.9
 - Added support to native openssl brainpool curves;
