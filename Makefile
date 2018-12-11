@@ -4,7 +4,7 @@ CPPFLAGS = -std=c++98 -fPIC
 #LIBS
 LIBS = -lp11 -lcrypto -lssl
 LIBS_STATIC= /usr/local/ssl/lib/libcrypto.a /usr/local/ssl/lib/libssl.a -lp11
-SSL_INCLUDES = -I/home/labsec/Desktop/openssl-1.0.2q/include/
+SSL_INCLUDES = -I/usr/local/ssl/include/
 INCLUDES = -I./include $(SSL_INCLUDES)
 NAME = libcryptosec.so
 

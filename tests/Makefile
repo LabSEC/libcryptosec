@@ -5,7 +5,7 @@ EXECUTABLE = test.out
 LIBCRYPTOSEC = ../libcryptosec.so
 LIBS = $(LIBCRYPTOSEC) -lgtest
 SRC_DIR = src/unit
-SSL_INCLUDES = -I/home/labsec/Desktop/openssl-1.0.2q/include
+SSL_INCLUDES = -I/usr/local/ssl/include/
 INCLUDES = -I../include/ -I/usr/include/gtest $(SSL_INCLUDES)
 
 TEST_SRCS += $(wildcard $(SRC_DIR)/*.cpp)
