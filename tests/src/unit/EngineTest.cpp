@@ -1,3 +1,6 @@
+//Compile only if engine is defined
+#ifdef ENGINE_COMP
+
 #include <libcryptosec/DynamicEngine.h>
 #include <fstream>
 #include "gtest.h"
@@ -21,6 +24,7 @@ class EngineTest : public ::testing::Test {
 protected:
 
   virtual void SetUp() {
+	OpenSSL_add_all_algorithms();
     path = PATH;
     id = ID;
     keyid = KEY;
@@ -35,45 +39,57 @@ protected:
     // extraCommands.push_back(pw);
   }
 
-  DynamicEngine* engine;
+  virtual void TearDown() {
+	EVP_cleanup();
+  }
+
   std::string path;
   std::string id;
   std::vector<std::pair<std::string, std::string> > extraCommands;
   std::string keyid;
 };
 
-/**
- * @brief Gera e testa engine.
+typedef EngineTest EngineDeathTest;
+
+
+/*
+ *############################### DEATH TESTS! ###############################
  */
-TEST_F(EngineTest, CreateDynamicEngine) {
+
+/**
+ * @brief FynamicEngine Constructor death test.
+ */
+TEST_F(EngineDeathTest, CreateDynamicEngine) {
+  testing::FLAGS_gtest_death_test_style="threadsafe";
   ASSERT_EXIT(
   {
-    {
-      engine = new DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
-    }
+    DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
     exit(0);
   },::testing::ExitedWithCode(0),".*");
 }
 
 /**
- * @brief Inicia a engine.
+ * @brief Engine init/finish (connection) death test.
  */
-TEST_F(EngineTest, InitEngine) {
-  engine = new DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
-  ASSERT_EQ(true, engine->testInit());
+TEST_F(EngineDeathTest, InitEngine) {
+  testing::FLAGS_gtest_death_test_style="threadsafe";
+  DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
+  ASSERT_EXIT(
+  {
+	engine.testInit();
+    exit(0);
+  },::testing::ExitedWithCode(0),".*");
 }
 
 /**
- * @brief Carrega a chave da engine.
+ * @brief Engine load key death test.
  */
-TEST_F(EngineTest, LoadEngineKey) {
-  engine = new DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
-
+TEST_F(EngineDeathTest, LoadEngineKey) {
+  testing::FLAGS_gtest_death_test_style="threadsafe";
+  DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
   ASSERT_EXIT(
   {
-    {
-      KeyPair kpair(engine, keyid);
-    }
+    KeyPair kpair(&engine, keyid);
     exit(0);
   },::testing::ExitedWithCode(0),".*");
 }
@@ -81,7 +97,8 @@ TEST_F(EngineTest, LoadEngineKey) {
 /**
  * @brief Assina usando a engine.
  */
-TEST_F(EngineTest, SignWithEngine) {
+TEST_F(EngineDeathTest, SignWithEngine) {
+  testing::FLAGS_gtest_death_test_style="threadsafe";
   static const long version = 2L;
   RDNSequence rdn = RDNSequence();
   rdn.addEntry(RDNSequence::COUNTRY, "CO");
@@ -91,9 +108,9 @@ TEST_F(EngineTest, SignWithEngine) {
   rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "Organization Unit");
   rdn.addEntry(RDNSequence::COMMON_NAME, "Common Name");
 
-  engine = new DynamicEngine(path, id, extraCommands); //!< Objeto para geração da engine.
+  DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
 
-  KeyPair kpair(engine, keyid);
+  KeyPair kpair(&engine, keyid);
 
   CertificateBuilder certBuilder;
   certBuilder.setSerialNumber(11444);
@@ -103,9 +120,49 @@ TEST_F(EngineTest, SignWithEngine) {
 
   ASSERT_EXIT(
   {
-    {
-      Certificate* cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA256);
-    }
+    Certificate* cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA256);
     exit(0);
   },::testing::ExitedWithCode(0),".*");
 }
+
+/*
+ *############################### NORMAL TESTS! ###############################
+ */
+
+/**
+ * @brief Inicia a engine.
+ */
+TEST_F(EngineTest, InitEngine) {
+  testing::FLAGS_gtest_death_test_style="threadsafe";
+  DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
+  ASSERT_EQ(true, engine.testInit());
+}
+
+/**
+ * @brief Assina usando a engine.
+ */
+TEST_F(EngineTest, SignWithEngine) {
+  testing::FLAGS_gtest_death_test_style="threadsafe";
+  static const long version = 2L;
+  RDNSequence rdn = RDNSequence();
+  rdn.addEntry(RDNSequence::COUNTRY, "CO");
+  rdn.addEntry(RDNSequence::STATE_OR_PROVINCE, "State");
+  rdn.addEntry(RDNSequence::LOCALITY, "Locality");
+  rdn.addEntry(RDNSequence::ORGANIZATION, "Organization");
+  rdn.addEntry(RDNSequence::ORGANIZATION_UNIT, "Organization Unit");
+  rdn.addEntry(RDNSequence::COMMON_NAME, "Common Name");
+
+  DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
+
+  KeyPair kpair(&engine, keyid);
+
+  CertificateBuilder certBuilder;
+  certBuilder.setSerialNumber(11444);
+  certBuilder.setPublicKey(*kpair.getPublicKey());
+  certBuilder.setVersion(version);
+  certBuilder.setIssuer(rdn);
+  Certificate* cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA256);
+  //TODO Verify signature?
+}
+
+#endif
