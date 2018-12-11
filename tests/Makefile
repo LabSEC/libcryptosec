@@ -1,5 +1,5 @@
 CC = g++
-CPPFLAGS = -g -DFIPS -std=c++98 -DGTEST_HAS_PTHREAD=0
+CPPFLAGS = -g -DFIPS -std=c++98 -DGTEST_HAS_PTHREAD=0 -DENGINE_COMP
 EXECUTABLE = test.out
 
 LIBCRYPTOSEC = ../libcryptosec.so
@@ -28,6 +28,12 @@ test: all
 	@echo 'Building libcryptosec'
 	@echo 'Executing tests...'
 	./$(EXECUTABLE)
+	@echo 'Done!'
+
+engine: all
+	@echo 'Building libcryptosec'
+	@echo 'Executing tests...'
+	./$(EXECUTABLE) --gtest_filter='EngineDeathTest.*:EngineTest.*'
 	@echo 'Done!'
 
 clean:
