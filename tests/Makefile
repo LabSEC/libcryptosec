@@ -1,5 +1,5 @@
 CC = g++
-CPPFLAGS = -g -DFIPS -std=c++98 -DGTEST_HAS_PTHREAD=0 -DENGINE_COMP
+CPPFLAGS = -g -DFIPS -std=c++98 -DGTEST_HAS_PTHREAD=0
 EXECUTABLE = test.out
 
 LIBCRYPTOSEC = ../libcryptosec.so
