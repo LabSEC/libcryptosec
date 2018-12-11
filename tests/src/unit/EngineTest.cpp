@@ -63,7 +63,7 @@ TEST_F(EngineDeathTest, CreateDynamicEngine) {
   testing::FLAGS_gtest_death_test_style="threadsafe";
   ASSERT_EXIT(
   {
-    DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
+    {DynamicEngine engine(path, id, extraCommands);} //!< Objeto para geração da engine.
     exit(0);
   },::testing::ExitedWithCode(0),".*");
 }
@@ -76,7 +76,7 @@ TEST_F(EngineDeathTest, InitEngine) {
   DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
   ASSERT_EXIT(
   {
-	engine.testInit();
+	{engine.testInit();}
     exit(0);
   },::testing::ExitedWithCode(0),".*");
 }
@@ -89,7 +89,7 @@ TEST_F(EngineDeathTest, LoadEngineKey) {
   DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
   ASSERT_EXIT(
   {
-    KeyPair kpair(&engine, keyid);
+    {KeyPair kpair(&engine, keyid);}
     exit(0);
   },::testing::ExitedWithCode(0),".*");
 }
@@ -120,7 +120,7 @@ TEST_F(EngineDeathTest, SignWithEngine) {
 
   ASSERT_EXIT(
   {
-    Certificate* cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA256);
+    {Certificate* cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA256);}
     exit(0);
   },::testing::ExitedWithCode(0),".*");
 }
