@@ -30,9 +30,10 @@ test: all
 	./$(EXECUTABLE)
 	@echo 'Done!'
 
-engine: all
-	@echo 'Building libcryptosec'
-	@echo 'Executing tests...'
+eng_comp:
+CPPFLAGS+=-DENGINE_COMP
+
+test_engine: eng_comp all
 	./$(EXECUTABLE) --gtest_filter='EngineDeathTest.*:EngineTest.*'
 	@echo 'Done!'
 
