@@ -28,4 +28,4 @@ install:
 script:
   - docker exec -t image-build bash -c "cd /travis && ls && openssl version"
   - docker exec -t image-build bash -c "cd /travis && SSL_DIR='$INC' STATIC_LIBS='$LIB' make static -j `nproc` && make install"
-  - docker exec -t image-build bash -c "cd /travis/tests && SSL_DIR='$INC' STATIC_LIBS='$LIB' make installed_test_static -j `nproc`"
+  - docker exec -t image-build bash -c "cd /travis/tests && SSL_DIR='$INC' make installed_test_static"
