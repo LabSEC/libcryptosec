@@ -40,7 +40,7 @@ OBJS += $(TEST_SRCS:.cpp=.o)
 	$(eval LIBS= $(LIBCRYPTOSEC) -lgtest)
 
 .set_installed:
-	$(eval INCLUDES=-I/usr/libcryptosec/include -I$(GTEST_DIR) -I$(SSL_DIR))
+	$(eval INCLUDES=-I/usr/include/libcryptosec -I$(GTEST_DIR) -I$(SSL_DIR))
 
 .set_engine:
 	$(eval DEFS+= -DENGINE_COMP)
