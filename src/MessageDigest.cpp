@@ -176,6 +176,9 @@ const EVP_MD* MessageDigest::getMessageDigest(MessageDigest::Algorithm algorithm
 		case MessageDigest::SHA512:
 			md = EVP_sha512();
 			break;
+		case MessageDigest::Identity:
+			md = EVP_get_digestbyname("identity_md");
+			break;
 	}
 	return md;
 }
@@ -184,6 +187,7 @@ MessageDigest::Algorithm MessageDigest::getMessageDigest(int algorithmNid)
 		throw (MessageDigestException)
 {
 	MessageDigest::Algorithm ret;
+	int nidIdentity = OBJ_sn2nid("identity_md");
 	switch (algorithmNid)
 	{
 		case NID_sha512WithRSAEncryption: case NID_ecdsa_with_SHA512:
@@ -207,13 +211,17 @@ MessageDigest::Algorithm MessageDigest::getMessageDigest(int algorithmNid)
     	case NID_md4WithRSAEncryption: case NID_md4:
     		ret = MessageDigest::MD4;
     		break;
-    	case NID_ripemd160: case NID_ripemd160WithRSA: 
+    	case NID_ripemd160: case NID_ripemd160WithRSA:
     		ret = MessageDigest::RIPEMD160;
     		break;
     	case NID_sha: case NID_shaWithRSAEncryption:
     		ret = MessageDigest::SHA;
     		break;
     	default:
+			if (algorithmNid != 0 && algorithmNid == nidIdentity) {
+				ret = MessageDigest::Identity;
+				break;
+			}
     		throw MessageDigestException(MessageDigestException::INVALID_ALGORITHM, "MessageDigest::getMessageDigest");
 	}
 	return ret;

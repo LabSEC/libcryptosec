@@ -79,15 +79,19 @@ PrivateKey* Pkcs12::getPrivKey(string password) throw(Pkcs12Exception)
 		case AsymmetricKey::ECDSA:
 			ret = new ECDSAPrivateKey(this->privKey->getEvpPkey());
 			break;
+
+		case AsymmetricKey::EdDSA:
+			ret = new EdDSAPrivateKey(this->privKey->getEvpPkey());
+			break;
 	}
-	
+
 	if (ret == NULL)
 	{
 		throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "Pkcs12::getPrivKey");
 	}
 	CRYPTO_add(&this->privKey->getEvpPkey()->references,1,CRYPTO_LOCK_EVP_PKEY);
-	
-	
+
+
 	return ret;
 }
 

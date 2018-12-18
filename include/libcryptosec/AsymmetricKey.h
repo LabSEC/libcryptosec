@@ -49,6 +49,7 @@ public:
 		RSA, /*!< A chave é do tipo RSA */
 		DSA, /*!< A chave é do tipo DSA */
 		ECDSA, /*!< A chave é do tipo ECDSA */
+		EdDSA, /*!< A chave é do tipo EdDSA */
 //		DH,
 //		EC,
 	};
@@ -124,6 +125,11 @@ public:
 		BRAINPOOL_P384T1 = 932,
 		BRAINPOOL_P512R1 = 933,
 		BRAINPOOL_P512T1 = 934,
+
+		// Os NIDs são gerados pela engine, então usa valores "inválidos"
+		ED25519 = 10001,
+		ED448 = 10002,
+		ED521 = 10003,
 	};
 
 

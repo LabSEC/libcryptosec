@@ -8,9 +8,11 @@
 #include "RSAPublicKey.h"
 #include "DSAPublicKey.h"
 #include "ECDSAPublicKey.h"
+#include "EdDSAPublicKey.h"
 #include "RSAPrivateKey.h"
 #include "DSAPrivateKey.h"
 #include "ECDSAPrivateKey.h"
+#include "EdDSAPrivateKey.h"
 
 #include <libcryptosec/exception/EngineException.h>
 #include <libcryptosec/exception/EncodeException.h>

@@ -93,6 +93,17 @@ NetscapeSPKI* NetscapeSPKIBuilder::sign(PrivateKey &privateKey, MessageDigest::A
 {
 	int rc;
 	NetscapeSPKI *ret;
+
+        // TODO: We force Identity message digest for EdDSA to avoid changing callers which always pass digests.
+        EVP_PKEY* pkey = privateKey.getEvpPkey();
+        int pkeyType = EVP_PKEY_type(pkey->type);
+        int nid25519 = OBJ_sn2nid("ED25519");
+        int nid521 = OBJ_sn2nid("ED521");
+        int nid448 = OBJ_sn2nid("ED448");
+        if (pkeyType == nid25519 || pkeyType == nid521 || pkeyType == nid448) {
+		messageDigest = MessageDigest::Identity;
+        }
+
 	rc = NETSCAPE_SPKI_sign(this->netscapeSPKI, privateKey.getEvpPkey(), MessageDigest::getMessageDigest(messageDigest));
 	if (!rc)
 	{

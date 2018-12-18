@@ -37,48 +37,49 @@ public:
 		SHA256,
 		SHA384,
 		SHA512,
+		Identity,
 	};
-	
+
 	/**
 	 * Construtor padrão.
 	 * Controi objeto MessageDigest não inicializado.
 	 */
 	MessageDigest();
-	
+
 	/**
 	 * Construtor
 	 * Constroi um objeto MessageDigest.
 	 * @param algorithm algoritmo de resumo.
-	 * @throw MessageDigestException caso ocorra erro ao inicializar a estrutura de resumos do OpenSSL. 
+	 * @throw MessageDigestException caso ocorra erro ao inicializar a estrutura de resumos do OpenSSL.
 	 */
 	MessageDigest(MessageDigest::Algorithm algorithm) throw (MessageDigestException);
-	
+
 	/**
 	 * Construtor
 	 * Constroi um objeto MessageDigest utilizando uma engine.
 	 * @param algorithm algoritmo de resumo.
 	 * @param engine objeto Engine.
-	 * @throw MessageDigestException caso ocorra erro ao inicializar a estrutura de resumos do OpenSSL. 
+	 * @throw MessageDigestException caso ocorra erro ao inicializar a estrutura de resumos do OpenSSL.
 	 */
 	MessageDigest(MessageDigest::Algorithm algorithm, Engine &engine) throw (MessageDigestException);
-	
+
 	/**
 	 * Destrutor.
 	 */
 	virtual ~MessageDigest();
-	
+
 	/**
 	 * Inicializa estruturas de resumos do OpenSSL.
 	 * @param algorithm algoritmo de resumo.
-	 * @throw MessageDigestException caso ocorra erro ao inicializar a estrutura de resumos do OpenSSL. 
+	 * @throw MessageDigestException caso ocorra erro ao inicializar a estrutura de resumos do OpenSSL.
 	 */
 	void init(MessageDigest::Algorithm algorithm) throw (MessageDigestException);
-	
+
 	/**
 	 * Inicializa estruturas de resumos do OpenSSL utilizando uma engine.
 	 * @param algorithm algoritmo de resumo.
 	 * @param engine objeto Engine.
-	 * @throw MessageDigestException caso ocorra erro ao inicializar a estrutura de resumos do OpenSSL. 
+	 * @throw MessageDigestException caso ocorra erro ao inicializar a estrutura de resumos do OpenSSL.
 	 */
 	void init(MessageDigest::Algorithm algorithm, Engine &engine) throw (MessageDigestException);
 
@@ -97,23 +98,23 @@ public:
 	 * @throw InvalidStateException caso o objeto MessageDigest não tenha sido inicializado corretamente.
 	 */
 	void update(std::string &data) throw (MessageDigestException, InvalidStateException);
-	
+
 	/**
 	 * Realiza resumo criptográfico.
 	 * @return bytes que representam o resumo calculado.
 	 * @throw MessageDigestException caso ocorra erro ao finalizar o contexto de resumo do OpenSSL.
-	 * @throw InvalidStateException caso o objeto MessageDigest não tenha sido inicializado corretamente ou caso não tenha sido passado o conteúdo para calculo do resumo. 
+	 * @throw InvalidStateException caso o objeto MessageDigest não tenha sido inicializado corretamente ou caso não tenha sido passado o conteúdo para calculo do resumo.
 	 */
 	ByteArray doFinal() throw (MessageDigestException, InvalidStateException);
-	
+
 	/**
 	 * Realiza atualização do contexto e faz resumo criptográfico.
 	 * Equivalente a executar MessageDigest::update(ByteArray &data) e, em seguida, MessageDigest::doFinal().
 	 * @param data conteúdo para resumo.
 	 * @return bytes que representam o resumo calculado.
 	 * @throw MessageDigestException caso ocorra erro ao finalizar o contexto de resumo do OpenSSL.
-	 * @throw InvalidStateException caso o objeto MessageDigest não tenha sido inicializado corretamente ou caso não tenha sido passado o conteúdo para calculo do resumo. 
-	 */	
+	 * @throw InvalidStateException caso o objeto MessageDigest não tenha sido inicializado corretamente ou caso não tenha sido passado o conteúdo para calculo do resumo.
+	 */
 	ByteArray doFinal(ByteArray &data) throw (MessageDigestException, InvalidStateException);
 
 
