@@ -26,6 +26,6 @@ install:
   - docker exec -t image-build bash -c "dnf update -y && dnf install openssl openssl-static libp11-devel gcc-c++ make gtest-devel findutils -y"
 
 script:
-  - docker exec -t image-build bash -c "cd /travis && ls && openssl version && export SSL_DIR=$INC && export STATIC_LIBS=$LIB"
-  - docker exec -t image-build bash -c "cd /travis && make static -j `nproc` && make install"
-  - docker exec -t image-build bash -c "cd /travis/tests && make installed_test_static -j `nproc`"
+  - docker exec -t image-build bash -c "cd /travis && ls && openssl version"
+  - docker exec -t image-build bash -c "cd /travis && export SSL_DIR=$INC && export STATIC_LIBS=$LIB && make static -j `nproc` && make install"
+  - docker exec -t image-build bash -c "cd /travis/tests && export SSL_DIR=$INC && export STATIC_LIBS=$LIB && make installed_test_static -j `nproc`"
