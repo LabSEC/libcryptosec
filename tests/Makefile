@@ -28,7 +28,7 @@ LIBDIR=/usr/lib64
 endif
 
 ############ DEPENDENCIES ############################
-LIBS = $(LIBCRYPTOSEC) -lgtest -lcrypto -lssl
+LIBS = $(LIBCRYPTOSEC) -lgtest -lcrypto -lssl -pthread
 INCLUDES = -I../include -I$(GTEST_DIR) -I$(SSL_DIR)
 
 ########### OBJECTS ##################################
