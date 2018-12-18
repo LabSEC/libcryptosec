@@ -6,12 +6,12 @@ matrix:
   include:
       env: 
         - IMAGE=fedora:25
-        - INC="-I/usr/include/"
+        - INC="/usr/include/"
         - LIB="/usr/lib64/libcrypto.a /usr/lib64/libssl.a -lp11"
   allow_failures:
       env: 
         - IMAGE=fedora:latest
-        - INC="-I/usr/include/"
+        - INC="/usr/include/"
         - LIB="/usr/lib64/libcrypto.a /usr/lib64/libssl.a -lp11"
 
 services:
@@ -27,5 +27,5 @@ install:
 
 script:
   - docker exec -t image-build bash -c "cd /travis && ls && openssl version"
-  - docker exec -t image-build bash -c "cd /travis && make SSL_INCLUDES='$INC'  LIBS_STATIC='$LIB' static -j `nproc` && make install"
-  - docker exec -t image-build bash -c "cd /travis/tests && make SSL_INCLUDES='$INC' test -j `nproc`"
+  - docker exec -t image-build bash -c "cd /travis && SSL_DIR='$INC' STATIC_LIBS='$LIB' make static -j `nproc` && make install"
+  - docker exec -t image-build bash -c "cd /travis/tests && SSL_DIR='$INC' make installed_test_static"

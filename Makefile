@@ -1,22 +1,33 @@
+############# CC FLAGS ###############################
+NAME = libcryptosec.so
 CC = g++
 CPPFLAGS = -std=c++98 -fPIC
 
-#LIBS
-LIBS = -lp11 -lcrypto -lssl
-LIBS_STATIC= /usr/local/ssl/lib/libcrypto.a /usr/local/ssl/lib/libssl.a -lp11 
-SSL_INCLUDES = -I/usr/local/ssl/include/
-INCLUDES = -I./include $(SSL_INCLUDES)
-NAME = libcryptosec.so
+############# COMP ENVIRONMENT VARIABLES #############
+ifndef STATIC_LIBS
+STATIC_LIBS=/usr/local/ssl/lib/libcrypto.a /usr/local/ssl/lib/libssl.a -lp11
+endif
 
-CPP_SRCS := $(shell find src -name "*.cpp")
-OBJS += $(CPP_SRCS:.cpp=.o)
-CPP_DEPS += $(CPP_SRCS:.cpp=.d)
+ifndef SSL_DIR
+SSL_DIR=/usr/local/ssl/include/
+endif
 
 ARQ= $(shell uname -m)
 LIBDIR = /usr/lib
 ifeq ($(ARQ), x86_64)
 LIBDIR=/usr/lib64
 endif
+
+############ DEPENDENCIES ############################
+LIBS = -lp11 -lcrypto -lssl
+INCLUDES = -I./include -I$(SSL_DIR)
+
+########### OBJECTS ##################################
+CPP_SRCS := $(shell find src -name "*.cpp")
+OBJS += $(CPP_SRCS:.cpp=.o)
+CPP_DEPS += $(CPP_SRCS:.cpp=.d)
+
+########### TARGETS ##################################
 
 src/%.o: ./src/%.cpp
 	@echo 'Building file: $<'
@@ -28,7 +39,7 @@ $(NAME): $(OBJS)
 	@echo 'Build complete!'
 
 static: $(OBJS)
-	$(CC) $(CPPFLAGS) -shared -o $(NAME) $(OBJS) $(LIBS_STATIC)
+	$(CC) $(CPPFLAGS) -shared -o $(NAME) $(OBJS) $(STATIC_LIBS)
 	@echo 'Build complete!'
 
 static_release: static
@@ -36,7 +47,7 @@ static_release: static
 
 clean:
 	rm -rf $(CPP_DEPS) $(OBJS) $(NAME)
-	
+
 
 install: $(NAME)
 	@echo 'Installing libcryptosec ...'
