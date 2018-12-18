@@ -24,17 +24,18 @@ class EngineTest : public ::testing::Test {
 protected:
 
   virtual void SetUp() {
+	ENGINE_load_dynamic();
 	OpenSSL_add_all_algorithms();
     path = PATH;
     id = ID;
     keyid = KEY;
 
     std::pair<std::string, std::string> addr("ADDRESS_CONN", ADDR);
-    // std::pair<std::string, std::string> port("PORT_CONN", PORT);
+    //std::pair<std::string, std::string> port("PORT_CONN", PORT);
     // std::pair<std::string, std::string> user("USERNAME", USER);
     // std::pair<std::string, std::string> pw("PW", PW);
     extraCommands.push_back(addr);
-    // extraCommands.push_back(port);
+    //extraCommands.push_back(port);
     // extraCommands.push_back(user);
     // extraCommands.push_back(pw);
   }
@@ -89,7 +90,7 @@ TEST_F(EngineDeathTest, LoadEngineKey) {
   DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
   ASSERT_EXIT(
   {
-    {KeyPair kpair(&engine, keyid);}
+    { try {KeyPair kpair(&engine, keyid);} catch (...){};}
     exit(0);
   },::testing::ExitedWithCode(0),".*");
 }
@@ -120,7 +121,7 @@ TEST_F(EngineDeathTest, SignWithEngine) {
 
   ASSERT_EXIT(
   {
-    {Certificate* cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA256);}
+    {try {Certificate* cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA256);} catch (...){};}
     exit(0);
   },::testing::ExitedWithCode(0),".*");
 }
@@ -135,7 +136,24 @@ TEST_F(EngineDeathTest, SignWithEngine) {
 TEST_F(EngineTest, InitEngine) {
   testing::FLAGS_gtest_death_test_style="threadsafe";
   DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
-  ASSERT_EQ(true, engine.testInit());
+  bool check = false;
+  EXPECT_NO_THROW(
+    check = engine.testInit();
+  );
+  ASSERT_EQ(true, check);
+}
+
+/**
+ * @brief Engine load key test.
+ */
+TEST_F(EngineTest, LoadEngineKey) {
+  testing::FLAGS_gtest_death_test_style="threadsafe";
+  DynamicEngine engine(path, id, extraCommands); //!< Objeto para geração da engine.
+  try {
+    KeyPair kpair(&engine, keyid);
+  } catch(LibCryptoSecException& e) {
+    FAIL() << "with message exception msg: " <<  e.getMessage();
+  }
 }
 
 /**
@@ -161,7 +179,10 @@ TEST_F(EngineTest, SignWithEngine) {
   certBuilder.setPublicKey(*kpair.getPublicKey());
   certBuilder.setVersion(version);
   certBuilder.setIssuer(rdn);
-  Certificate* cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA256);
+  Certificate* cert;
+  EXPECT_NO_THROW(
+    cert = certBuilder.sign(*kpair.getPrivateKey(), MessageDigest::SHA256);
+  );
   //TODO Verify signature?
 }
 
