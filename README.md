@@ -4,6 +4,15 @@ Object Oriented Wrapper for the OpenSSL libcrypto library.
 
 [![Build Status](https://travis-ci.org/LabSEC/libcryptosec.svg?branch=master)](https://travis-ci.org/LabSEC/libcryptosec)
 
+## Contributions
+
+* We take in pull requests, feel free to fork :-)
+* the Master and Dev branches are protected. Use branches and 
+pull requests.
+* Avoid backwards incompability! We use this for many of our project.
+* OpenSSL 1.1.x support is not in the roadmap, but we might make a compilation target for it soon.
+
+
 ## Compilation
 
 * Requires OpenSSL-dev libraries (```libssl-dev``` for ubuntu or ```openssl-dev``` for fedora);
@@ -37,14 +46,6 @@ Make sure you fill in the engine test variables at ```/test/src/unit/EngineTest.
 ```
 
 If a non-engine test is called before an Engine test, make sure you call ```make clean```, to force the engine compilation flags through all test files.
-
-## Contributions
-
-* We take in pull requests, feel free to fork :-)
-* the Master and Dev branches are protected. Use branches and 
-pull requests.
-* Avoid creating backwards compability! We use this for some of
-our project.
 
 ## Tags and OpenSSL
 
