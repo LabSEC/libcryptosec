@@ -43,6 +43,8 @@ KeyPair::KeyPair(AsymmetricKey::Algorithm algorithm, int length)
 			break;
 		case AsymmetricKey::ECDSA:
 			break;
+		case AsymmetricKey::EdDSA:
+			break;
 	}
 	if (!this->key)
 	{
@@ -192,6 +194,9 @@ PublicKey* KeyPair::getPublicKey()
 		case AsymmetricKey::ECDSA:
 			ret = new ECDSAPublicKey(keyTemp);
 			break;
+		case AsymmetricKey::EdDSA:
+			ret = new EdDSAPublicKey(keyTemp);
+			break;
 	}
 	return ret;
 }
@@ -231,6 +236,9 @@ PrivateKey* KeyPair::getPrivateKey()
 				break;
 			case AsymmetricKey::ECDSA:
 				ret = new ECDSAPrivateKey(this->key);
+				break;
+			case AsymmetricKey::EdDSA:
+				ret = new EdDSAPrivateKey(this->key);
 				break;
 		}
 		if (ret == NULL)
@@ -347,12 +355,18 @@ ByteArray KeyPair::getDerEncoded() throw (EncodeException)
 
 AsymmetricKey::Algorithm KeyPair::getAlgorithm() throw (AsymmetricKeyException)
 {
+	int nid25519 = OBJ_sn2nid("ED25519");
+	int nid448 = OBJ_sn2nid("ED448");
+	int nid521 = OBJ_sn2nid("ED521");
+	int pkeyType = 0;
+
 	AsymmetricKey::Algorithm type;
 	if (this->key == NULL)
 	{
 		throw AsymmetricKeyException(AsymmetricKeyException::SET_NO_VALUE, "KeyPair::getAlgorithm");
 	}
-	switch (EVP_PKEY_type(this->key->type))
+	pkeyType = EVP_PKEY_type(this->key->type);
+	switch (pkeyType)
 	{
 		case EVP_PKEY_RSA: /* TODO: confirmar porque tem estes dois tipos */
 		case EVP_PKEY_RSA2:
@@ -375,6 +389,10 @@ AsymmetricKey::Algorithm KeyPair::getAlgorithm() throw (AsymmetricKeyException)
 //			type = AsymmetricKey::EC;
 //			break;
 		default:
+			if (pkeyType != 0 && (pkeyType == nid25519 || pkeyType == nid448 || pkeyType == nid521)) {
+				type = AsymmetricKey::EdDSA;
+				break;
+			}
 			throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "There is no support for this type: " + std::string(OBJ_nid2sn(this->key->type)), "KeyPair::getAlgorithm");
 	}
 	return type;
