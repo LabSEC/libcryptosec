@@ -1,6 +1,6 @@
 Summary: libcryptosec
 Name: libcryptosec
-Version: 2.2.10
+Version: 2.3.0
 Release: 1
 Source0: %{name}-%{version}.zip
 License: GPL
@@ -39,7 +39,10 @@ cp -f include/libcryptosec/ec/* %{buildroot}%{_includedir}/libcryptosec/ec
 %{_includedir}/libcryptosec/
 
 %changelog
-%changelog
+
+* Wed Dec 19 2018 Lucas Palma <lucas.palma@posgrad.ufsc.br> - 2.3.0
+- Adds EdDSA support with custom engine, that registers the NIDs 'ED25519', 'ED448' and 'ED521'. 
+- Contributions by Kryptus-sa.
 
 * Tue Dec 07 2018 Lucas Perin <lucas.perin@posgrad.ufsc.br> - 2.2.10
 - Minor test changes and static compilation option on Makefile.
