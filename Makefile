@@ -48,7 +48,7 @@ clean:
 install: $(NAME)
 	@echo 'Installing libcryptosec ...'
 	@mkdir -p $(INSTALL_LIBDIR)
-	@cp libcryptosec.so $(INSTALL_PREFIX)/BDIR)
+	@cp $(NAME) $(INSTALL_LIBDIR)
 	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec
 	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec/exception
 	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec/certificate
