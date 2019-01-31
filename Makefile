@@ -1,31 +1,27 @@
 ############# CC FLAGS ###############################
-NAME = libcryptosec.so
-CC = g++
-CPPFLAGS = -std=c++98 -fPIC
-
-############# COMP ENVIRONMENT VARIABLES #############
-ifndef STATIC_LIBS
-STATIC_LIBS=/usr/local/ssl/lib/libcrypto.a /usr/local/ssl/lib/libssl.a -lp11
-endif
-
-ifndef SSL_DIR
-SSL_DIR=/usr/local/ssl/include/
-endif
-
-ARQ= $(shell uname -m)
-LIBDIR = /usr/lib
-ifeq ($(ARQ), x86_64)
-LIBDIR=/usr/lib64
-endif
+NAME ?= libcryptosec.so
+CC ?= g++
+CPPFLAGS ?= -std=c++98 -fPIC
+OPENSSL_PREFIX ?= /usr
+OPENSSL_LIBDIR ?= $(OPENSSL_PREFIX)/lib64
+OPENSSL_INCLUDEDIR ?= $(OPENSSL_PREFIX)/include
+LIBP11_PREFIX ?= /usr
+LIBP11_LIBDIR ?= $(LIBP11_PREFIX)/lib64
+LIBP11_INCLUDEDIR ?= $(LIBP11_PREFIX)/include
+INSTALL_PREFIX ?= /usr/local
+INSTALL_LIBDIR ?= $(INSTALL_PREFIX)/lib64
+INSTALL_INCLUDEDIR ?= $(INSTALL_PREFIX)/include
 
 ############ DEPENDENCIES ############################
-LIBS = -lp11 -lcrypto -lssl
-INCLUDES = -I./include -I$(SSL_DIR)
+
+STATIC_LIBS = $(OPENSSL_LIBDIR)/libcrypto.a $(OPENSSL_LIBDIR)/libssl.a $(LIBP11_LIBDIR)/libp11.a
+LIBS = -L$(LIBP11_LIBDIR) -L$(OPENSSL_LIBDIR) -Wl,-rpath,$(LIBP11_LIBDIR):$(OPENSSL_LIBDIR) -lp11 -lcrypto -Wstack-protector
+INCLUDES = -I$(OPENSSL_INCLUDEDIR) -I$(LIBP11_INCLUDEDIR) -I./include
 
 ########### OBJECTS ##################################
 CPP_SRCS := $(shell find src -name "*.cpp")
-OBJS += $(CPP_SRCS:.cpp=.o)
-CPP_DEPS += $(CPP_SRCS:.cpp=.d)
+OBJS = $(CPP_SRCS:.cpp=.o)
+CPP_DEPS = $(CPP_SRCS:.cpp=.d)
 
 ########### TARGETS ##################################
 
@@ -51,20 +47,20 @@ clean:
 
 install: $(NAME)
 	@echo 'Installing libcryptosec ...'
-	@mkdir -p $(LIBDIR)
-	@cp libcryptosec.so $(LIBDIR)
-	@mkdir -m 0755 -p /usr/include/libcryptosec
-	@mkdir -m 0755 -p /usr/include/libcryptosec/exception
-	@mkdir -m 0755 -p /usr/include/libcryptosec/certificate
-	@mkdir -m 0755 -p /usr/include/libcryptosec/ec
-	@cp -f include/libcryptosec/*.h /usr/include/libcryptosec/
-	@cp -f include/libcryptosec/exception/* /usr/include/libcryptosec/exception
-	@cp -f include/libcryptosec/certificate/* /usr/include/libcryptosec/certificate
-	@cp -f include/libcryptosec/ec/* /usr/include/libcryptosec/ec
+	@mkdir -p $(INSTALL_LIBDIR)
+	@cp libcryptosec.so $(INSTALL_PREFIX)/BDIR)
+	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec
+	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec/exception
+	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec/certificate
+	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec/ec
+	@cp -f include/libcryptosec/*.h $(INSTALL_INCLUDEDIR)/libcryptosec/
+	@cp -f include/libcryptosec/exception/* $(INSTALL_INCLUDEDIR)/libcryptosec/exception
+	@cp -f include/libcryptosec/certificate/* $(INSTALL_INCLUDEDIR)/libcryptosec/certificate
+	@cp -f include/libcryptosec/ec/* $(INSTALL_INCLUDEDIR)/libcryptosec/ec
 	@echo 'Instalation complete!'
 
 uninstall:
 	@echo 'Uninstalling libcryptosec ...'
-	@rm -rf $(LIBDIR)/$(NAME)
-	@rm -rf /usr/include/libcryptosec
+	@rm -rf $(INSTALL_LIBDIR)/$(NAME)
+	@rm -rf $(INSTALL_INCLUDEDIR)/libcryptosec
 	@echo 'Uninstalation complete!'
