@@ -15,7 +15,7 @@ INSTALL_INCLUDEDIR ?= $(INSTALL_PREFIX)/include
 ############ DEPENDENCIES ############################
 
 STATIC_LIBS = $(OPENSSL_LIBDIR)/libcrypto.a $(OPENSSL_LIBDIR)/libssl.a $(LIBP11_LIBDIR)/libp11.a
-LIBS = -L$(LIBP11_LIBDIR) -L$(OPENSSL_LIBDIR) -Wl,-rpath,$(LIBP11_LIBDIR):$(OPENSSL_LIBDIR) -lp11 -lcrypto -Wstack-protector
+LIBS = -L$(OPENSSL_LIBDIR) -L$(LIBP11_LIBDIR) -Wl,-rpath,$(OPENSSL_LIBDIR):$(LIBP11_LIBDIR) -lp11 -lcrypto -Wstack-protector
 INCLUDES = -I$(OPENSSL_INCLUDEDIR) -I$(LIBP11_INCLUDEDIR) -I./include
 
 ########### OBJECTS ##################################
