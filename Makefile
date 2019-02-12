@@ -49,10 +49,10 @@ install: $(NAME)
 	@echo 'Installing libcryptosec ...'
 	@mkdir -p $(INSTALL_LIBDIR)
 	@cp $(NAME) $(INSTALL_LIBDIR)
-	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec
-	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec/exception
-	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec/certificate
-	@mkdir -m 0755 -p $(INTSALL_INCLUDEDIR)/libcryptosec/ec
+	@mkdir -m 0755 -p $(INSTALL_INCLUDEDIR)/libcryptosec
+	@mkdir -m 0755 -p $(INSTALL_INCLUDEDIR)/libcryptosec/exception
+	@mkdir -m 0755 -p $(INSTALL_INCLUDEDIR)/libcryptosec/certificate
+	@mkdir -m 0755 -p $(INSTALL_INCLUDEDIR)/libcryptosec/ec
 	@cp -f include/libcryptosec/*.h $(INSTALL_INCLUDEDIR)/libcryptosec/
 	@cp -f include/libcryptosec/exception/* $(INSTALL_INCLUDEDIR)/libcryptosec/exception
 	@cp -f include/libcryptosec/certificate/* $(INSTALL_INCLUDEDIR)/libcryptosec/certificate
