@@ -2,6 +2,8 @@
 NAME ?= libcryptosec.so
 CC ?= g++
 CPPFLAGS ?= -std=c++98 -fPIC
+
+############# ENVIRONMENT ###############################
 OPENSSL_PREFIX ?= /usr
 OPENSSL_LIBDIR ?= $(OPENSSL_PREFIX)/lib64
 OPENSSL_INCLUDEDIR ?= $(OPENSSL_PREFIX)/include
@@ -14,7 +16,7 @@ INSTALL_INCLUDEDIR ?= $(INSTALL_PREFIX)/include
 
 ############ DEPENDENCIES ############################
 
-STATIC_LIBS = $(OPENSSL_LIBDIR)/libcrypto.a $(OPENSSL_LIBDIR)/libssl.a $(LIBP11_LIBDIR)/libp11.a
+STATIC_LIBS = $(OPENSSL_LIBDIR)/libcrypto.a $(OPENSSL_LIBDIR)/libssl.a $(LIBP11_LIBDIR)/libp11.a -ldl
 LIBS = -L$(OPENSSL_LIBDIR) -L$(LIBP11_LIBDIR) -Wl,-rpath,$(OPENSSL_LIBDIR):$(LIBP11_LIBDIR) -lp11 -lcrypto -Wstack-protector
 INCLUDES = -I$(OPENSSL_INCLUDEDIR) -I$(LIBP11_INCLUDEDIR) -I./include
 
