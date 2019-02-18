@@ -79,7 +79,7 @@ PrivateKey* DSAKeyPair::getPrivateKey()
 		{
 			throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "DSAKeyPair::getPrivateKey");
 		}
-		CRYPTO_add(&this->key->references,1,CRYPTO_LOCK_EVP_PKEY);
+		EVP_PKEY_up_ref(this->key);
 	}
 	return ret;
 }

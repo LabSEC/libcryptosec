@@ -25,13 +25,13 @@ Hmac::~Hmac() { }
 void Hmac::init(ByteArray &key, MessageDigest::Algorithm algorithm) throw (HmacException) {
 	if (this->state != Hmac::NO_INIT)
 	{
-		HMAC_CTX_cleanup( &this->ctx );
+		HMAC_CTX_free( this->ctx );
 	}
-	HMAC_CTX_init( &this->ctx );
+	ctx = HMAC_CTX_new();
 
 	this->algorithm = algorithm;
 	const EVP_MD *md = MessageDigest::getMessageDigest( this->algorithm );
-	int rc = HMAC_Init_ex( &this->ctx, (void*)key.getDataPointer(), key.size(), md, NULL );
+	int rc = HMAC_Init_ex( this->ctx, (void*)key.getDataPointer(), key.size(), md, NULL );
 	if (!rc)
 	{
 		this->state = Hmac::NO_INIT;
@@ -44,13 +44,13 @@ void Hmac::init(ByteArray &key, MessageDigest::Algorithm algorithm) throw (HmacE
 void Hmac::init(ByteArray &key, MessageDigest::Algorithm algorithm, Engine &engine) throw (HmacException) {
 	if (this->state != Hmac::NO_INIT)
 	{
-		HMAC_CTX_cleanup( &this->ctx );
+		HMAC_CTX_free( this->ctx );
 	}
-	HMAC_CTX_init( &this->ctx );
+	ctx = HMAC_CTX_new();
 
 	this->algorithm = algorithm;
 	const EVP_MD *md = MessageDigest::getMessageDigest( this->algorithm );
-	int rc = HMAC_Init_ex( &this->ctx, (void*)key.getDataPointer(), key.size(), md, engine.getEngine() );
+	int rc = HMAC_Init_ex( this->ctx, (void*)key.getDataPointer(), key.size(), md, engine.getEngine() );
 	if (!rc)
 	{
 		this->state = Hmac::NO_INIT;
@@ -75,7 +75,7 @@ void Hmac::update(ByteArray &data) throw (HmacException, InvalidStateException) 
 	{
 		throw InvalidStateException("Hmac::update");
 	}
-	int rc = HMAC_Update( &this->ctx, data.getDataPointer(), data.size() );
+	int rc = HMAC_Update( this->ctx, data.getDataPointer(), data.size() );
 	if (!rc)
 	{
 		throw HmacException(HmacException::CTX_UPDATE, "Hmac::update");
@@ -119,8 +119,8 @@ ByteArray Hmac::doFinal() throw (HmacException, InvalidStateException) {
 
 	unsigned int size;
 	unsigned char *md = new unsigned char[EVP_MAX_MD_SIZE + 1];
-	int rc = HMAC_Final( &this->ctx, md, &size );
-	HMAC_CTX_cleanup( &this->ctx );
+	int rc = HMAC_Final( this->ctx, md, &size );
+	HMAC_CTX_reset( this->ctx );
 	this->state = Hmac::NO_INIT;
 	if (!rc)
 	{

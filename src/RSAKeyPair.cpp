@@ -7,7 +7,10 @@ RSAKeyPair::RSAKeyPair(int length)
 	this->key = NULL;
 	this->engine = NULL;
 	rsa = NULL;
-	rsa = RSA_generate_key(length, RSA_F4, NULL, NULL);
+	if (!RSA_generate_key_ex(rsa, length, NULL, NULL))
+	{
+		throw AsymmetricKeyException(AsymmetricKeyException::INTERNAL_ERROR, "RSAKeyPair::RSAKeyPair");
+	}
 	if (!rsa)
 	{
 		throw AsymmetricKeyException(AsymmetricKeyException::INTERNAL_ERROR, "RSAKeyPair::RSAKeyPair");
@@ -74,7 +77,7 @@ PrivateKey* RSAKeyPair::getPrivateKey()
 		{
 			throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "RSAKeyPair::getPrivateKey");
 		}
-		CRYPTO_add(&this->key->references,1,CRYPTO_LOCK_EVP_PKEY);
+		EVP_PKEY_up_ref(this->key);
 	}
 	return ret;
 }

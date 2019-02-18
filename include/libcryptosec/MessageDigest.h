@@ -31,7 +31,6 @@ public:
 		MD4,
 		MD5,
 		RIPEMD160,
-		SHA,
 		SHA1,
 		SHA224,
 		SHA256,
@@ -187,7 +186,7 @@ protected:
 	/**
 	 * Estrutura OpenSSL que representa o algoritmo de resumo.
 	 */
-	EVP_MD_CTX ctx;
+	EVP_MD_CTX* ctx;
 };
 
 #endif /*MESSAGEDIGEST_H_*/

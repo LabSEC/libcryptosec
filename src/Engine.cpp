@@ -66,16 +66,11 @@ std::vector<Engine::Algorithm> Engine::getCapabilities()
 		algorithm = Engine::DSA;
 		ret.push_back(algorithm);
 	}
-	if (ENGINE_get_ECDSA(this->engine))
+	if (ENGINE_get_DH(this->engine))
 	{
-		algorithm = Engine::ECDSA;
+		algorithm = Engine::DH;
 		ret.push_back(algorithm);
 	}
-//	if (ENGINE_get_DH(this->engine))
-//	{
-//		algorithm = Engine::DH;
-//		ret.push_back(algorithm);
-//	}
 	if (ENGINE_get_RAND(this->engine))
 	{
 		algorithm = Engine::RAND;
@@ -175,8 +170,8 @@ std::string Engine::algorithm2Name(Engine::Algorithm algorithm)
 		case Engine::DSA:
 			ret = "DSA";
 			break;
-		case Engine::ECDSA:
-			ret = "ECDSA";
+		case Engine::DH:
+			ret = "DH";
 			break;
 		case Engine::RAND:
 			ret = "RAND";
