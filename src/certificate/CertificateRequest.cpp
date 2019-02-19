@@ -240,7 +240,7 @@ MessageDigest::Algorithm CertificateRequest::getMessageDigestAlgorithm()
 		throw (MessageDigestException)
 {
 	MessageDigest::Algorithm ret;
-	ret = MessageDigest::getMessageDigest(OBJ_obj2nid(this->req->sig_alg->algorithm));
+	ret = MessageDigest::getMessageDigest(X509_REQ_get_signature_nid(this->req));
 	return ret;
 }
 
@@ -274,16 +274,15 @@ PublicKey* CertificateRequest::getPublicKey()
 ByteArray CertificateRequest::getPublicKeyInfo()
 		throw (CertificationException)
 {
-	ByteArray ret;
-	unsigned int size;
-	ASN1_BIT_STRING *temp;
-	if (this->req->req_info->pubkey->public_key == NULL)
+	ByteArray ret =  ByteArray(EVP_MAX_MD_SIZE);
+	unsigned char *key_bin;
+	unsigned int key_len = i2d_X509_PUBKEY(X509_REQ_get_X509_PUBKEY(this->req), &key_bin);
+	if (key_len <= 0)
 	{
 		throw CertificationException(CertificationException::SET_NO_VALUE, "CertificateBuilder::getPublicKeyInfo");
 	}
-	temp = this->req->req_info->pubkey->public_key;
-	ret = ByteArray(EVP_MAX_MD_SIZE);
-	EVP_Digest(temp->data, temp->length, ret.getDataPointer(), &size, EVP_sha1(), NULL);
+	unsigned int size;
+	EVP_Digest(key_bin, key_len, ret.getDataPointer(), &size, EVP_sha1(), NULL);
 	ret = ByteArray(ret.getDataPointer(), size);
 	return ret;
 }
