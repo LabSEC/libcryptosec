@@ -97,23 +97,10 @@ void Hmac::update(std::vector<std::string> &data) throw (HmacException, InvalidS
 }
 
 void Hmac::update(std::vector<ByteArray> &data) throw (HmacException, InvalidStateException) {
-
 	for(int unsigned i = 0; i < data.size(); i++){
 		this->update(data[i]);
 	}
-}  //HMAC_CTX_init( this->ctx ); //martin: testar!
-33
-  else {
-34
-    this->ctx = HMAC_CTX_new();
-35
-  }
-36
-=======
-37
-    HMAC_CTX_free( this->ctx );
-38
-  }
+}  
 
 ByteArray Hmac::doFinal(ByteArray &data) throw (HmacException, InvalidStateException) {
 	this->update( data );

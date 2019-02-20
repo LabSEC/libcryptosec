@@ -28,6 +28,7 @@ public:
 	{
 		RSA,
 		DSA,
+		ECDSA,
 		DH,
 		RAND,
 		CIPHERS,

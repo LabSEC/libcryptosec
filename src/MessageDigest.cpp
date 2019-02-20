@@ -27,31 +27,7 @@ MessageDigest::MessageDigest(MessageDigest::Algorithm algorithm, Engine &engine)
 	int rc;
 	const EVP_MD *md;
 	this->state = MessageDigest::INIT;
-	this->algorithm = algorithm;  //HMAC_CTX_init( this->ctx ); //martin: testar!
-33
-  else {
-34
-    this->ctx = HMAC_CTX_new();
-35
-  }
-36
-=======
-37  //HMAC_CTX_init( this->ctx ); //martin: testar!
-33
-  else {
-34
-    this->ctx = HMAC_CTX_new();
-35
-  }
-36
-=======
-37
-    HMAC_CTX_free( this->ctx );
-38
-  }
-    HMAC_CTX_free( this->ctx );
-38
-  }
+	this->algorithm = algorithm;
 	md = MessageDigest::getMessageDigest(this->algorithm);
 	EVP_MD_CTX_init(this->ctx);
 	rc = EVP_DigestInit_ex(this->ctx, md, engine.getEngine());
@@ -218,9 +194,6 @@ ObjectIdentifier MessageDigest::getMessageDigestOid(MessageDigest::Algorithm alg
 			break;
 		case MessageDigest::RIPEMD160:
 			asn1object = OBJ_nid2obj(NID_ripemd160);
-			break;
-		case MessageDigest::SHA:
-			asn1object = OBJ_nid2obj(NID_sha);
 			break;
 		case MessageDigest::SHA1:
 			asn1object = OBJ_nid2obj(NID_sha1);
