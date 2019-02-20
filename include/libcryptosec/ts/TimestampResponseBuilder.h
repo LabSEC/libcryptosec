@@ -1,15 +1,8 @@
-/*
- * TimestampResponseBuilder.h
- *
- *  Created on: Nov 29, 2016
- *      Author: martin
- */
-
 #include <openssl/ts.h>
 #include <openssl/evp.h>
 
 #include <libcryptosec/ts/TimestampRequest.h>
-#include <libcryptosec/Certificate/Certificate.h>
+#include <libcryptosec/certificate/Certificate.h>
 
 #ifndef TIMESTAMPRESPONSEBUILDER_H_
 #define TIMESTAMPRESPONSEBUILDER_H_

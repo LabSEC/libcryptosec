@@ -93,7 +93,7 @@ TS_RESP* TimestampResponseBuilder::sign(PrivateKey &privateKey, MessageDigest::A
 	throw (AsymmetricKeyException) {
 	TS_RESP_CTX_set_signer_key(this->ctx, privateKey.getEvpPkey());
 
-	if(this->ctx-> != NULL){
-		EVP_MD_CTX_free(this-)
+	if(this->ctx != NULL){
+		TS_RESP_CTX_free(this->ctx);
 	}
 }
