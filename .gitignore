@@ -31,5 +31,7 @@
 *.out
 *.app
 
-.cproject
-.settings/language.settings.xml
+# Hidden folders & files
+.*
+!/.gitignore
+!/.travis.yml
