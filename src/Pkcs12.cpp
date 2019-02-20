@@ -91,7 +91,6 @@ PrivateKey* Pkcs12::getPrivKey(string password) throw(Pkcs12Exception)
 	}
 	//CRYPTO_add(&this->privKey->getEvpPkey()->references,1,CRYPTO_LOCK_EVP_PKEY);
 	EVP_PKEY_up_ref(this->privKey->getEvpPkey());//martin: faz o mesmo que a linha comentada acima?
-	
 	return ret;
 }
 

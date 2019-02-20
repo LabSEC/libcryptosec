@@ -32,7 +32,6 @@ public:
 		MD4,
 		MD5,
 		RIPEMD160,
-		SHA,
 		SHA1,
 		SHA224,
 		SHA256,

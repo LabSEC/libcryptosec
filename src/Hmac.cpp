@@ -29,10 +29,7 @@ void Hmac::init(ByteArray &key, MessageDigest::Algorithm algorithm) throw (HmacE
 	{
 		HMAC_CTX_reset( this->ctx ); //martin: HMAC_CTX_cleanup -> HMAC_CTX_free, see openssl1.1.0c/CHANGES:647
 	}
-	//HMAC_CTX_init( this->ctx ); //martin: testar!
-	else {
-		this->ctx = HMAC_CTX_new();
-	}
+	this->ctx = HMAC_CTX_new();
 
 	this->algorithm = algorithm;
 	const EVP_MD *md = MessageDigest::getMessageDigest( this->algorithm );
@@ -51,10 +48,7 @@ void Hmac::init(ByteArray &key, MessageDigest::Algorithm algorithm, Engine &engi
 	{
 		HMAC_CTX_reset( this->ctx ); //martin: HMAC_CTX_cleanup -> HMAC_CTX_free, see openssl1.1.0c/CHANGES:647
 	}
-	//HMAC_CTX_init( this->ctx );//martin: testar!
-	else {
-		this->ctx = HMAC_CTX_new();
-		}
+	this->ctx = HMAC_CTX_new();
 
 	this->algorithm = algorithm;
 	const EVP_MD *md = MessageDigest::getMessageDigest( this->algorithm );
@@ -107,7 +101,19 @@ void Hmac::update(std::vector<ByteArray> &data) throw (HmacException, InvalidSta
 	for(int unsigned i = 0; i < data.size(); i++){
 		this->update(data[i]);
 	}
-}
+}  //HMAC_CTX_init( this->ctx ); //martin: testar!
+33
+  else {
+34
+    this->ctx = HMAC_CTX_new();
+35
+  }
+36
+=======
+37
+    HMAC_CTX_free( this->ctx );
+38
+  }
 
 ByteArray Hmac::doFinal(ByteArray &data) throw (HmacException, InvalidStateException) {
 	this->update( data );

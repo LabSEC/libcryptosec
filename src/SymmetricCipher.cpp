@@ -74,7 +74,7 @@ void SymmetricCipher::init(SymmetricKey &key, SymmetricCipher::Operation operati
 		throw (SymmetricCipherException)
 {
 	this->init(key, SymmetricCipher::CBC, operation);
-//	EVP_CIPHER_CTX_cleanup(&this->ctx);
+//	EVP_CIPHER_CTX_cleanup(this->ctx);
 //	if (this->buffer)
 //	{
 //		delete this->buffer;
@@ -89,14 +89,14 @@ void SymmetricCipher::init(SymmetricKey &key, SymmetricCipher::Operation operati
 //	newKey = keyIv.first;
 //	iv = keyIv.second;
 //	
-//	EVP_CIPHER_CTX_init(&this->ctx);
-//	int rc = EVP_CipherInit_ex(&this->ctx, cipher, NULL, newKey->getDataPointer(), iv->getDataPointer(), (operation == this->ENCRYPT)?1:0);
+//	EVP_CIPHER_CTX_init(this->ctx);
+//	int rc = EVP_CipherInit_ex(this->ctx, cipher, NULL, newKey->getDataPointer(), iv->getDataPointer(), (operation == this->ENCRYPT)?1:0);
 //	if (!rc)
 //	{
 //		delete newKey;
 //		delete iv;
 //		delete keyEncoded;
-//		EVP_CIPHER_CTX_cleanup(&this->ctx);
+//		EVP_CIPHER_CTX_cleanup(this->ctx);
 //		this->state = SymmetricCipher::NO_INIT;
 //		throw SymmetricCipherException();
 //	}
@@ -193,7 +193,7 @@ void SymmetricCipher::update(ByteArray &data)
 ByteArray SymmetricCipher::doFinal()
 		throw (InvalidStateException, SymmetricCipherException)
 {
-	int rc, totalEncrypted, encrypted;
+	int rc = 0, totalEncrypted = 0, encrypted = 0;
 	ByteArray *newBuffer;
 	ByteArray ret; 
 	if (this->state != this->UPDATE)
@@ -266,11 +266,11 @@ SymmetricCipher::Operation SymmetricCipher::getOperation() throw (InvalidStateEx
 
 std::pair<ByteArray*, ByteArray*> SymmetricCipher::keyToKeyIv(ByteArray &key, const EVP_CIPHER *cipher)
 {
-	int rc;
 	std::pair<ByteArray*, ByteArray*> ret;
 	ByteArray *newKey = new ByteArray(EVP_CIPHER_key_length(cipher));
-    ByteArray *iv = new ByteArray(EVP_CIPHER_iv_length(cipher));
-    rc = EVP_BytesToKey(cipher, EVP_md5(), NULL, key.getDataPointer(), key.size(), 1, newKey->getDataPointer(), iv->getDataPointer()); 
+  ByteArray *iv = new ByteArray(EVP_CIPHER_iv_length(cipher));
+	//TODO(perin): Missing return value exception case for EVP_BytesToKey
+  EVP_BytesToKey(cipher, EVP_md5(), NULL, key.getDataPointer(), key.size(), 1, newKey->getDataPointer(), iv->getDataPointer()); 
 	ret.first = newKey;
 	ret.second = iv;
 	return ret;

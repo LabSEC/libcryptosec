@@ -274,29 +274,16 @@ PublicKey* CertificateRequest::getPublicKey()
 ByteArray CertificateRequest::getPublicKeyInfo()
 		throw (CertificationException)
 {
-	ByteArray ret;
-	unsigned int size;
-	//if (this->req->req_info->pubkey->public_key == NULL) //martin:
-	if(X509_REQ_get_pubkey(this->req))
+	ByteArray ret =  ByteArray(EVP_MAX_MD_SIZE);
+	unsigned char *key_bin;
+	unsigned int key_len = i2d_X509_PUBKEY(X509_REQ_get_X509_PUBKEY(this->req), &key_bin);
+	if (key_len <= 0)
 	{
 		throw CertificationException(CertificationException::SET_NO_VALUE, "CertificateBuilder::getPublicKeyInfo");
 	}
-	//	temp = this->req->req_info->pubkey->public_key; //Pablo:
-	ASN1_BIT_STRING *tempSig = ASN1_BIT_STRING_new();
-	X509_ALGOR *tempAlg = X509_ALGOR_new();
-
-	const ASN1_BIT_STRING *psig = const_cast<const ASN1_BIT_STRING *>(tempSig);
-	const X509_ALGOR *palg = const_cast<const X509_ALGOR *>(tempAlg);
-
-	X509_REQ_get0_signature(this->req, &psig, &palg);
-	//X509_PUBKEY * pubk = X509_REQ_get_X509_PUBKEY(this->req);
-	//	temp = pubk->public_key; //Pablo
-	ret = ByteArray(EVP_MAX_MD_SIZE);
-
-	EVP_Digest(psig->data, psig->length, ret.getDataPointer(), &size, EVP_sha1(), NULL);
+	unsigned int size;
+	EVP_Digest(key_bin, key_len, ret.getDataPointer(), &size, EVP_sha1(), NULL);
 	ret = ByteArray(ret.getDataPointer(), size);
-	ASN1_BIT_STRING_free(tempSig);
-	X509_ALGOR_free(tempAlg);
 	return ret;
 }
 

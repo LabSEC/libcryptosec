@@ -27,7 +27,31 @@ MessageDigest::MessageDigest(MessageDigest::Algorithm algorithm, Engine &engine)
 	int rc;
 	const EVP_MD *md;
 	this->state = MessageDigest::INIT;
-	this->algorithm = algorithm;
+	this->algorithm = algorithm;  //HMAC_CTX_init( this->ctx ); //martin: testar!
+33
+  else {
+34
+    this->ctx = HMAC_CTX_new();
+35
+  }
+36
+=======
+37  //HMAC_CTX_init( this->ctx ); //martin: testar!
+33
+  else {
+34
+    this->ctx = HMAC_CTX_new();
+35
+  }
+36
+=======
+37
+    HMAC_CTX_free( this->ctx );
+38
+  }
+    HMAC_CTX_free( this->ctx );
+38
+  }
 	md = MessageDigest::getMessageDigest(this->algorithm);
 	EVP_MD_CTX_init(this->ctx);
 	rc = EVP_DigestInit_ex(this->ctx, md, engine.getEngine());
@@ -39,7 +63,6 @@ MessageDigest::MessageDigest(MessageDigest::Algorithm algorithm, Engine &engine)
 
 MessageDigest::~MessageDigest()
 {
-	//EVP_MD_CTX_cleanup(this->ctx);
 	EVP_MD_CTX_free(this->ctx);
 }
 
@@ -160,9 +183,6 @@ const EVP_MD* MessageDigest::getMessageDigest(MessageDigest::Algorithm algorithm
 		case MessageDigest::RIPEMD160:
 			md = EVP_ripemd160();
 			break;
-		//case MessageDigest::SHA: //removido no OpenSSL1.1.c?
-		//	md = EVP_sha();
-		//	break;
 		case MessageDigest::SHA1:
 			md = EVP_sha1();
 			break;
@@ -253,9 +273,6 @@ MessageDigest::Algorithm MessageDigest::getMessageDigest(int algorithmNid)
     		break;
     	case NID_ripemd160: case NID_ripemd160WithRSA:
     		ret = MessageDigest::RIPEMD160;
-    		break;
-    	case NID_sha: case NID_shaWithRSAEncryption:
-    		ret = MessageDigest::SHA;
     		break;
     	default:
 			if (algorithmNid != 0 && algorithmNid == nidIdentity) {

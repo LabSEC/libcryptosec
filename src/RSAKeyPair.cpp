@@ -7,7 +7,10 @@ RSAKeyPair::RSAKeyPair(int length)
 	this->key = NULL;
 	this->engine = NULL;
 	rsa = NULL;
-	rsa = RSA_generate_key(length, RSA_F4, NULL, NULL);
+	if (!RSA_generate_key_ex(rsa, length, NULL, NULL))
+	{
+		throw AsymmetricKeyException(AsymmetricKeyException::INTERNAL_ERROR, "RSAKeyPair::RSAKeyPair");
+	}
 	if (!rsa)
 	{
 		throw AsymmetricKeyException(AsymmetricKeyException::INTERNAL_ERROR, "RSAKeyPair::RSAKeyPair");

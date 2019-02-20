@@ -13,8 +13,8 @@ Extension::Extension(X509_EXTENSION *ext) throw (CertificationException)
 	}
 	this->objectIdentifier = ObjectIdentifier(OBJ_dup(X509_EXTENSION_get_object(ext)));
 	this->critical = X509_EXTENSION_get_critical(ext)?true:false;
-	ASN1_OCTET_STRING *extData = X509_EXTENSION_get_data(ext);
-	this->value = ByteArray(extData->data, extData->length);
+	ASN1_OCTET_STRING* data = X509_EXTENSION_get_data(ext);
+	this->value = ByteArray(ASN1_STRING_get0_data(data), ASN1_STRING_length(data));
 }
 
 Extension::Extension(std::string oid, bool critical, std::string valueBase64)  throw (CertificationException)
@@ -101,13 +101,13 @@ void Extension::setCritical(bool critical)
 X509_EXTENSION* Extension::getX509Extension()
 {
 	X509_EXTENSION *ret;
-	ByteArray data;
 	ret = X509_EXTENSION_new();
-	X509_EXTENSION_set_object(ret, OBJ_dup(this->objectIdentifier.getObjectIdentifier()));
+	X509_EXTENSION_set_object(ret, this->objectIdentifier.getObjectIdentifier());
 	X509_EXTENSION_set_critical(ret, this->critical?1:0);
-	ASN1_OCTET_STRING *tempData = ASN1_OCTET_STRING_new();
-	data = this->value;
-	ASN1_OCTET_STRING_set(tempData, data.getDataPointer(), this->value.size());
+	const unsigned char* p = this->value.getDataPointer();
+	ASN1_OCTET_STRING* data = d2i_ASN1_OCTET_STRING(NULL, &p, this->value.size());
+	X509_EXTENSION_set_data(ret, data);
+	//TODO(perin): Exception case rc is 0 for the set functions; the 2di_ASN1_OCTET function returns NULL. Catch with if(!data);
 	return ret;
 }
 
