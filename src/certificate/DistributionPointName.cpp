@@ -134,8 +134,7 @@ DIST_POINT_NAME* DistributionPointName::getDistPointName()
 		case DistributionPointName::RELATIVE_NAME:
 			ret->type = 1;
 			name = this->relativeName.getX509Name();
-			ret->name.relativename = name->entries;
-			name->entries = NULL;
+			DIST_POINT_set_dpname(ret, name);
 			X509_NAME_free(name);
 			break;
 		default:

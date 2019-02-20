@@ -20,14 +20,16 @@ Hmac::Hmac(ByteArray key, MessageDigest::Algorithm algorithm, Engine &engine) th
 	this->init( key, algorithm, engine );
 }
 
-Hmac::~Hmac() { }
+Hmac::~Hmac() {
+	HMAC_CTX_free(this->ctx);
+}
 
 void Hmac::init(ByteArray &key, MessageDigest::Algorithm algorithm) throw (HmacException) {
 	if (this->state != Hmac::NO_INIT)
 	{
-		HMAC_CTX_free( this->ctx );
+		HMAC_CTX_reset( this->ctx ); //martin: HMAC_CTX_cleanup -> HMAC_CTX_free, see openssl1.1.0c/CHANGES:647
 	}
-	ctx = HMAC_CTX_new();
+	this->ctx = HMAC_CTX_new();
 
 	this->algorithm = algorithm;
 	const EVP_MD *md = MessageDigest::getMessageDigest( this->algorithm );
@@ -44,9 +46,9 @@ void Hmac::init(ByteArray &key, MessageDigest::Algorithm algorithm) throw (HmacE
 void Hmac::init(ByteArray &key, MessageDigest::Algorithm algorithm, Engine &engine) throw (HmacException) {
 	if (this->state != Hmac::NO_INIT)
 	{
-		HMAC_CTX_free( this->ctx );
+		HMAC_CTX_reset( this->ctx ); //martin: HMAC_CTX_cleanup -> HMAC_CTX_free, see openssl1.1.0c/CHANGES:647
 	}
-	ctx = HMAC_CTX_new();
+	this->ctx = HMAC_CTX_new();
 
 	this->algorithm = algorithm;
 	const EVP_MD *md = MessageDigest::getMessageDigest( this->algorithm );
@@ -99,7 +101,19 @@ void Hmac::update(std::vector<ByteArray> &data) throw (HmacException, InvalidSta
 	for(int unsigned i = 0; i < data.size(); i++){
 		this->update(data[i]);
 	}
-}
+}  //HMAC_CTX_init( this->ctx ); //martin: testar!
+33
+  else {
+34
+    this->ctx = HMAC_CTX_new();
+35
+  }
+36
+=======
+37
+    HMAC_CTX_free( this->ctx );
+38
+  }
 
 ByteArray Hmac::doFinal(ByteArray &data) throw (HmacException, InvalidStateException) {
 	this->update( data );
@@ -120,7 +134,7 @@ ByteArray Hmac::doFinal() throw (HmacException, InvalidStateException) {
 	unsigned int size;
 	unsigned char *md = new unsigned char[EVP_MAX_MD_SIZE + 1];
 	int rc = HMAC_Final( this->ctx, md, &size );
-	HMAC_CTX_reset( this->ctx );
+	HMAC_CTX_reset( this->ctx ); //martin: HMAC_CTX_cleanup -> HMAC_CTX_free, see openssl1.1.0c/CHANGES:647
 	this->state = Hmac::NO_INIT;
 	if (!rc)
 	{

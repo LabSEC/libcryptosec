@@ -2,6 +2,7 @@
 
 SymmetricCipher::SymmetricCipher()
 {
+	this->ctx = EVP_CIPHER_CTX_new();
 	this->state = SymmetricCipher::NO_INIT;
 	this->buffer = NULL;
 }
@@ -252,7 +253,7 @@ SymmetricCipher::Operation SymmetricCipher::getOperation() throw (InvalidStateEx
 	{
 		throw InvalidStateException("SymmetricCipher::getOperation");
 	}
-	if(EVP_CIPHER_CTX_encrypting(this->ctx))
+	if (EVP_CIPHER_CTX_encrypting(this->ctx))
 	{
 		operation = this->ENCRYPT;
 	}
@@ -267,9 +268,9 @@ std::pair<ByteArray*, ByteArray*> SymmetricCipher::keyToKeyIv(ByteArray &key, co
 {
 	std::pair<ByteArray*, ByteArray*> ret;
 	ByteArray *newKey = new ByteArray(EVP_CIPHER_key_length(cipher));
-    ByteArray *iv = new ByteArray(EVP_CIPHER_iv_length(cipher));
+  ByteArray *iv = new ByteArray(EVP_CIPHER_iv_length(cipher));
 	//TODO(perin): Missing return value exception case for EVP_BytesToKey
-    EVP_BytesToKey(cipher, EVP_md5(), NULL, key.getDataPointer(), key.size(), 1, newKey->getDataPointer(), iv->getDataPointer()); 
+  EVP_BytesToKey(cipher, EVP_md5(), NULL, key.getDataPointer(), key.size(), 1, newKey->getDataPointer(), iv->getDataPointer()); 
 	ret.first = newKey;
 	ret.second = iv;
 	return ret;

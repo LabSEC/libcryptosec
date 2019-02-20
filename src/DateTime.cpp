@@ -278,7 +278,7 @@ ASN1_TIME* DateTime::getUTCTime() const throw(BigIntegerException)
 
 	utc = stream.str();
 	
-	ret = M_ASN1_UTCTIME_new();
+	ret = ASN1_STRING_new();
 	
 	//pode retornar 1 no caso de falha de alocacao de memoria
 	ASN1_STRING_set(ret, utc.c_str(), utc.size());

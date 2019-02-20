@@ -16,13 +16,13 @@ ByteArray Signer::sign(PrivateKey &key, ByteArray &hash, MessageDigest::Algorith
 	switch (alg)
 	{
 		case AsymmetricKey::RSA:
-			rc = RSA_sign(hashAlgorithmId, hash.getDataPointer(), hash.size(), ret.getDataPointer(), &signedSize, (key.getEvpPkey())->pkey.rsa);
+			rc = RSA_sign(hashAlgorithmId, hash.getDataPointer(), hash.size(), ret.getDataPointer(), &signedSize, EVP_PKEY_get1_RSA(key.getEvpPkey()));
 			break;
 		case AsymmetricKey::DSA:
-			rc = DSA_sign(hashAlgorithmId, hash.getDataPointer(), hash.size(), ret.getDataPointer(), &signedSize, (key.getEvpPkey())->pkey.dsa);
+			rc = DSA_sign(hashAlgorithmId, hash.getDataPointer(), hash.size(), ret.getDataPointer(), &signedSize, EVP_PKEY_get1_DSA(key.getEvpPkey()));
 			break;
 		case AsymmetricKey::ECDSA:
-			rc = ECDSA_sign(hashAlgorithmId, hash.getDataPointer(), hash.size(), ret.getDataPointer(), &signedSize, (key.getEvpPkey())->pkey.ec);
+			rc = ECDSA_sign(hashAlgorithmId, hash.getDataPointer(), hash.size(), ret.getDataPointer(), &signedSize, EVP_PKEY_get1_EC_KEY(key.getEvpPkey()));
 			break;
 		case AsymmetricKey::EdDSA:
 			// TODO: add support?
@@ -51,13 +51,13 @@ bool Signer::verify(PublicKey &key, ByteArray &signature, ByteArray &hash, Messa
 	switch (alg)
 	{
 		case AsymmetricKey::RSA:
-			rc = RSA_verify(hashAlgorithmId, hash.getDataPointer(), hash.size(), signature.getDataPointer(), signature.size(), (key.getEvpPkey())->pkey.rsa);
+			rc = RSA_verify(hashAlgorithmId, hash.getDataPointer(), hash.size(), signature.getDataPointer(), signature.size(), EVP_PKEY_get1_RSA(key.getEvpPkey()));
 			break;
 		case AsymmetricKey::DSA:
-			rc = DSA_verify(hashAlgorithmId, hash.getDataPointer(), hash.size(), signature.getDataPointer(), signature.size(), (key.getEvpPkey())->pkey.dsa);
+			rc = DSA_verify(hashAlgorithmId, hash.getDataPointer(), hash.size(), signature.getDataPointer(), signature.size(), EVP_PKEY_get1_DSA(key.getEvpPkey()));
 			break;
 		case AsymmetricKey::ECDSA:
-			rc = ECDSA_verify(hashAlgorithmId, hash.getDataPointer(), hash.size(), signature.getDataPointer(), signature.size(), (key.getEvpPkey())->pkey.ec);
+			rc = ECDSA_verify(hashAlgorithmId, hash.getDataPointer(), hash.size(), signature.getDataPointer(), signature.size(), EVP_PKEY_get1_EC_KEY(key.getEvpPkey()));
 			break;
 		case AsymmetricKey::EdDSA:
 			// TODO: add support

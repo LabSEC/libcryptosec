@@ -2,6 +2,7 @@
 
 MessageDigest::MessageDigest()
 {
+	this->ctx = EVP_MD_CTX_new();
 	this->state = MessageDigest::NO_INIT;
 }
 
@@ -13,7 +14,7 @@ MessageDigest::MessageDigest(MessageDigest::Algorithm algorithm)
 	this->state = MessageDigest::INIT;
 	this->algorithm = algorithm;
 	md = MessageDigest::getMessageDigest(this->algorithm);
-	rc = EVP_DigestInit(this->ctx, md); 
+	rc = EVP_DigestInit(this->ctx, md);
 	if (!rc)
 	{
 		throw MessageDigestException(MessageDigestException::CTX_INIT, "MessageDigest::MessageDigest");
@@ -26,7 +27,31 @@ MessageDigest::MessageDigest(MessageDigest::Algorithm algorithm, Engine &engine)
 	int rc;
 	const EVP_MD *md;
 	this->state = MessageDigest::INIT;
-	this->algorithm = algorithm;
+	this->algorithm = algorithm;  //HMAC_CTX_init( this->ctx ); //martin: testar!
+33
+  else {
+34
+    this->ctx = HMAC_CTX_new();
+35
+  }
+36
+=======
+37  //HMAC_CTX_init( this->ctx ); //martin: testar!
+33
+  else {
+34
+    this->ctx = HMAC_CTX_new();
+35
+  }
+36
+=======
+37
+    HMAC_CTX_free( this->ctx );
+38
+  }
+    HMAC_CTX_free( this->ctx );
+38
+  }
 	md = MessageDigest::getMessageDigest(this->algorithm);
 	EVP_MD_CTX_init(this->ctx);
 	rc = EVP_DigestInit_ex(this->ctx, md, engine.getEngine());
@@ -47,11 +72,11 @@ void MessageDigest::init(MessageDigest::Algorithm algorithm)
 	int rc;
 	const EVP_MD *md;
 	if (this->state != MessageDigest::NO_INIT){
-		EVP_MD_CTX_free(this->ctx);
+		EVP_MD_CTX_reset(this->ctx); //martin: EVP_MD_CTX_cleanup -> EVP_MD_CTX_reset see openssl1.1.c/CHANGES:647
 	}
 	this->algorithm = algorithm;
 	md = MessageDigest::getMessageDigest(this->algorithm);
-	rc = EVP_DigestInit(this->ctx, md); 
+	rc = EVP_DigestInit(this->ctx, md);
 	if (!rc)
 	{
 		throw MessageDigestException(MessageDigestException::CTX_INIT, "MessageDigest::init");
@@ -65,7 +90,7 @@ void MessageDigest::init(MessageDigest::Algorithm algorithm, Engine &engine)
 	int rc;
 	const EVP_MD *md;
 	if (this->state != MessageDigest::NO_INIT){
-		EVP_MD_CTX_free(this->ctx);
+		EVP_MD_CTX_reset(this->ctx); //martin: EVP_MD_CTX_cleanup -> EVP_MD_CTX_reset see openssl1.1.c/CHANGES:647
 	}
 	this->algorithm = algorithm;
 	md = MessageDigest::getMessageDigest(this->algorithm);
@@ -110,7 +135,7 @@ ByteArray MessageDigest::doFinal() throw (MessageDigestException, InvalidStateEx
 	}
 	digest = (unsigned char *)calloc(EVP_MAX_MD_SIZE + 1, sizeof(unsigned char));
 	rc = EVP_DigestFinal_ex(this->ctx, digest, &ndigest);
-	EVP_MD_CTX_free(this->ctx);
+	EVP_MD_CTX_reset(this->ctx); //martin: EVP_MD_CTX_cleanup -> EVP_MD_CTX_reset see openssl1.1.c/CHANGES:647
 	this->state = MessageDigest::NO_INIT;
 	if (!rc)
 	{
@@ -178,6 +203,44 @@ const EVP_MD* MessageDigest::getMessageDigest(MessageDigest::Algorithm algorithm
 			break;
 	}
 	return md;
+}
+
+ObjectIdentifier MessageDigest::getMessageDigestOid(MessageDigest::Algorithm algorithm) throw (MessageDigestException)
+{
+	ASN1_OBJECT* asn1object = NULL;
+	switch (algorithm)
+	{
+		case MessageDigest::MD4:
+			asn1object = OBJ_nid2obj(NID_md4);
+			break;
+		case MessageDigest::MD5:
+			asn1object = OBJ_nid2obj(NID_md5);
+			break;
+		case MessageDigest::RIPEMD160:
+			asn1object = OBJ_nid2obj(NID_ripemd160);
+			break;
+		case MessageDigest::SHA:
+			asn1object = OBJ_nid2obj(NID_sha);
+			break;
+		case MessageDigest::SHA1:
+			asn1object = OBJ_nid2obj(NID_sha1);
+			break;
+		case MessageDigest::SHA224:
+			asn1object = OBJ_nid2obj(NID_sha224);
+			break;
+		case MessageDigest::SHA256:
+			asn1object = OBJ_nid2obj(NID_sha256);
+			break;
+		case MessageDigest::SHA384:
+			asn1object = OBJ_nid2obj(NID_sha384);
+			break;
+		case MessageDigest::SHA512:
+			asn1object = OBJ_nid2obj(NID_sha512);
+			break;
+		default:
+			throw MessageDigestException(MessageDigestException::INVALID_ALGORITHM, "MessageDigest::getMessageDigest");
+	}
+	return ObjectIdentifier(asn1object);
 }
 
 MessageDigest::Algorithm MessageDigest::getMessageDigest(int algorithmNid)

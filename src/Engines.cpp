@@ -59,7 +59,7 @@ Engine* Engines::getEngineDefault(Engine::Algorithm algorithm)
 //			e = ENGINE_get_default_ECDH();
 //			break;
 		case Engine::ECDSA:
-			eng = ENGINE_get_default_ECDSA();
+			eng = ENGINE_get_default_EC(); //martin: ENGINE_get_default_ECDSA ->ENGINE_get_default_EC
 			break;
 //		case Engine::CIPHERS:
 //			e = ENGINE_get_default_CIPHERS();
@@ -122,7 +122,7 @@ unsigned int Engines::getAlgorithmFlags(Engine::Algorithm flag)
 //			ret = ENGINE_METHOD_ECDH;
 //			break;
 		case Engine::ECDSA:
-			ret = ENGINE_METHOD_ECDSA;
+			ret = ENGINE_METHOD_EC; //martin: ENGINE_METHOD_ECDSA -> ENGINE_METHOD_EC;
 			break;
 		case Engine::CIPHERS:
 			ret = ENGINE_METHOD_CIPHERS;
