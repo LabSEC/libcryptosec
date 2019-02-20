@@ -11,7 +11,7 @@ CRLDistributionPointsExtension::CRLDistributionPointsExtension(X509_EXTENSION *e
 	CRL_DIST_POINTS *points;
 	DistributionPoint distPoint;
 	int i, num = 0;
-	if (OBJ_obj2nid(ext->object) != NID_crl_distribution_points)
+	if (OBJ_obj2nid(X509_EXTENSION_get_object(ext)) != NID_crl_distribution_points)
 	{
 		throw CertificationException(CertificationException::INVALID_TYPE, "CRLDistributionPointsExtension::CRLDistributionPointsExtension");
 	}

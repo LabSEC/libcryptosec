@@ -10,7 +10,7 @@ AuthorityInformationAccessExtension::AuthorityInformationAccessExtension(X509_EX
 	AUTHORITY_INFO_ACCESS *authorityInfoAccess;
 	AccessDescription accessDescription;
 
-	if (OBJ_obj2nid(ext->object) != NID_info_access)
+	if (OBJ_obj2nid(X509_EXTENSION_get_object(ext)) != NID_info_access)
 	{
 		throw CertificationException(CertificationException::INVALID_TYPE, "AuthorityInformationAccessExtension::AuthorityInformationAccessExtension");
 	}

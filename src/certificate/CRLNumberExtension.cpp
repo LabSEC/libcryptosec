@@ -1,6 +1,6 @@
 #include <libcryptosec/certificate/CRLNumberExtension.h>
 
-CRLNumberExtension::CRLNumberExtension(unsigned long serial=0) : Extension() 
+CRLNumberExtension::CRLNumberExtension(unsigned long serial) : Extension() 
 {
 	this->serial = serial;
     this->objectIdentifier = ObjectIdentifierFactory::getObjectIdentifier(NID_crl_number);
@@ -10,7 +10,7 @@ CRLNumberExtension::CRLNumberExtension(X509_EXTENSION* ext) throw (Certification
 {
 	ASN1_INTEGER* serialAsn1 = NULL;
 	
-	if (OBJ_obj2nid(ext->object) != NID_crl_number)
+	if (OBJ_obj2nid(X509_EXTENSION_get_object(ext)) != NID_crl_number)
 	{
 		X509_EXTENSION_free(ext);
 		throw CertificationException(CertificationException::INVALID_TYPE, "CRLNumberExtension::CRLNumberExtension");

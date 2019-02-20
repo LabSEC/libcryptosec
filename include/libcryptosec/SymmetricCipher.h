@@ -213,7 +213,7 @@ private:
 	/**
 	 * Estrutura interna OpenSSL.
 	 **/
-	EVP_CIPHER_CTX ctx;
+	EVP_CIPHER_CTX* ctx;
 
 	/**
 	 * Buffer de dados a serem processados. 

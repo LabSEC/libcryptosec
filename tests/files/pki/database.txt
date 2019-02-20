@@ -1,0 +1,1 @@
+R	201122200737Z	161123200737Z,keyCompromise	02	unknown	/C=DE/ST=Hessen/L=Darmstadt/O=TU Darmstadt/OU=Kryptographie und Computeralgebra/CN=User 2 pki0

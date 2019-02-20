@@ -11,17 +11,18 @@ RevokedCertificate::RevokedCertificate(X509_REVOKED *revoked)
 	ASN1_ENUMERATED* asn1Enumerated;
 	if (revoked)
 	{
-		if (revoked->serialNumber)
+		if (X509_REVOKED_get0_serialNumber(revoked))
 		{
-			this->certificateSerialNumber = BigInteger(revoked->serialNumber);
+			this->certificateSerialNumber = BigInteger(ASN1_INTEGER_get(X509_REVOKED_get0_serialNumber(revoked)));
 		}
 		else
 		{
 			this->certificateSerialNumber = BigInteger();
 		}
-		if (revoked->revocationDate)
+		if (X509_REVOKED_get0_revocationDate(revoked))
 		{
-			this->revocationDate = DateTime(revoked->revocationDate);
+
+			this->revocationDate = DateTime(const_cast<ASN1_TIME *>(X509_REVOKED_get0_revocationDate(revoked)));
 		}
 		asn1Enumerated = (ASN1_ENUMERATED*) X509_REVOKED_get_ext_d2i(revoked, NID_crl_reason, NULL, NULL);
 		if (asn1Enumerated != NULL)
@@ -112,10 +113,10 @@ X509_REVOKED* RevokedCertificate::getX509Revoked()
 	ASN1_ENUMERATED *asn1Enumerated;
 	ret = X509_REVOKED_new();
 	
-	ret->serialNumber = this->certificateSerialNumber.getASN1Value();
-	
-	ret->revocationDate = this->revocationDate.getAsn1Time();
-	
+	X509_REVOKED_set_serialNumber(ret, this->certificateSerialNumber.getASN1Value());
+
+	X509_REVOKED_set_revocationDate(ret, this->revocationDate.getAsn1Time());
+
 	if (this->reasonCode != RevokedCertificate::UNSPECIFIED)
 	{
 		asn1Enumerated = ASN1_ENUMERATED_new();

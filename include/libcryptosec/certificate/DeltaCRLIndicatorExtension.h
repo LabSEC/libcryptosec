@@ -11,7 +11,7 @@
 class DeltaCRLIndicatorExtension : public Extension
 {
 public:
-	DeltaCRLIndicatorExtension(unsigned long baseCrlNumber);
+	DeltaCRLIndicatorExtension(unsigned long baseCrlNumber=0);
 	DeltaCRLIndicatorExtension(X509_EXTENSION *ext) throw (CertificationException);
 	virtual ~DeltaCRLIndicatorExtension();
 	/**

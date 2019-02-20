@@ -62,7 +62,7 @@ KeyPair::KeyPair(Engine *engine, std::string keyId)
 		throw EngineException(EngineException::INIT_FAILED, "KeyPair::KeyPair", true);
 	}
 	// TODO: rever essa questão do User Interface UI_OpenSSL();
-//	this->key = ENGINE_load_public_key(eng, keyId.c_str(), UI_OpenSSL(), NULL);
+	//	this->key = ENGINE_load_public_key(eng, keyId.c_str(), UI_OpenSSL(), NULL);
 	this->key = ENGINE_load_private_key(eng, keyId.c_str(), NULL, NULL);
 	ENGINE_finish(eng);
 	if (!this->key)
@@ -153,7 +153,8 @@ KeyPair::KeyPair(const KeyPair &keyPair)
 	this->key = keyPair.getEvpPkey();
 	if (this->key)
 	{
-		CRYPTO_add(&this->key->references,1,CRYPTO_LOCK_EVP_PKEY);
+		//CRYPTO_add(&this->key->references,1,CRYPTO_LOCK_EVP_PKEY);
+		EVP_PKEY_up_ref(this->key);//martin: faz o mesmo que a linha comentada acima?
 	}
 	this->keyId = keyPair.getKeyId();
 	this->engine = keyPair.getEngine();
@@ -245,7 +246,8 @@ PrivateKey* KeyPair::getPrivateKey()
 		{
 			throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "KeyPair::getPrivateKey");
 		}
-		CRYPTO_add(&this->key->references,1,CRYPTO_LOCK_EVP_PKEY);
+		//CRYPTO_add(&this->key->references,1,CRYPTO_LOCK_EVP_PKEY);
+		EVP_PKEY_up_ref(this->key);//martin: faz o mesmo que a linha comentada acima?
 	}
 	return ret;
 }
@@ -365,8 +367,7 @@ AsymmetricKey::Algorithm KeyPair::getAlgorithm() throw (AsymmetricKeyException)
 	{
 		throw AsymmetricKeyException(AsymmetricKeyException::SET_NO_VALUE, "KeyPair::getAlgorithm");
 	}
-	pkeyType = EVP_PKEY_type(this->key->type);
-	switch (pkeyType)
+	switch (EVP_PKEY_base_id(this->key))
 	{
 		case EVP_PKEY_RSA: /* TODO: confirmar porque tem estes dois tipos */
 		case EVP_PKEY_RSA2:
@@ -393,7 +394,7 @@ AsymmetricKey::Algorithm KeyPair::getAlgorithm() throw (AsymmetricKeyException)
 				type = AsymmetricKey::EdDSA;
 				break;
 			}
-			throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "There is no support for this type: " + std::string(OBJ_nid2sn(this->key->type)), "KeyPair::getAlgorithm");
+			throw AsymmetricKeyException(AsymmetricKeyException::INVALID_TYPE, "There is no support for this type: " + std::string(OBJ_nid2sn(EVP_PKEY_id(this->key))), "KeyPair::getAlgorithm");
 	}
 	return type;
 }

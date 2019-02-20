@@ -66,7 +66,7 @@ std::vector<Engine::Algorithm> Engine::getCapabilities()
 		algorithm = Engine::DSA;
 		ret.push_back(algorithm);
 	}
-	if (ENGINE_get_ECDSA(this->engine))
+	if (ENGINE_get_EC(this->engine))//martin: ENGINE_get_ECDSA -> ENGINE_get_EC
 	{
 		algorithm = Engine::ECDSA;
 		ret.push_back(algorithm);

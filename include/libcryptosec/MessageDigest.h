@@ -7,6 +7,7 @@
 #include "Engine.h"
 #include <libcryptosec/exception/MessageDigestException.h>
 #include <libcryptosec/exception/InvalidStateException.h>
+#include <libcryptosec/certificate/ObjectIdentifier.h>
 
 /**
  * @defgroup Util Classes Relacionadas Utilitárias de Criptografia
@@ -150,6 +151,9 @@ public:
 	static MessageDigest::Algorithm getMessageDigest(int algorithmNid)
 			throw (MessageDigestException);
 	
+	static ObjectIdentifier getMessageDigestOid(MessageDigest::Algorithm algorithm)
+		throw (MessageDigestException);
+
 	
 	/**
 	 * Carrega todos os algoritmos de resumo.
@@ -187,7 +191,7 @@ protected:
 	/**
 	 * Estrutura OpenSSL que representa o algoritmo de resumo.
 	 */
-	EVP_MD_CTX ctx;
+	EVP_MD_CTX* ctx;
 };
 
 #endif /*MESSAGEDIGEST_H_*/
