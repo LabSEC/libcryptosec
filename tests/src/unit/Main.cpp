@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "gtest.h"
+#include <gtest/gtest.h>
 
 GTEST_API_ int main(int argc, char **argv) {
 	printf("Running main() from Main.cpp\n");

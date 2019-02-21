@@ -1,7 +1,7 @@
 #include <libcryptosec/certificate/CertificateBuilder.h>
 #include <libcryptosec/RSAKeyPair.h>
 #include <fstream>
-#include "gtest.h"
+#include <gtest/gtest.h>
 #include <iostream>
 #include <sstream>
 

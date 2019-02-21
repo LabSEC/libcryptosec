@@ -3,7 +3,7 @@
 
 #include <libcryptosec/DynamicEngine.h>
 #include <fstream>
-#include "gtest.h"
+#include <gtest/gtest.h>
 #include <libcryptosec/KeyPair.h>
 #include <libcryptosec/certificate/CertificateBuilder.h>
 #include <ostream>

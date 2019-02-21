@@ -1,6 +1,6 @@
 #include <libcryptosec/Hmac.h>
 #include <fstream>
-#include "gtest.h"
+#include <gtest/gtest.h>
 
 /**
  * @brief Testes unitários da classe Hmac.

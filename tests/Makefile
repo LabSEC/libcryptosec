@@ -9,7 +9,7 @@ OPENSSL_PREFIX ?= /usr
 OPENSSL_LIBDIR ?= $(OPENSSL_PREFIX)/lib64
 OPENSSL_INCLUDEDIR ?= $(OPENSSL_PREFIX)/include
 LIBCRYPTOSEC ?= ../libcryptosec.so
-GTEST_INCLUDEDIR ?= /usr/include/gtest
+GTEST_INCLUDEDIR ?= /usr/include
 SRC_DIR ?= src/unit
 
 
