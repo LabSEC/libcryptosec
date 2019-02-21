@@ -5,9 +5,6 @@ language: cpp
 matrix:
   include:
       env: 
-        - IMAGE=fedora:25
-  allow_failures:
-      env: 
         - IMAGE=fedora:latest
 
 services:
