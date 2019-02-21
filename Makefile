@@ -1,34 +1,36 @@
 ############# CC FLAGS ###############################
-NAME ?= libcryptosec.so
-CC ?= g++
-CPPFLAGS ?= -std=c++98 -fPIC
+NAME		?= libcryptosec.so
+CC			:= g++
+CPPFLAGS	?= -std=c++98 -fPIC
 
 ############# ENVIRONMENT ###############################
-OPENSSL_PREFIX ?= /usr
-OPENSSL_LIBDIR ?= $(OPENSSL_PREFIX)/lib64
-OPENSSL_INCLUDEDIR ?= $(OPENSSL_PREFIX)/include
-LIBP11_PREFIX ?= /usr
-LIBP11_LIBDIR ?= $(LIBP11_PREFIX)/lib64
-LIBP11_INCLUDEDIR ?= $(LIBP11_PREFIX)/include
-INSTALL_PREFIX ?= /usr/local
-INSTALL_LIBDIR ?= $(INSTALL_PREFIX)/lib64
-INSTALL_INCLUDEDIR ?= $(INSTALL_PREFIX)/include
+OPENSSL_PREFIX		?= /usr
+OPENSSL_LIBDIR		?= $(OPENSSL_PREFIX)/lib64
+OPENSSL_INCLUDEDIR	?= $(OPENSSL_PREFIX)/include
+LIBP11_PREFIX		?= /usr
+LIBP11_LIBDIR		?= $(LIBP11_PREFIX)/lib64
+LIBP11_INCLUDEDIR	?= $(LIBP11_PREFIX)/include
+INSTALL_PREFIX		?= /usr/local
+INSTALL_LIBDIR		?= $(INSTALL_PREFIX)/lib64
+INSTALL_INCLUDEDIR	?= $(INSTALL_PREFIX)/include
 
 ############ DEPENDENCIES ############################
 
-STATIC_LIBS = $(OPENSSL_LIBDIR)/libcrypto.a $(OPENSSL_LIBDIR)/libssl.a $(LIBP11_LIBDIR)/libp11.a -ldl
-LIBS = -L$(OPENSSL_LIBDIR) -L$(LIBP11_LIBDIR) -Wl,-rpath,$(OPENSSL_LIBDIR):$(LIBP11_LIBDIR) -lp11 -lcrypto -Wstack-protector
-INCLUDES = -I$(OPENSSL_INCLUDEDIR) -I$(LIBP11_INCLUDEDIR) -I./include
+STATIC_LIBS	:= $(OPENSSL_LIBDIR)/libcrypto.a $(OPENSSL_LIBDIR)/libssl.a $(LIBP11_LIBDIR)/libp11.a -ldl
+LIBS		:= -L$(OPENSSL_LIBDIR) -L$(LIBP11_LIBDIR) -Wl,-rpath,$(OPENSSL_LIBDIR):$(LIBP11_LIBDIR) -lp11 -lcrypto -Wstack-protector
+INCLUDES	:= -I./include -I$(OPENSSL_INCLUDEDIR) -I$(LIBP11_INCLUDEDIR)
 
 ########### OBJECTS ##################################
-CPP_SRCS := $(shell find src -name "*.cpp")
-OBJS = $(CPP_SRCS:.cpp=.o)
-CPP_DEPS = $(CPP_SRCS:.cpp=.d)
+BUILD_ROOT	?= build
+CPP_SRCS	:= $(shell find src -name "*.cpp")
+OBJS 		:= $(CPP_SRCS:%.cpp=$(BUILD_ROOT)/%.o)
+CPP_DEPS	:= $(CPP_SRCS:%.cpp=$(BUILD_ROOT)%.d)
 
 ########### TARGETS ##################################
 
-src/%.o: ./src/%.cpp
+$(BUILD_ROOT)/%.o: %.cpp
 	@echo 'Building file: $<'
+	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(INCLUDES) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 
@@ -44,8 +46,7 @@ static_release: static
 	strip $(NAME)
 
 clean:
-	rm -rf $(CPP_DEPS) $(OBJS) $(NAME)
-
+	rm -rf $(NAME) $(BUILD_ROOT)
 
 install: $(NAME)
 	@echo 'Installing libcryptosec ...'
