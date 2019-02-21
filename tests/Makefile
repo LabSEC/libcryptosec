@@ -14,9 +14,6 @@ SRC_DIR ?= src/unit
 
 
 ############ DEPENDENCIES ############################
-#LIBS = $(LIBCRYPTOSEC) -lgtest -lcrypto -lssl -pthread
-#INCLUDES = -I../include -I$(GTEST_DIR) -I$(SSL_DIR)
-
 
 LIBS = $(LIBCRYPTOSEC) -L$(OPENSSL_LIBDIR) -Wl,-rpath,$(OPENSSL_LIBDIR) -lcrypto -lgtest -pthread
 INCLUDES = -I$(OPENSSL_INCLUDEDIR) -I$(GTEST_INCLUDEDIR) -I../include
@@ -53,6 +50,8 @@ OBJS += $(TEST_SRCS:.cpp=.o)
 ########### TARGETS ##################################
 
 all: .comp
+
+test: test_dynamic
 
 test_dynamic: .check_compiled .comp .run
 
