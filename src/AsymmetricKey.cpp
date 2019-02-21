@@ -3,9 +3,6 @@
 AsymmetricKey::AsymmetricKey(EVP_PKEY *key)
 		throw (AsymmetricKeyException)
 {
-	if(this->key != NULL){
-		EVP_PKEY_free(this->key);
-	}
 	this->key = key;
 }
 
