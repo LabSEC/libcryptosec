@@ -24,19 +24,17 @@ INCLUDES	:= -I./include -I$(OPENSSL_INCLUDEDIR) -I$(LIBP11_INCLUDEDIR)
 BUILD_ROOT	?= build
 CPP_SRCS	:= $(shell find src -name "*.cpp")
 OBJS 		:= $(CPP_SRCS:%.cpp=$(BUILD_ROOT)/%.o)
-CPP_DEPS	:= $(CPP_SRCS:%.cpp=$(BUILD_ROOT)%.d)
 
 ########### TARGETS ##################################
 
-$(BUILD_ROOT)/%.o: %.cpp
-	@echo 'Building file: $<'
-	@mkdir -p $(@D)
-	$(CC) $(CPPFLAGS) $(INCLUDES) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
-	@echo ' '
+.PHONY: all release static static_release clean install uninstall
 
-$(NAME): $(OBJS)
+all: $(OBJS)
 	$(CC) $(CPPFLAGS) -shared -o $(NAME) $(OBJS) $(LIBS)
 	@echo 'Build complete!'
+
+release: all
+	strip $(NAME)
 
 static: $(OBJS)
 	$(CC) $(CPPFLAGS) -shared -o $(NAME) $(OBJS) $(STATIC_LIBS)
@@ -44,6 +42,12 @@ static: $(OBJS)
 
 static_release: static
 	strip $(NAME)
+
+$(OBJS): $(BUILD_ROOT)/%.o: %.cpp
+	@echo 'Building file: $<'
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(INCLUDES) -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
 
 clean:
 	rm -rf $(NAME) $(BUILD_ROOT)
