@@ -102,3 +102,18 @@ void DynamicEngine::removeFromEnginesList() throw (EngineException)
 		throw EngineException(EngineException::REMOVE_ENGINE_FROM_LIST, "DynamicEngine::removeFromEnginesList");
 	}
 }
+
+bool DynamicEngine::load() throw (EngineException)
+{
+	int rc = ENGINE_init(this->engine);
+	rc &= ENGINE_set_default(this->engine, ENGINE_METHOD_ALL);
+	OpenSSL_add_all_algorithms();
+	return rc;
+}
+
+bool DynamicEngine::release() throw (EngineException)
+{
+	int rc = ENGINE_finish(this->engine);
+	rc &= ENGINE_free(this->engine);
+	return rc;
+}
