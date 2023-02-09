@@ -71,11 +71,13 @@ POLICYINFO* PolicyInformation::getPolicyInfo() const
 	POLICYQUALINFO *policyQualInfo;
 	ret = POLICYINFO_new();
 	ret->policyid = OBJ_dup(this->policyIdentifier.getObjectIdentifier());
-	ret->qualifiers = sk_POLICYQUALINFO_new_null();
-	for (i=0;i<this->policyQualifiers.size();i++)
-	{
-		policyQualInfo = this->policyQualifiers.at(i).getPolicyQualInfo();
-		sk_POLICYQUALINFO_push(ret->qualifiers, policyQualInfo);
+
+	if (this->policyQualifiers.size()) {
+		ret->qualifiers = sk_POLICYQUALINFO_new_null();
+		for (i=0;i<this->policyQualifiers.size();i++)
+		{
+			policyQualInfo = this->policyQualifiers.at(i).getPolicyQualInfo();
+			sk_POLICYQUALINFO_push(ret->qualifiers, policyQualInfo);
+		}
 	}
-	return ret;
 }
