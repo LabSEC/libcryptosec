@@ -80,4 +80,6 @@ POLICYINFO* PolicyInformation::getPolicyInfo() const
 			sk_POLICYQUALINFO_push(ret->qualifiers, policyQualInfo);
 		}
 	}
+
+	return ret;
 }
