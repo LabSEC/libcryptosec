@@ -72,7 +72,8 @@ POLICYINFO* PolicyInformation::getPolicyInfo() const
 	ret = POLICYINFO_new();
 	ret->policyid = OBJ_dup(this->policyIdentifier.getObjectIdentifier());
 
-	if (this->policyQualifiers.size()) {
+	if (this->policyQualifiers.size())
+	{
 		ret->qualifiers = sk_POLICYQUALINFO_new_null();
 		for (i=0;i<this->policyQualifiers.size();i++)
 		{
