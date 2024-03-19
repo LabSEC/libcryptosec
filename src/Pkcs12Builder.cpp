@@ -46,6 +46,9 @@ Pkcs12* Pkcs12Builder::doFinal(string password) const throw(Pkcs12Exception)
 	int mac_iter = 0;
 	int keytype = 0;
 
+	//this method must be executed before PKCS12_create() or else it always returns null, temporary fix
+	OpenSSL_add_all_algorithms();
+
 	//verifica se chave privada corresponde a chave publica
 	if(!X509_check_private_key(this->keyCert->getX509(), this->key->getEvpPkey()))
 	{
