@@ -15,6 +15,7 @@ public:
 		KEY_AND_CERT_DO_NOT_MATCH,
 		PARSE_ERROR,
 		MAC_VERIFY_FAILURE,
+		ASN1_INVALID_OBJECT_ENCODING,
 	};
 
 	Pkcs12Exception(std::string where)
@@ -73,12 +74,9 @@ public:
     		case Pkcs12Exception::PARSE_ERROR :
     			ret = "Parse error";
     			break;
-    			//    		case Pkcs12Exception:::
-    			//    			ret = "";
-    			//    			break;
-    			//    		case Pkcs12Exception:::
-    			//    			ret = "";
-    			//    			break;    			
+			case Pkcs12Exception::ASN1_INVALID_OBJECT_ENCODING :
+				ret = "ASN1 invalid enconding";
+				break;
     	}
     	return ret;
     }
